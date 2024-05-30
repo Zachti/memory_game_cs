@@ -1,0 +1,4 @@
+enum eGameModes {
+    singlePlayer,
+    multiPlayer
+}
