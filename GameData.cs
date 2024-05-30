@@ -1,7 +1,4 @@
- using System.Collections.Generic;
-using System;
-
- public class GameData
+public class GameData
     {
         private static readonly Random m_Random = new Random();
         public Player PlayerOne { get; }
