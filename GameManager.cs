@@ -1,6 +1,6 @@
 public class GameManager
 {
-    private static int Difficulty { get; } = 80;
+    private static int Difficulty { get; } = 50;
     public static int MinBoardWidth { get; } = 4;
     public static int MaxBoardWidth { get; } = 6;
     public static int MinBoardHeight { get; } = 4;
