@@ -11,7 +11,8 @@ public class GameUIManager {
         // if(GameLogicManager.CurrentGameState == eGameStates.Menu)
         // {
             string o_fPlayerName, o_sPlayerName;
-            eGameModes mode = r_Menu.Start(out o_fPlayerName, out o_sPlayerName);
+            int height, width;
+            eGameModes mode = r_Menu.Start(out o_fPlayerName, out o_sPlayerName, out height, out width);
         // }
 
         // runGame();
