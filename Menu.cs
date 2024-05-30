@@ -62,7 +62,6 @@ public class Menu {
         }
     }
 
-
     private int validateNumberInRange() {
         int userInput = 0;
         bool isNumber = false;
