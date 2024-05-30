@@ -39,8 +39,8 @@ public class GameUIManager {
         {
             while(GameManager.CurrentGameState == eGameStates.Running)
             {
-                DrawData();
-                //string playerInput = getPlayerInput();
+                DrawBoard();
+                string playerInput = GetPlayerInput();
                 //sendInputAndUpdateUI(playerInput);
                 break;
             }
@@ -50,12 +50,15 @@ public class GameUIManager {
        Console.Clear();
     }
 
-    private void DrawData()
+    private void DrawBoard()
     {
         ClearWindow();
+        Console.WriteLine();
+        Console.WriteLine($"Current Turn: {m_GameManager.CurrentPlayer.PlayerName}");
+        Console.WriteLine();    
         DrawTopLetterRow(m_GameManager.BoardWidth);
         string border = string.Format("  {0}", new string('=', 4 * m_GameManager.BoardWidth + 1));
-       Console.WriteLine(border);
+        Console.WriteLine(border);
         for (int i = 0; i < m_GameManager.BoardHeight; i++)
         {
             DrawRow(i);
@@ -84,5 +87,35 @@ public class GameUIManager {
         }
 
         Console.WriteLine(row.ToString());
+    }
+
+    private string GetPlayerInput()
+    {     
+        if (m_GameManager.CurrentPlayer.Type == ePlayerTypes.Human)
+        {
+            return GetHumanInput(m_GameManager.CurrentPlayer.PlayerName);
+        }
+        // string aiInput = m_GameManager.GetAiInput();
+        //drawComputerMessage();
+        //return aiInput;
+        return string.Empty;
+    }
+
+    private string GetHumanInput(string i_PlayerName)
+    {
+        string userInput = string.Empty;
+        bool isValidInput = false;
+        while (!isValidInput)
+        {
+            Console.WriteLine("{0}, Please enter your selection: ", i_PlayerName);
+            userInput = Console.ReadLine();
+            isValidInput = m_GameManager.validatePlayerInput(userInput);
+            if (!isValidInput)
+            {
+                Console.WriteLine("\nInvalid input. Please enter a valid selection.");
+            }
+        }
+
+        return userInput;
     }
 }
