@@ -1,4 +1,4 @@
-public class GameUiManager {
+public class GameUIManager {
       private readonly Menu r_Menu;
 
     public GameUIManager()
@@ -10,7 +10,8 @@ public class GameUiManager {
     {
         // if(GameLogicManager.CurrentGameState == eGameStates.Menu)
         // {
-            runMenu();
+            string o_fPlayerName, o_sPlayerName;
+            eGameModes mode = r_Menu.Start(out o_fPlayerName, out o_sPlayerName);
         // }
 
         // runGame();

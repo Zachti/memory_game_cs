@@ -1,8 +1,9 @@
 public class Menu {
     public eGameModes Start(out string o_fPlayerName, out string o_sPlayerName) {
         Console.WriteLine("Welcome \n lets play some memory game! \n");
-        getFirstPlayerName();
-        eGameModes gameMode = selectGameMode(out string o_sPlayerName);
+        getFirstPlayerName(out o_fPlayerName);
+        eGameModes gameMode = selectGameMode(out o_sPlayerName);
+        return gameMode;
     }
 
     private void getFirstPlayerName(out string o_fPlayerName) {
@@ -21,12 +22,13 @@ public class Menu {
         gameMode = validateGameMode();
     }
 
-        if(gameMode == '2') {
-            Console.WriteLine('Please enter the name of the secod player: ');
+        if(gameMode == "2") {
+            Console.WriteLine("Please enter the name of the secod player: ");
             o_sPlayerName = Console.ReadLine();
             return eGameModes.multiPlayer;
         }
 
+        o_sPlayerName = "Computer";
         return eGameModes.singlePlayer;
 
     }
@@ -35,7 +37,7 @@ public class Menu {
     
         string gameMode = Console.ReadLine();
   
-        modeDescription = gameMode switch
+        string modeDescription = gameMode switch
         {
             "1" => "Single Player (Player vs. Computer)",
             "2" => "Multiplayer (1v1 or Head-to-Head)",

@@ -1,4 +1,4 @@
-enum eGameModes {
+public enum eGameModes {
     singlePlayer,
     multiPlayer
 }
