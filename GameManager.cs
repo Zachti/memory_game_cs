@@ -17,6 +17,12 @@ public class GameManager
     private bool m_SelectionNotMatching = false;
     private bool m_AiHasMatches = false;
 
+    public int BoardWidth => r_GameData.BoardWidth;
+
+    public int BoardHeight => r_GameData.BoardHeight;
+
+    public Player CurrentPlayer { get => r_GameData.CurrentPlayer; set => r_GameData.CurrentPlayer = value; }
+
     public GameManager(Player i_Player1, Player i_Player2, int i_Height, int i_Width, eGameModes i_GameMode)
     {
         r_GameData = new GameData(i_Player1, i_Player2, i_Width, i_Height);
@@ -29,29 +35,6 @@ public class GameManager
         }
     }
 
-    public int BoardWidth
-    {
-        get { return r_GameData.BoardWidth; }
-    }
-
-    public int BoardHeight
-    {
-        get { return r_GameData.BoardHeight; }
-    }
-
-    public Player CurrentPlayer
-    {
-        get
-        {
-            return r_GameData.CurrentPlayer;
-        }
-
-        set
-        {
-            r_GameData.CurrentPlayer = value;
-        }
-    }
-    
     public bool validatePlayerInput(string i_userInput) {
         bool isValid = false;
         if (i_userInput == null) {
