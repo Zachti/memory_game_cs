@@ -17,15 +17,25 @@ public class GameManager
     private bool m_SelectionNotMatching = false;
     private bool m_AiHasMatches = false;
 
-    public GameManager(Player i_Player1, Player i_Player2, int i_Width, int i_Height, eGameModes i_GameMode)
+    public GameManager(Player i_Player1, Player i_Player2, int i_Height, int i_Width, eGameModes i_GameMode)
+    {
+        r_GameData = new GameData(i_Player1, i_Player2, i_Width, i_Height);
+        r_GameData.InitializeBoard();
+        r_GameMode = i_GameMode;
+        CurrentGameState = eGameStates.Running;
+        if (r_GameMode == eGameModes.singlePlayer)
         {
-            r_GameData = new GameData(i_Player1, i_Player2, i_Width, i_Height);
-            r_GameData.InitializeBoard();
-            r_GameMode = i_GameMode;
-            CurrentGameState = eGameStates.Running;
-            if (r_GameMode == eGameModes.singlePlayer)
-            {
-                r_AiMemory = new Dictionary<Cell, char>();
-            }
+            r_AiMemory = new Dictionary<Cell, char>();
         }
+    }
+
+    public int BoardWidth
+    {
+        get { return r_GameData.BoardWidth; }
+    }
+
+    public int BoardHeight
+    {
+        get { return r_GameData.BoardHeight; }
+    }
 }

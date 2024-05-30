@@ -1,6 +1,6 @@
 public class Menu {
     public eGameModes Start(out string o_fPlayerName, out string o_sPlayerName, out int o_Height, out int o_Width) {
-        Console.WriteLine("Welcome \n lets play some memory game! \n");
+        Console.WriteLine("\nWelcome \nLets play some memory game! \n");
         getFirstPlayerName(out o_fPlayerName);
         eGameModes gameMode = selectGameMode(out o_sPlayerName);
         getBoardSize(out o_Height, out o_Width);
@@ -10,7 +10,7 @@ public class Menu {
     private void getFirstPlayerName(out string o_fPlayerName) {
         Console.WriteLine("Please enter your name: ");
         o_fPlayerName = Console.ReadLine();
-        Console.WriteLine("Hi {0}, \n Welcome Aboard! \nPlease choose a game mode: ", o_fPlayerName);
+        Console.WriteLine("Hi {0}, \nWelcome Aboard! \nPlease choose a game mode: ", o_fPlayerName);
     }
 
     private eGameModes selectGameMode(out string o_sPlayerName) {
