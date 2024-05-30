@@ -1,5 +1,4 @@
-public enum ePlayerTypes
-{
+public enum ePlayerTypes {
     Human,
     Computer
 }
