@@ -66,7 +66,7 @@ public class GameData
             return boardLetters;
         }
   
-        private int GetRandomNumber(int i_RangeStart, int i_RangeEnd)
+        public static int GetRandomNumber(int i_RangeStart, int i_RangeEnd)
         { 
             return m_Random.Next(i_RangeStart, i_RangeEnd);
         } 

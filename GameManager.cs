@@ -1,6 +1,6 @@
 public class GameManager
 {
-    private const int k_DifficultyOdds = 80;
+    private static int Difficulty { get; } = 80;
     public static int MinBoardWidth { get; } = 4;
     public static int MaxBoardWidth { get; } = 6;
     public static int MinBoardHeight { get; } = 4;
@@ -18,10 +18,10 @@ public class GameManager
     private bool m_AiHasMatches = false;
 
     public int BoardWidth => r_GameData.BoardWidth;
-
     public int BoardHeight => r_GameData.BoardHeight;
-
+    public BoardLetter[,] Letters => r_GameData.Letters;
     public Player CurrentPlayer { get => r_GameData.CurrentPlayer; set => r_GameData.CurrentPlayer = value; }
+    public bool SelectionNotMatching { get => m_SelectionNotMatching; set => m_SelectionNotMatching = value; }
 
     public GameManager(Player i_Player1, Player i_Player2, int i_Height, int i_Width, eGameModes i_GameMode)
     {
@@ -33,6 +33,200 @@ public class GameManager
         {
             r_AiMemory = new Dictionary<Cell, char>();
         }
+    }
+
+    public string GetScoreboard()
+    {
+        return string.Format(
+            "Score: {0} {1} - {2} {3}",
+            r_GameData.PlayerOne.PlayerName,
+            r_GameData.PlayerOne.PlayerScore,
+            r_GameData.PlayerTwo.PlayerName,
+            r_GameData.PlayerTwo.PlayerScore );
+    }
+
+    public void ChangeTurn() {
+        CurrentPlayer = CurrentPlayer == r_GameData.PlayerOne ? r_GameData.PlayerTwo : r_GameData.PlayerOne;
+
+        getBoardLetterAt(m_CurrentUserSelection).IsRevealed = false;
+        getBoardLetterAt(m_PreviousUserSelection).IsRevealed = false;
+        m_SelectionNotMatching = false;
+    }
+
+    public void Update(Cell i_UserSelection)
+    {       
+        if(!m_SelectionNotMatching) {
+                UpdateNextTurn(i_UserSelection);
+        }
+        if ((r_GameData.PlayerOne.PlayerScore + r_GameData.PlayerTwo.PlayerScore) == (BoardWidth * BoardHeight) / 2)
+        {
+            CurrentGameState = eGameStates.GameOver;
+        }
+    }
+
+    private void UpdateNextTurn(Cell i_UserSelection)
+    {
+        m_CurrentUserSelection = i_UserSelection;
+
+        if (r_GameMode == eGameModes.singlePlayer)
+        {
+            if (GameData.GetRandomNumber(0, 100) <= Difficulty)
+            {
+                addToAiMemory(m_CurrentUserSelection);
+            }
+        }
+
+        if (m_IsFirstSelection)
+        {
+            m_PreviousUserSelection = m_CurrentUserSelection;
+            getBoardLetterAt(m_CurrentUserSelection).IsRevealed = true;
+            m_IsFirstSelection = false;
+        } else {
+            BoardLetter firstSelectionLetter = getBoardLetterAt(m_PreviousUserSelection);
+            BoardLetter secondSelectionLetter = getBoardLetterAt(m_CurrentUserSelection);
+
+            secondSelectionLetter.IsRevealed = true;
+
+            m_SelectionNotMatching = firstSelectionLetter.Letter != secondSelectionLetter.Letter;
+
+            if (!m_SelectionNotMatching) {
+                if (r_GameMode == eGameModes.singlePlayer) {
+                    r_AiMemory.Remove(m_CurrentUserSelection);
+                    r_AiMemory.Remove(m_PreviousUserSelection);
+                }
+
+                CurrentPlayer.PlayerScore++;
+            }
+            m_IsFirstSelection = true;
+        }
+    }
+
+    private void addToAiMemory(Cell i_CellToBeAdded)
+    {
+        if(!r_AiMemory.ContainsKey(i_CellToBeAdded))
+        {
+            r_AiMemory.Add(i_CellToBeAdded, Letters[i_CellToBeAdded.Row, i_CellToBeAdded.Column].Letter);
+        }
+    }
+
+    private BoardLetter getBoardLetterAt(Cell i_CellLocation)
+    {
+        return Letters[i_CellLocation.Row, i_CellLocation.Column];
+    }
+
+    public string GetAiInput()
+     {
+        string aiSelection;
+
+        if(r_AiMemory.Count == 0)
+        {
+            m_AiHasMatches = false;
+            aiSelection = GetRandomUnmemorizedCell();
+        } else {
+            aiSelection = m_IsFirstSelection ? GetFirstSelection() : GetSecondSelection();
+        }
+        return aiSelection;
+    }
+    
+    private string GetFirstSelection()
+    {
+        string firstSelection = null;
+
+        m_FoundMatch = findLetterMatch(ref firstSelection);
+
+        if(m_FoundMatch)
+        {
+            m_AiHasMatches = true;
+        } else {
+                m_AiHasMatches = false;
+                firstSelection = GetRandomUnmemorizedCell();
+            }
+
+        return firstSelection;
+    }
+
+    private string GetSecondSelection()
+    {
+        string secondSelection;
+
+        if(m_FoundMatch)
+        {
+            secondSelection = m_AiSelection.ToString();
+        } else {
+            secondSelection = findLetterInMemory(m_AiSelection);
+            if(secondSelection != null)
+            {
+                m_AiHasMatches = true;
+            } else {
+                m_AiHasMatches = false;
+                secondSelection = GetRandomUnmemorizedCell();
+            }
+        }
+        return secondSelection;
+     }
+    
+    private string findLetterInMemory(Cell i_FirstSelectionCell)
+    {
+        string foundLetter = null;
+
+        foreach(var memorizedLetter in r_AiMemory)
+        {
+            Cell currentKey = memorizedLetter.Key;
+            char firstSelectionLetter = Letters[i_FirstSelectionCell.Row, i_FirstSelectionCell.Column].Letter;
+
+            if(!currentKey.Equals(i_FirstSelectionCell) && memorizedLetter.Value == firstSelectionLetter) 
+            {
+                foundLetter = memorizedLetter.Key.ToString();
+            }
+        }
+        return foundLetter;
+    }
+
+    private string GetRandomUnmemorizedCell()
+    {
+        int row = Letters.GetLength(0);
+        int column = Letters.GetLength(1);
+        Cell[] cellsNotInMemory = new Cell[(BoardHeight * BoardWidth) - r_AiMemory.Count];
+        int indexOfCellNotInMemory = 0;
+
+        for (int i = 0; i < row; i++)
+        {
+            for(int j = 0; j < column; j++)
+            {
+                if(!Letters[i, j].IsRevealed)
+                {
+                    if(!r_AiMemory.ContainsKey(new Cell(i, j)))
+                    {
+                        cellsNotInMemory[indexOfCellNotInMemory++] = new Cell(i, j);
+                    }
+                }
+            }
+         }
+        indexOfCellNotInMemory = GameData.GetRandomNumber(0, indexOfCellNotInMemory);
+        m_AiSelection = cellsNotInMemory[indexOfCellNotInMemory];
+        return m_AiSelection.ToString();
+    }
+
+    private bool findLetterMatch(ref string i_MemorizedMatchingLetter)
+    {
+        bool foundMatch = false;
+
+        foreach (var firstMemorizedLetter in r_AiMemory)
+        {
+            foreach (var secondMemorizedLetter in r_AiMemory)
+            {
+                if (!firstMemorizedLetter.Key.Equals(secondMemorizedLetter.Key))
+                {
+                     if (firstMemorizedLetter.Value == secondMemorizedLetter.Value)
+                    {
+                        i_MemorizedMatchingLetter = firstMemorizedLetter.Key.ToString();
+                        m_AiSelection = secondMemorizedLetter.Key;
+                        foundMatch = true;
+                    }
+                }
+             }
+         }
+            return foundMatch;
     }
 
     public bool validatePlayerInput(string i_userInput) {

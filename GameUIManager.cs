@@ -41,8 +41,7 @@ public class GameUIManager {
             {
                 DrawBoard();
                 string playerInput = GetPlayerInput();
-                //sendInputAndUpdateUI(playerInput);
-                break;
+                DrawInputAndUpdateUI(playerInput);
             }
         }
     private void ClearWindow()
@@ -95,10 +94,9 @@ public class GameUIManager {
         {
             return GetHumanInput(m_GameManager.CurrentPlayer.PlayerName);
         }
-        // string aiInput = m_GameManager.GetAiInput();
+        string aiInput = m_GameManager.GetAiInput();
         //drawComputerMessage();
-        //return aiInput;
-        return string.Empty;
+        return aiInput;
     }
 
     private string GetHumanInput(string i_PlayerName)
@@ -117,5 +115,24 @@ public class GameUIManager {
         }
 
         return userInput;
+    }
+
+    private void DrawInputAndUpdateUI(string i_PlayerInput)
+    {
+        if(i_PlayerInput == "Q")
+        {
+            //stopGame();
+        }
+        m_GameManager.Update(Cell.Parse(i_PlayerInput));
+
+        if(m_GameManager.SelectionNotMatching)
+        {
+            DrawBoard();
+            Console.WriteLine("Mismatch, remember this!");
+
+            System.Threading.Thread.Sleep(2000);
+
+            m_GameManager.ChangeTurn();
+        }
     }
 }
