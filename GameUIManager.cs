@@ -2,13 +2,13 @@
 using System.Text;
 
 public class GameUIManager {
-      private readonly IMenu r_Menu;
-      private GameManager m_GameManager;
+      private IMenu IMenu { get; }
+      private GameManager GameManager { get; }
 
    public GameUIManager(IMenu i_Menu, GameManager i_GameManager)
     {
-        r_Menu = i_Menu;
-        m_GameManager = i_GameManager;
+        IMenu = i_Menu;
+        GameManager = i_GameManager;
     }
 
     public void StartGame()
@@ -24,11 +24,11 @@ public class GameUIManager {
         int height, width;
         int? difficulty;
 
-        eGameModes desiredGameMode = r_Menu.Start(out fPlayerName, out sPlayerName, out height, out width, out difficulty);
+        eGameModes desiredGameMode = IMenu.Start(out fPlayerName, out sPlayerName, out height, out width, out difficulty);
         Player fPlayer = new Player(fPlayerName, ePlayerTypes.Human);
         ePlayerTypes type = desiredGameMode == eGameModes.multiPlayer ? ePlayerTypes.Human : ePlayerTypes.AI;
         Player sPlayer = new Player(sPlayerName, type);
-        m_GameManager.Initializae(fPlayer, sPlayer, new Board(height, width), desiredGameMode, difficulty);
+        GameManager.Initializae(fPlayer, sPlayer, new Board(height, width), desiredGameMode, difficulty);
     }
 
     private void RunGame()
@@ -50,12 +50,12 @@ public class GameUIManager {
     {
         ClearWindow();
         Console.WriteLine();
-        Console.WriteLine($"Current Turn: {m_GameManager.CurrentPlayer.PlayerName}");
+        Console.WriteLine($"Current Turn: {GameManager.CurrentPlayer.PlayerName}");
         Console.WriteLine();    
-        DrawTopLetterRow(m_GameManager.BoardWidth);
-        string border = string.Format("  {0}", new string('=', 4 * m_GameManager.BoardWidth + 1));
+        DrawTopLetterRow(GameManager.BoardWidth);
+        string border = string.Format("  {0}", new string('=', 4 * GameManager.BoardWidth + 1));
         Console.WriteLine(border);
-        for (int i = 0; i < m_GameManager.BoardHeight; i++)
+        for (int i = 0; i < GameManager.BoardHeight; i++)
         {
             DrawRow(i);
             Console.WriteLine(border);
@@ -77,9 +77,9 @@ public class GameUIManager {
     private void DrawRow(int i_Index) {
         StringBuilder row = new StringBuilder();
         row.Append(string.Format("{0} |", i_Index + 1));
-        for (int j = 0; j < m_GameManager.BoardWidth; j++)
+        for (int j = 0; j < GameManager.BoardWidth; j++)
         {
-            BoardLetter currentBoardLetter = m_GameManager.Letters[i_Index, j];
+            BoardLetter currentBoardLetter = GameManager.Letters[i_Index, j];
             row.Append(string.Format(" {0} |", currentBoardLetter.IsRevealed ? currentBoardLetter.Letter : ' '));
         }
         Console.WriteLine(row.ToString());
@@ -87,11 +87,11 @@ public class GameUIManager {
 
     private string GetPlayerInput()
     {     
-        if (m_GameManager.CurrentPlayer.Type == ePlayerTypes.Human)
+        if (GameManager.CurrentPlayer.Type == ePlayerTypes.Human)
         {
-            return GetHumanInput(m_GameManager.CurrentPlayer.PlayerName);
+            return GetHumanInput(GameManager.CurrentPlayer.PlayerName);
         }
-        string aiInput = m_GameManager.GetAiInput();
+        string aiInput = GameManager.GetAiInput();
         ShowAIMessage();
         return aiInput;
     }
@@ -104,7 +104,7 @@ public class GameUIManager {
         {
             Console.WriteLine("{0}, Please enter your selection: ", i_PlayerName);
             userInput = Console.ReadLine();
-            isValidInput = m_GameManager.ValidatePlayerInput(userInput);
+            isValidInput = GameManager.ValidatePlayerInput(userInput);
             if (!isValidInput)
             {
                 Console.WriteLine("\nInvalid input. Please enter a valid selection.");
@@ -120,22 +120,22 @@ public class GameUIManager {
         {
             Exit();
         }
-        m_GameManager.Update(Cell.Parse(i_PlayerInput));
+        GameManager.Update(Cell.Parse(i_PlayerInput));
 
-        if(m_GameManager.SelectionNotMatching)
+        if(GameManager.SelectionNotMatching)
         {
             DrawBoard();
             Console.WriteLine("Mismatch, but try to remember!");
 
             System.Threading.Thread.Sleep(2000);
 
-            m_GameManager.ChangeTurn();
+            GameManager.ChangeTurn();
         }
     }
     
     private void ShowAIMessage()
     {
-        if(m_GameManager.AiHasMatches) {
+        if(GameManager.AiHasMatches) {
             Console.WriteLine("AI has found a match!");
             System.Threading.Thread.Sleep(2000);
             return;
@@ -163,7 +163,7 @@ public class GameUIManager {
 
         DrawBoard();
 
-        Console.WriteLine(m_GameManager.GetGameOverStatus());
+        Console.WriteLine(GameManager.GetGameOverStatus());
 
         if(CheckForRestart())
         {
@@ -185,8 +185,8 @@ public class GameUIManager {
 
      private void RestartGame()
     {
-        r_Menu.GetBoardSize(out int height, out int width);
-        m_GameManager.ResetGame(height, width);
+        IMenu.GetBoardSize(out int height, out int width);
+        GameManager.ResetGame(height, width);
         StartGame();
     }   
 }

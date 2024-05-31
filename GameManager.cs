@@ -9,45 +9,44 @@ public class GameManager
     private bool FoundMatch { get; set; } = false;
     private bool IsFirstSelection { get; set; } = true;
     public bool AiHasMatches { get; set; } = false;
-    public int BoardWidth => r_GameData.Board.Width;
-    public int BoardHeight => r_GameData.Board.Height;
-    public BoardLetter[,] Letters => r_GameData.Letters;
-    public Player CurrentPlayer { get => r_GameData.CurrentPlayer; set => r_GameData.CurrentPlayer = value; }
+    public int BoardWidth => IGameData.Board.Width;
+    public int BoardHeight => IGameData.Board.Height;
+    public BoardLetter[,] Letters => IGameData.Letters;
+    public Player CurrentPlayer { get => IGameData.CurrentPlayer; set => IGameData.CurrentPlayer = value; }
     public bool SelectionNotMatching { get; set; } = false;
     private Cell AiSelection { get; set; }
     private Cell CurrentUserSelection { get; set; }
     private Cell PreviousUserSelection{ get; set; }
-
-    private readonly IGameMode r_GameMode;
-    private readonly IGameData r_GameData;
-    private  Dictionary<Cell, char>? r_AiMemory;
+    private IGameMode IGameMode { get; }
+    private IGameData IGameData { get; }
+    private  Dictionary<Cell, char>? AiMemory { get; set; }
 
 
     public GameManager(IGameData i_GameData, IGameMode i_GameMode)
     {
-        r_GameData = i_GameData;
-        r_GameMode = i_GameMode;
+        IGameData = i_GameData;
+        IGameMode = i_GameMode;
     }
 
     public void Initializae(Player i_PlayerOne, Player i_PlayerTwo, Board i_Board, eGameModes i_GameMode, int? i_Difficulty)
     {
-        r_GameData.PlayerOne = i_PlayerOne;
-        r_GameData.PlayerTwo = i_PlayerTwo;
-        r_GameData.Board = i_Board;
-        r_GameData.CurrentPlayer = i_PlayerOne;
-        r_GameData.Letters = new BoardLetter[i_Board.Height, i_Board.Width];
-        r_GameData.InitializeBoard();
+        IGameData.PlayerOne = i_PlayerOne;
+        IGameData.PlayerTwo = i_PlayerTwo;
+        IGameData.Board = i_Board;
+        IGameData.CurrentPlayer = i_PlayerOne;
+        IGameData.Letters = new BoardLetter[i_Board.Height, i_Board.Width];
+        IGameData.InitializeBoard();
         CurrentGameState = eGameStates.Running;
-        r_GameMode.Mode = i_GameMode;
-        if (r_GameMode.Mode == eGameModes.singlePlayer)
+        IGameMode.Mode = i_GameMode;
+        if (IGameMode.Mode == eGameModes.singlePlayer)
         {
             Difficulty = i_Difficulty;
-            r_AiMemory = new Dictionary<Cell, char>();
+            AiMemory = new Dictionary<Cell, char>();
         }
     }
 
     public void ChangeTurn() {
-        CurrentPlayer = CurrentPlayer == r_GameData.PlayerOne ? r_GameData.PlayerTwo : r_GameData.PlayerOne;
+        CurrentPlayer = CurrentPlayer == IGameData.PlayerOne ? IGameData.PlayerTwo : IGameData.PlayerOne;
 
         GetBoardLetterAt(CurrentUserSelection).IsRevealed = false;
         GetBoardLetterAt(PreviousUserSelection).IsRevealed = false;
@@ -59,7 +58,7 @@ public class GameManager
         if(!SelectionNotMatching) {
                 UpdateNextTurn(i_UserSelection);
         }
-        if ((r_GameData.PlayerOne.PlayerScore + r_GameData.PlayerTwo.PlayerScore) == (BoardWidth * BoardHeight) / 2)
+        if ((IGameData.PlayerOne.PlayerScore + IGameData.PlayerTwo.PlayerScore) == (BoardWidth * BoardHeight) / 2)
         {
             CurrentGameState = eGameStates.GameOver;
         }
@@ -69,7 +68,7 @@ public class GameManager
     {
         CurrentUserSelection = i_UserSelection;
 
-        if (r_GameMode.Mode == eGameModes.singlePlayer)
+        if (IGameMode.Mode == eGameModes.singlePlayer)
         {
             if (GameData.GetRandomNumber(0, 100) <= Difficulty)
             {
@@ -91,9 +90,9 @@ public class GameManager
             SelectionNotMatching = firstSelectionLetter.Letter != secondSelectionLetter.Letter;
 
             if (!SelectionNotMatching) {
-                if (r_GameMode.Mode == eGameModes.singlePlayer) {
-                    r_AiMemory?.Remove(CurrentUserSelection);
-                    r_AiMemory?.Remove(PreviousUserSelection);
+                if (IGameMode.Mode == eGameModes.singlePlayer) {
+                    AiMemory?.Remove(CurrentUserSelection);
+                    AiMemory?.Remove(PreviousUserSelection);
                 }
                 CurrentPlayer.PlayerScore++;
             }
@@ -103,9 +102,9 @@ public class GameManager
 
     private void AddToAiMemory(Cell i_CellToBeAdded)
     {
-        if(r_AiMemory != null && !r_AiMemory.ContainsKey(i_CellToBeAdded))
+        if(AiMemory != null && !AiMemory.ContainsKey(i_CellToBeAdded))
         {
-            r_AiMemory.Add(i_CellToBeAdded, Letters[i_CellToBeAdded.Row, i_CellToBeAdded.Column].Letter);
+            AiMemory.Add(i_CellToBeAdded, Letters[i_CellToBeAdded.Row, i_CellToBeAdded.Column].Letter);
         }
     }
 
@@ -118,7 +117,7 @@ public class GameManager
      {
         string aiSelection;
 
-        if(r_AiMemory?.Count == 0)
+        if(AiMemory?.Count == 0)
         {
             AiHasMatches = false;
             aiSelection = GetRandomUnmemorizedCell();
@@ -169,7 +168,7 @@ public class GameManager
     {
         string foundLetter = string.Empty;
 
-        foreach(var memorizedLetter in r_AiMemory)
+        foreach(var memorizedLetter in AiMemory!)
         {
             Cell currentKey = memorizedLetter.Key;
             char firstSelectionLetter = Letters[i_FirstSelectionCell.Row, i_FirstSelectionCell.Column].Letter;
@@ -186,7 +185,7 @@ public class GameManager
     {
         int row = Letters.GetLength(0);
         int column = Letters.GetLength(1);
-        Cell[] cellsNotInMemory = new Cell[(BoardHeight * BoardWidth) - r_AiMemory.Count];
+        Cell[] cellsNotInMemory = new Cell[(BoardHeight * BoardWidth) - AiMemory!.Count];
         int indexOfCellNotInMemory = 0;
 
         for (int i = 0; i < row; i++)
@@ -195,7 +194,7 @@ public class GameManager
             {
                 if(!Letters[i, j].IsRevealed)
                 {
-                    if(!r_AiMemory.ContainsKey(new Cell(i, j)))
+                    if(!AiMemory.ContainsKey(new Cell(i, j)))
                     {
                         cellsNotInMemory[indexOfCellNotInMemory++] = new Cell(i, j);
                     }
@@ -211,9 +210,9 @@ public class GameManager
     {
         bool foundMatch = false;
 
-        foreach (var firstMemorizedLetter in r_AiMemory)
+        foreach (var firstMemorizedLetter in AiMemory!)
         {
-            foreach (var secondMemorizedLetter in r_AiMemory)
+            foreach (var secondMemorizedLetter in AiMemory)
             {
                 if (!firstMemorizedLetter.Key.Equals(secondMemorizedLetter.Key))
                 {
@@ -269,7 +268,7 @@ public class GameManager
     private bool ValidateCellIsHidden(string i_userInput) {
         int column = i_userInput[0] - 'A';
         int row = i_userInput[1] - '1';
-        bool isValid = !r_GameData.Letters[row, column].IsRevealed;
+        bool isValid = !IGameData.Letters[row, column].IsRevealed;
         if (!isValid)
         {
            Console.WriteLine("Cell {0} is already revealed", i_userInput);
@@ -281,15 +280,15 @@ public class GameManager
     {
         return string.Format(
             "Score: {0} {1} - {2} {3}",
-            r_GameData.PlayerOne.PlayerName,
-            r_GameData.PlayerOne.PlayerScore,
-            r_GameData.PlayerTwo.PlayerName,
-            r_GameData.PlayerTwo.PlayerScore );
+            IGameData.PlayerOne.PlayerName,
+            IGameData.PlayerOne.PlayerScore,
+            IGameData.PlayerTwo.PlayerName,
+            IGameData.PlayerTwo.PlayerScore );
     }
 
     public string GetGameOverStatus() {
-        Player playerOne = r_GameData.PlayerOne;
-        Player playerTwo = r_GameData.PlayerTwo;
+        Player playerOne = IGameData.PlayerOne;
+        Player playerTwo = IGameData.PlayerTwo;
 
         string gameResult = playerOne.PlayerScore.CompareTo(playerTwo.PlayerScore) switch
         {
@@ -309,18 +308,18 @@ public class GameManager
 
     public void ResetGame(int i_Height, int i_Width) {
 
-        CurrentPlayer = r_GameData.PlayerOne.PlayerScore.CompareTo(r_GameData.PlayerTwo.PlayerScore) > 0
-                        ? r_GameData.PlayerOne
-                        : r_GameData.PlayerTwo;
+        CurrentPlayer = IGameData.PlayerOne.PlayerScore.CompareTo(IGameData.PlayerTwo.PlayerScore) > 0
+                        ? IGameData.PlayerOne
+                        : IGameData.PlayerTwo;
 
-        r_GameData.PlayerOne.PlayerScore = 0;
-        r_GameData.PlayerTwo.PlayerScore = 0;
+        IGameData.PlayerOne.PlayerScore = 0;
+        IGameData.PlayerTwo.PlayerScore = 0;
 
-        r_GameData.Board.Height = i_Height;
-        r_GameData.Board.Width = i_Width;
+        IGameData.Board.Height = i_Height;
+        IGameData.Board.Width = i_Width;
 
-        r_GameData.Letters = new BoardLetter[i_Height, i_Width];
-        r_GameData.InitializeBoard();
+        IGameData.Letters = new BoardLetter[i_Height, i_Width];
+        IGameData.InitializeBoard();
 
         InitializeLogic();
 
@@ -333,9 +332,9 @@ public class GameManager
         SelectionNotMatching = false;
         AiHasMatches = false;
         FoundMatch = false;
-        if (r_GameMode.Mode == eGameModes.singlePlayer)
+        if (IGameMode.Mode == eGameModes.singlePlayer)
         {
-            r_AiMemory?.Clear();
+            AiMemory?.Clear();
         }
     }
     
