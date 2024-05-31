@@ -2,12 +2,12 @@
 using System.Text;
 
 public class GameUIManager {
-      private readonly Menu r_Menu;
+      private readonly IMenu r_Menu;
       private GameManager m_GameManager;
 
-    public GameUIManager()
+    public GameUIManager(IMenu menu)
     {
-        r_Menu = new Menu();
+        r_Menu = menu;
     }
 
     public void StartGame()
@@ -95,7 +95,7 @@ public class GameUIManager {
             return GetHumanInput(m_GameManager.CurrentPlayer.PlayerName);
         }
         string aiInput = m_GameManager.GetAiInput();
-        ShowComputerMessage();
+        ShowAIMessage();
         return aiInput;
     }
 
@@ -136,7 +136,7 @@ public class GameUIManager {
         }
     }
     
-    private void ShowComputerMessage()
+    private void ShowAIMessage()
     {
         if(m_GameManager.AiHasMatches) {
             Console.WriteLine("AI has found a match!");

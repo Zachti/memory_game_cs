@@ -1,8 +1,15 @@
 using System.Runtime.CompilerServices;
 
-public class Menu {
+public interface IMenu
+{
+    eGameModes Start(out string o_fPlayerName, out string o_sPlayerName, out int o_Height, out int o_Width);
+    void GetBoardSize(out int o_Height, out int o_Width);
+}
+
+public class Menu : IMenu
+{
     public eGameModes Start(out string o_fPlayerName, out string o_sPlayerName, out int o_Height, out int o_Width) {
-        Console.WriteLine("\nWelcome \nLets play some memory game! \n");
+        Console.WriteLine("\nWelcome \nLet's play a memory game! \n");
         GetFirstPlayerName(out o_fPlayerName);
         eGameModes gameMode = SelectGameMode(out o_sPlayerName);
         GetBoardSize(out o_Height, out o_Width);
@@ -13,17 +20,17 @@ public class Menu {
         Console.WriteLine("Please enter your name: ");
         o_fPlayerName = Console.ReadLine();
         o_fPlayerName = GetValidName(o_fPlayerName);
-        Console.WriteLine("Hi {0}, \nWelcome Aboard! \nPlease choose a game mode: ", o_fPlayerName);
+        Console.WriteLine("\nHi {0}, \nWelcome Aboard! \nPlease choose a game mode: ", o_fPlayerName);
     }
 
     private eGameModes SelectGameMode(out string o_sPlayerName) {
         string gameMode = "0";
-        o_sPlayerName = "Computer";
+        o_sPlayerName = "AI";
         while (gameMode != "1" && gameMode != "2")
         {
-            Console.WriteLine("1. Single Player (Player vs. Computer)");
+            Console.WriteLine("1. Single Player (Player vs. AI)");
             Console.WriteLine("2. Multiplayer (Head-to-Head)");
-            Console.WriteLine("Please enter 1 or 2 to choose the game mode: ");
+            Console.WriteLine("\nPlease enter 1 or 2 to choose the game mode: ");
             gameMode = ValidateGameMode();
         }
 
@@ -42,12 +49,12 @@ public class Menu {
         return GetValidName(sPlayerName);
     }
 
-    private string GetValidName(string? name) {
-        while(string.IsNullOrEmpty(name)) {
+    private string GetValidName(string? i_name) {
+        while(string.IsNullOrEmpty(i_name)) {
             Console.WriteLine("Invalid input. Please enter a valid name: ");
-            name = Console.ReadLine();
+            i_name = Console.ReadLine();
         }
-        return name;
+        return i_name;
     }
     
     private string ValidateGameMode() { 
@@ -56,12 +63,12 @@ public class Menu {
   
         string modeDescription = gameMode switch
         {
-            "1" => "Single Player (Player vs. Computer)",
+            "1" => "Single Player (Player vs. AI)",
             "2" => "Multiplayer (1v1 or Head-to-Head)",
             _ => "Invalid choice. Please enter 1 or 2."
         };
 
-        Console.WriteLine($"You have chosen {modeDescription}");
+        Console.WriteLine($"\nYou have chosen {modeDescription}\n");
         return gameMode!;
     }
  
