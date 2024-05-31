@@ -12,7 +12,7 @@ namespace MemoryGame {
         return new Cell(row, column);
     }
     
-    public override string ToString()
+    public override readonly string ToString()
     {
         return string.Format("{0}{1}", (char)(Column + 'A'), (char)(Row + '1'));
     }
