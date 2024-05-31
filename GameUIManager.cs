@@ -41,7 +41,7 @@ public class GameUIManager {
             {
                 DrawBoard();
                 string playerInput = GetPlayerInput();
-                DrawInputAndUpdateUI(playerInput);
+                UpdateUI(playerInput);
             }
         }
     private void ClearWindow()
@@ -117,7 +117,7 @@ public class GameUIManager {
         return userInput;
     }
 
-    private void DrawInputAndUpdateUI(string i_PlayerInput)
+    private void UpdateUI(string i_PlayerInput)
     {
         if(i_PlayerInput == "Q")
         {

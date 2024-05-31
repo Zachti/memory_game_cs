@@ -7,7 +7,7 @@ public class GameManager
     public static int MaxBoardHeight { get; } = 6;
     public static eGameStates CurrentGameState { get; set; } = eGameStates.Menu;
     private bool FoundMatch { get; set; } = false;
-    private bool IsFirstSelection { get; set; } = false;
+    private bool IsFirstSelection { get; set; } = true;
     private bool AiHasMatches { get; set; } = false;
     public int BoardWidth => r_GameData.BoardWidth;
     public int BoardHeight => r_GameData.BoardHeight;
