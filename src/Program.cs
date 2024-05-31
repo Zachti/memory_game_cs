@@ -1,17 +1,18 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 
-    public class Program
+namespace MemoryGame {
+    internal class Program
     {
         public static void Main(string[] i_Args)
         {
-            IServiceProvider ServiceProvider = ConfigureServices();
+            IServiceProvider ServiceProvider = configureServices();
 
             GameUIManager gameUiManager = ServiceProvider.GetRequiredService<GameUIManager>();
 
             gameUiManager.StartGame();
         }
 
-        private static IServiceProvider ConfigureServices()
+        private static IServiceProvider configureServices()
         {
             return new ServiceCollection()
                 .AddSingleton<IMenu, Menu>()
@@ -24,4 +25,5 @@
                 .AddSingleton<IGameMode>(provider => new GameMode(eGameModes.singlePlayer))
                 .BuildServiceProvider();
         }   
+    }
 }
