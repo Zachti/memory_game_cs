@@ -3,20 +3,20 @@ using System.Runtime.CompilerServices;
 public class Menu {
     public eGameModes Start(out string o_fPlayerName, out string o_sPlayerName, out int o_Height, out int o_Width) {
         Console.WriteLine("\nWelcome \nLets play some memory game! \n");
-        getFirstPlayerName(out o_fPlayerName);
-        eGameModes gameMode = selectGameMode(out o_sPlayerName);
-        getBoardSize(out o_Height, out o_Width);
+        GetFirstPlayerName(out o_fPlayerName);
+        eGameModes gameMode = SelectGameMode(out o_sPlayerName);
+        GetBoardSize(out o_Height, out o_Width);
         return gameMode;
     }
 
-    private void getFirstPlayerName(out string o_fPlayerName) {
+    private void GetFirstPlayerName(out string o_fPlayerName) {
         Console.WriteLine("Please enter your name: ");
         o_fPlayerName = Console.ReadLine();
         o_fPlayerName = GetValidName(o_fPlayerName);
         Console.WriteLine("Hi {0}, \nWelcome Aboard! \nPlease choose a game mode: ", o_fPlayerName);
     }
 
-    private eGameModes selectGameMode(out string o_sPlayerName) {
+    private eGameModes SelectGameMode(out string o_sPlayerName) {
         string gameMode = "0";
         o_sPlayerName = "Computer";
         while (gameMode != "1" && gameMode != "2")
@@ -24,7 +24,7 @@ public class Menu {
             Console.WriteLine("1. Single Player (Player vs. Computer)");
             Console.WriteLine("2. Multiplayer (Head-to-Head)");
             Console.WriteLine("Please enter 1 or 2 to choose the game mode: ");
-            gameMode = validateGameMode();
+            gameMode = ValidateGameMode();
         }
 
         if (gameMode == "2") {
@@ -50,7 +50,7 @@ public class Menu {
         return name;
     }
     
-    private string validateGameMode() { 
+    private string ValidateGameMode() { 
     
         string? gameMode = Console.ReadLine();
   
@@ -65,12 +65,12 @@ public class Menu {
         return gameMode!;
     }
  
-    public void getBoardSize(out int o_Height, out int o_Width) {
+    public void GetBoardSize(out int o_Height, out int o_Width) {
         bool isEven = false;
         o_Height = o_Width = 1;
         while(!isEven) {
-            o_Height = validateNumberInRange();
-            o_Width = validateNumberInRange();
+            o_Height = ValidateNumberInRange();
+            o_Width = ValidateNumberInRange();
             isEven = (o_Height * o_Width) % 2 == 0;
             if (!isEven) {
                 Console.WriteLine("Invalid input. Please enter an even number.");
@@ -78,7 +78,7 @@ public class Menu {
         }
     }
 
-    private int validateNumberInRange() {
+    private int ValidateNumberInRange() {
         int userInput = 0;
         bool isNumber = false;
         bool isWithinRange = false;

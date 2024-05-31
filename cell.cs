@@ -10,13 +10,14 @@ public struct Cell
     }
     public static Cell Parse(string i_ToParse)
     {
-            int column = i_ToParse[0] - 'A';
-            int row = i_ToParse[1] - '1';
+        int column = i_ToParse[0] - 'A';
+        int row = i_ToParse[1] - '1';
 
-            return new Cell(row, column);
+        return new Cell(row, column);
     }
     public override string ToString()
     {
-            return string.Format("{0}{1}", (char)(Column + 'A'), (char)(Row + '1'));
+        Console.WriteLine("Row: {0}, Column: {1}", Row, Column);
+        return string.Format("{0}{1}", (char)(Column + 'A'), (char)(Row + '1'));
     }
 }

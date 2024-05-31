@@ -14,12 +14,11 @@ public class GameUIManager {
     {
         if(GameManager.CurrentGameState == eGameStates.Menu)
         {
-
             RunMenu(); 
         }
 
         RunGame();
-        // gameOver();
+        GameOver();
     }
 
     private void RunMenu()
@@ -29,7 +28,7 @@ public class GameUIManager {
 
         eGameModes desiredGameMode = r_Menu.Start(out fPlayerName, out sPlayerName, out height, out width);
         Player fPlayer = new Player(fPlayerName, ePlayerTypes.Human);
-        ePlayerTypes type = desiredGameMode == eGameModes.multiPlayer ? ePlayerTypes.Human : ePlayerTypes.Computer;
+        ePlayerTypes type = desiredGameMode == eGameModes.multiPlayer ? ePlayerTypes.Human : ePlayerTypes.AI;
         Player sPlayer = new Player(sPlayerName, type);
 
         m_GameManager = new GameManager(fPlayer, sPlayer, height, width, desiredGameMode);
@@ -44,6 +43,7 @@ public class GameUIManager {
                 UpdateUI(playerInput);
             }
         }
+    
     private void ClearWindow()
     {
        Console.Clear();
@@ -95,7 +95,7 @@ public class GameUIManager {
             return GetHumanInput(m_GameManager.CurrentPlayer.PlayerName);
         }
         string aiInput = m_GameManager.GetAiInput();
-        //drawComputerMessage();
+        ShowComputerMessage();
         return aiInput;
     }
 
@@ -107,7 +107,7 @@ public class GameUIManager {
         {
             Console.WriteLine("{0}, Please enter your selection: ", i_PlayerName);
             userInput = Console.ReadLine();
-            isValidInput = m_GameManager.validatePlayerInput(userInput);
+            isValidInput = m_GameManager.ValidatePlayerInput(userInput);
             if (!isValidInput)
             {
                 Console.WriteLine("\nInvalid input. Please enter a valid selection.");
@@ -121,7 +121,7 @@ public class GameUIManager {
     {
         if(i_PlayerInput == "Q")
         {
-            //stopGame();
+            Exit();
         }
         m_GameManager.Update(Cell.Parse(i_PlayerInput));
 
@@ -135,4 +135,61 @@ public class GameUIManager {
             m_GameManager.ChangeTurn();
         }
     }
+    
+    private void ShowComputerMessage()
+    {
+        if(m_GameManager.AiHasMatches) {
+            Console.WriteLine("AI has found a match!");
+            System.Threading.Thread.Sleep(2000);
+            return;
+        }
+
+        Console.WriteLine("AI is thinking...");
+        System.Threading.Thread.Sleep(2000);
+        System.Threading.Thread.Sleep(1000);
+        Console.Write('.');
+        System.Threading.Thread.Sleep(1000);
+        Console.Write('.');
+        System.Threading.Thread.Sleep(1000);
+    }
+
+    private void Exit()
+    {
+        Console.WriteLine("Goodbye!");
+        Console.WriteLine("We hope to see you soon again!");
+        System.Threading.Thread.Sleep(2000);
+        Environment.Exit(0);
+    }
+
+    private void GameOver()
+    {
+
+        DrawBoard();
+
+        Console.WriteLine(m_GameManager.GetGameOverStatus());
+
+        if(CheckForRestart())
+        {
+            ClearWindow();
+            RestartGame();
+        }
+        else
+        {
+            Exit();
+        }
+    }
+
+    private bool CheckForRestart()
+    {
+        Console.WriteLine("Would you like to play again? (Y/N)");
+        string userInput = Console.ReadLine();
+        return userInput?.ToUpper() == "Y";
+    }
+
+     private void RestartGame()
+    {
+        r_Menu.GetBoardSize(out int height, out int width);
+        m_GameManager.ResetGame(height, width);
+        StartGame();
+    }   
 }
