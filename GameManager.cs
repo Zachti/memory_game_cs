@@ -1,10 +1,6 @@
 public class GameManager
 {
     private static int? Difficulty { get; set; }
-    public static int MinBoardWidth { get; } = 4;
-    public static int MaxBoardWidth { get; } = 6;
-    public static int MinBoardHeight { get; } = 4;
-    public static int MaxBoardHeight { get; } = 6;
     public static eGameStates CurrentGameState { get; set; } = eGameStates.Menu;
     private bool FoundMatch { get; set; } = false;
     private bool IsFirstSelection { get; set; } = true;

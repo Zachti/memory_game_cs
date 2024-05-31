@@ -9,6 +9,9 @@ public interface IMenu
 
 public class Menu : IMenu
 {
+    private static int MinBoardSize { get; } = 4;
+    private static int MaxBoardSize { get; } = 6;
+
     public eGameModes Start(out string o_fPlayerName, out string o_sPlayerName, out int o_Height, out int o_Width, out int? o_Difficulty) {
         Console.WriteLine("\nWelcome \nLet's play a memory game! \n");
         getFirstPlayerName(out o_fPlayerName);
@@ -98,7 +101,7 @@ public class Menu : IMenu
         while (!isNumber || !isWithinRange) {
             Console.WriteLine("Please enter a value (must be between 4 and 6): ");
             isNumber = int.TryParse(Console.ReadLine(), out userInput); 
-            isWithinRange = userInput >= 4 && userInput <= 6;
+            isWithinRange = userInput >= MinBoardSize && userInput <= MaxBoardSize;
             if (!isNumber || !isWithinRange) {
                 Console.WriteLine("Invalid input. Please enter a number between 4 and 6.");
         }
