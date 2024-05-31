@@ -1,22 +1,20 @@
 
 using System.Text;
+using Microsoft.Extensions.DependencyInjection;
 
 public class GameUIManager {
       private readonly IMenu r_Menu;
       private GameManager m_GameManager;
 
-    public GameUIManager(IMenu menu)
+   public GameUIManager(IMenu i_Menu, GameManager i_GameManager)
     {
-        r_Menu = menu;
+        r_Menu = i_Menu;
+        m_GameManager = i_GameManager;
     }
 
     public void StartGame()
     {
-        if(GameManager.CurrentGameState == eGameStates.Menu)
-        {
-            RunMenu(); 
-        }
-
+        RunMenu(); 
         RunGame();
         GameOver();
     }
@@ -30,8 +28,7 @@ public class GameUIManager {
         Player fPlayer = new Player(fPlayerName, ePlayerTypes.Human);
         ePlayerTypes type = desiredGameMode == eGameModes.multiPlayer ? ePlayerTypes.Human : ePlayerTypes.AI;
         Player sPlayer = new Player(sPlayerName, type);
-
-        m_GameManager = new GameManager(fPlayer, sPlayer, height, width, desiredGameMode);
+        m_GameManager.Initializae(fPlayer, sPlayer, new Board(height, width), desiredGameMode);
     }
 
     private void RunGame()
@@ -128,7 +125,7 @@ public class GameUIManager {
         if(m_GameManager.SelectionNotMatching)
         {
             DrawBoard();
-            Console.WriteLine("Mismatch, remember this!");
+            Console.WriteLine("Mismatch, but try to remember!");
 
             System.Threading.Thread.Sleep(2000);
 

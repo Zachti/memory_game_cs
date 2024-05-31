@@ -19,7 +19,6 @@ public struct Cell
     
     public override string ToString()
     {
-        Console.WriteLine("Row: {0}, Column: {1}", Row, Column);
         return string.Format("{0}{1}", (char)(Column + 'A'), (char)(Row + '1'));
     }
 }
