@@ -1,4 +1,4 @@
-public class GameManager
+public class GameManager(IGameData i_GameData, IGameMode i_GameMode)
 {
     private static int? Difficulty { get; set; }
     public static eGameStates CurrentGameState { get; set; } = eGameStates.Menu;
@@ -13,16 +13,9 @@ public class GameManager
     private Cell AiSelection { get; set; }
     private Cell CurrentUserSelection { get; set; }
     private Cell PreviousUserSelection{ get; set; }
-    private IGameMode IGameMode { get; }
-    private IGameData IGameData { get; }
+    private IGameMode IGameMode { get; } = i_GameMode;
+    private IGameData IGameData { get; } = i_GameData;
     private  Dictionary<Cell, char>? AiMemory { get; set; }
-
-
-    public GameManager(IGameData i_GameData, IGameMode i_GameMode)
-    {
-        IGameData = i_GameData;
-        IGameMode = i_GameMode;
-    }
 
     public void Initializae(Player i_PlayerOne, Player i_PlayerTwo, Board i_Board, eGameModes i_GameMode, int? i_Difficulty)
     {

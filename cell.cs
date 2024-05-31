@@ -1,14 +1,8 @@
-public struct Cell
+public struct Cell(int i_Row, int i_Column)
 {
-    public int Row { get; set; }
-    public int Column { get; set; }
+    public int Row { get; set; } = i_Row;
+    public int Column { get; set; } = i_Column;
 
-    public Cell(int i_Row, int i_Column)
-    {
-        Row = i_Row;
-        Column = i_Column;
-    }
-    
     public static Cell Parse(string i_ToParse)
     {
         int column = i_ToParse[0] - 'A';

@@ -1,15 +1,10 @@
 
 using System.Text;
 
-public class GameUIManager {
-      private IMenu IMenu { get; }
-      private GameManager GameManager { get; }
-
-   public GameUIManager(IMenu i_Menu, GameManager i_GameManager)
-    {
-        IMenu = i_Menu;
-        GameManager = i_GameManager;
-    }
+public class GameUIManager(IMenu i_Menu, GameManager i_GameManager)
+{
+    private IMenu IMenu { get; } = i_Menu;
+    private GameManager GameManager { get; } = i_GameManager;
 
     public void StartGame()
     {

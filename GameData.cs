@@ -8,25 +8,16 @@ public interface IGameData
     void InitializeBoard();
 }
 
-public class GameData: IGameData
+public class GameData(Player i_PlayerOne, Player i_PlayerTwo, Board i_Board) : IGameData
     {
         private static readonly Random m_Random = new Random();
-        public Player PlayerOne { get; set; }
-        public Player PlayerTwo { get; set; }
-        public Player CurrentPlayer { get; set; }
-        public BoardLetter[,] Letters { get; set; }
-        public Board Board { get; set; }
+    public Player PlayerOne { get; set; } = i_PlayerOne;
+    public Player PlayerTwo { get; set; } = i_PlayerTwo;
+    public Player CurrentPlayer { get; set; } = i_PlayerOne;
+    public BoardLetter[,] Letters { get; set; } = new BoardLetter[i_Board.Height, i_Board.Width];
+    public Board Board { get; set; } = i_Board;
 
-        public GameData(Player i_PlayerOne, Player i_PlayerTwo, Board i_Board)
-        {
-            PlayerOne = i_PlayerOne;
-            PlayerTwo = i_PlayerTwo;
-            CurrentPlayer = i_PlayerOne;
-            Board = i_Board;
-            Letters = new BoardLetter[Board.Height, Board.Width];
-        }
-        
-        public void InitializeBoard()
+    public void InitializeBoard()
         {
             char[] boardLetters = initializeBoardLetters();
             List<Cell> randomCells = getRandomCellsList();

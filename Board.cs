@@ -1,11 +1,5 @@
-public class Board
+public class Board(int i_width, int i_height)
 {
-    public int Width { get; set;}
-    public int Height { get; set;}
-
-    public Board(int i_width, int i_height)
-    {
-        Width = i_width;
-        Height = i_height;
-    }
+    public int Width { get; set; } = i_width;
+    public int Height { get; set; } = i_height;
 }
