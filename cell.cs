@@ -8,6 +8,7 @@ public struct Cell
         Row = i_Row;
         Column = i_Column;
     }
+    
     public static Cell Parse(string i_ToParse)
     {
         int column = i_ToParse[0] - 'A';
@@ -15,6 +16,7 @@ public struct Cell
 
         return new Cell(row, column);
     }
+    
     public override string ToString()
     {
         Console.WriteLine("Row: {0}, Column: {1}", Row, Column);
