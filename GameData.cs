@@ -1,21 +1,29 @@
-public class GameData
+public interface IGameData
+{
+    public Board Board { get; set; }
+    public Player PlayerOne { get; set;}
+    public Player PlayerTwo { get; set;}
+    Player CurrentPlayer { get; set; }
+    public BoardLetter[,] Letters { get; set; }
+    void InitializeBoard();
+}
+
+public class GameData: IGameData
     {
         private static readonly Random m_Random = new Random();
-        public Player PlayerOne { get; }
-        public Player PlayerTwo { get; }
+        public Player PlayerOne { get; set; }
+        public Player PlayerTwo { get; set; }
         public Player CurrentPlayer { get; set; }
         public BoardLetter[,] Letters { get; set; }
-        public int BoardHeight { get; set; }
-        public int BoardWidth { get; set; }
+        public Board Board { get; set; }
 
-        public GameData(Player i_PlayerOne, Player i_PlayerTwo, int i_BoardWidth, int i_BoardHeight)
+        public GameData(Player i_PlayerOne, Player i_PlayerTwo, Board i_Board)
         {
             PlayerOne = i_PlayerOne;
             PlayerTwo = i_PlayerTwo;
             CurrentPlayer = i_PlayerOne;
-            BoardWidth = i_BoardWidth;
-            BoardHeight = i_BoardHeight;
-            Letters = new BoardLetter[BoardHeight, BoardWidth];
+            Board = i_Board;
+            Letters = new BoardLetter[Board.Height, Board.Width];
         }
         
         public void InitializeBoard()
@@ -40,11 +48,11 @@ public class GameData
         
         private List<Cell> getRandomCellsList()
         {
-            List<Cell> randomCells = new List<Cell>(BoardHeight * BoardWidth);
+            List<Cell> randomCells = new List<Cell>(Board.Height * Board.Width);
 
-            for (int i = 0; i < BoardHeight; i++)
+            for (int i = 0; i < Board.Height; i++)
             {
-                for (int j = 0; j < BoardWidth; j++)
+                for (int j = 0; j < Board.Width; j++)
                 {
                    randomCells.Add(new Cell(i, j));
                 }
@@ -55,7 +63,7 @@ public class GameData
         
         private char[] initializeBoardLetters()
         {
-            char[] boardLetters = new char[BoardHeight * BoardWidth / 2];
+            char[] boardLetters = new char[Board.Height * Board.Width / 2];
 
             for(int i = 0; i < boardLetters.Length; i++)
             {

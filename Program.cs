@@ -4,15 +4,24 @@
     {
         public static void Main(string[] i_Args)
         {
-        var services = new ServiceCollection();
+            var ServiceProvider = ConfigureServices();
 
-        services.AddSingleton<IMenu, Menu>();
-        services.AddTransient<GameUIManager>();
+            var gameUiManager = ServiceProvider.GetRequiredService<GameUIManager>();
 
-        var serviceProvider = services.BuildServiceProvider();
-
-        var gameUiManager = serviceProvider.GetRequiredService<GameUIManager>();
-
-        gameUiManager.StartGame();
+            gameUiManager.StartGame();
         }
-    }
+
+        private static IServiceProvider ConfigureServices()
+        {
+            return new ServiceCollection()
+                .AddSingleton<IMenu, Menu>()
+                .AddTransient<GameUIManager>()
+                .AddSingleton<IGameData, GameData>()
+                .AddTransient<GameManager>()
+                .AddSingleton<Player>(provider => new Player("Player One", ePlayerTypes.Human))
+                .AddSingleton<Player>(provider => new Player("Player Two", ePlayerTypes.AI))
+                .AddSingleton<Board>(provider => new Board(6, 6))
+                .AddSingleton<IGameMode>(provider => new GameMode(eGameModes.singlePlayer))
+                .BuildServiceProvider();
+        }   
+}
