@@ -225,7 +225,7 @@ public class GameManager
             return isValid;
         }
         i_userInput = i_userInput.ToUpper();
-        return i_userInput != "Q" && ValidateCellSelection(i_userInput) && ValidateCellIsHidden(i_userInput);
+        return i_userInput == "Q" || (ValidateCellSelection(i_userInput) && ValidateCellIsHidden(i_userInput));
     }
 
     private bool ValidateCellSelection(string i_userInput) {
