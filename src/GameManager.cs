@@ -18,7 +18,7 @@ namespace MemoryGame {
         private IGameData IGameData { get; } = i_GameData;
         private  Dictionary<Cell, char>? AiMemory { get; set; }
 
-        public void Initializae(Player i_PlayerOne, Player i_PlayerTwo, Board i_Board, eGameModes i_GameMode, int? i_Difficulty)
+        public void Initialize(Player i_PlayerOne, Player i_PlayerTwo, Board i_Board, eGameModes i_GameMode, int? i_Difficulty)
         {
             IGameData.PlayerOne = i_PlayerOne;
             IGameData.PlayerTwo = i_PlayerTwo;

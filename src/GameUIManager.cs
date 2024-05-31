@@ -27,7 +27,7 @@ namespace MemoryGame {
             Player fPlayer = new Player(fPlayerName, ePlayerTypes.Human);
             ePlayerTypes type = desiredGameMode == eGameModes.multiPlayer ? ePlayerTypes.Human : ePlayerTypes.AI;
             Player sPlayer = new Player(sPlayerName, type);
-            GameManager.Initializae(fPlayer, sPlayer, new Board(height, width), desiredGameMode, difficulty);
+            GameManager.Initialize(fPlayer, sPlayer, new Board(height, width), desiredGameMode, difficulty);
         }
 
         private void runGame()
