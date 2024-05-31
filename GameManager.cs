@@ -93,7 +93,6 @@ public class GameManager
                     r_AiMemory.Remove(m_CurrentUserSelection);
                     r_AiMemory.Remove(m_PreviousUserSelection);
                 }
-
                 CurrentPlayer.PlayerScore++;
             }
             IsFirstSelection = true;

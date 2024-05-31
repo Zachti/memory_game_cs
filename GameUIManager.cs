@@ -82,9 +82,9 @@ public class GameUIManager {
         row.Append(string.Format("{0} |", i_Index + 1));
         for (int j = 0; j < m_GameManager.BoardWidth; j++)
         {
-            row.Append("   |");
+            BoardLetter currentBoardLetter = m_GameManager.Letters[i_Index, j];
+            row.Append(string.Format(" {0} |", currentBoardLetter.IsRevealed ? currentBoardLetter.Letter : ' '));
         }
-
         Console.WriteLine(row.ToString());
     }
 

@@ -27,11 +27,10 @@ public class GameData
             {
                 int randomSelection = GetRandomNumber(0, randomCells.Count);
                 Cell firstCell = randomCells[randomSelection];
+                randomCells.Remove(firstCell);
 
                 randomSelection = GetRandomNumber(0, randomCells.Count);
                 Cell secondCell = randomCells[randomSelection];
-
-                randomCells.Remove(firstCell);
                 randomCells.Remove(secondCell);
 
                 Letters[firstCell.Row, firstCell.Column] = new BoardLetter(letter);
