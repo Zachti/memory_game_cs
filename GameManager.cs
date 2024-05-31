@@ -228,7 +228,7 @@ public class GameManager
             return foundMatch;
     }
 
-    public bool validatePlayerInput(string i_userInput) {
+    public bool validatePlayerInput(string? i_userInput) {
         bool isValid = false;
         if (i_userInput == null) {
             Console.WriteLine("Input must not be empty");

@@ -114,7 +114,7 @@ public class GameUIManager {
             }
         }
 
-        return userInput;
+        return userInput!;
     }
 
     private void UpdateUI(string i_PlayerInput)

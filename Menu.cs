@@ -1,3 +1,5 @@
+using System.Runtime.CompilerServices;
+
 public class Menu {
     public eGameModes Start(out string o_fPlayerName, out string o_sPlayerName, out int o_Height, out int o_Width) {
         Console.WriteLine("\nWelcome \nLets play some memory game! \n");
@@ -10,16 +12,12 @@ public class Menu {
     private void getFirstPlayerName(out string o_fPlayerName) {
         Console.WriteLine("Please enter your name: ");
         o_fPlayerName = Console.ReadLine();
-        while (string.IsNullOrEmpty(o_fPlayerName)) {
-            Console.WriteLine("Invalid input. Please enter a valid name: ");
-            o_fPlayerName = Console.ReadLine();
-        }
+        o_fPlayerName = GetValidName(o_fPlayerName);
         Console.WriteLine("Hi {0}, \nWelcome Aboard! \nPlease choose a game mode: ", o_fPlayerName);
     }
 
     private eGameModes selectGameMode(out string o_sPlayerName) {
         string gameMode = "0";
-        bool sNameValid = false;
         o_sPlayerName = "Computer";
         while (gameMode != "1" && gameMode != "2")
         {
@@ -30,14 +28,7 @@ public class Menu {
         }
 
         if (gameMode == "2") {
-            while(!sNameValid) {
-                Console.WriteLine("Please enter the name of the second player: ");
-                o_sPlayerName = Console.ReadLine();
-                sNameValid = !string.IsNullOrEmpty(o_sPlayerName);
-                if (!sNameValid) {
-                    Console.WriteLine("Invalid input.\n");
-                }
-            }
+            o_sPlayerName = GetSecondPlayerName();
             return eGameModes.multiPlayer;
         }
 
@@ -45,9 +36,23 @@ public class Menu {
 
     }
 
+    private string GetSecondPlayerName() {
+        Console.WriteLine("Please enter the name of the second player: ");
+        string? sPlayerName = Console.ReadLine();
+        return GetValidName(sPlayerName);
+    }
+
+    private string GetValidName(string? name) {
+        while(string.IsNullOrEmpty(name)) {
+            Console.WriteLine("Invalid input. Please enter a valid name: ");
+            name = Console.ReadLine();
+        }
+        return name;
+    }
+    
     private string validateGameMode() { 
     
-        string gameMode = Console.ReadLine();
+        string? gameMode = Console.ReadLine();
   
         string modeDescription = gameMode switch
         {
