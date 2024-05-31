@@ -12,11 +12,6 @@ namespace MemoryGame {
 
     internal class GameMode : IGameMode
     {
-        public eGameModes Mode { get; set; }
-
-        public GameMode(eGameModes i_mode)
-        {
-            Mode = i_mode;
-        }
+        public eGameModes Mode { get; set; } = eGameModes.singlePlayer;
     }
 }
