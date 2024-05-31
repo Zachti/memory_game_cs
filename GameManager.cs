@@ -14,13 +14,14 @@ public class GameManager
     public BoardLetter[,] Letters => r_GameData.Letters;
     public Player CurrentPlayer { get => r_GameData.CurrentPlayer; set => r_GameData.CurrentPlayer = value; }
     public bool SelectionNotMatching { get; set; } = false;
+        private Cell AiSelection { get; set; }
+    private Cell CurrentUserSelection { get; set; }
+    private Cell PreviousUserSelection{ get; set; }
 
     private readonly eGameModes r_GameMode;
     private readonly GameData r_GameData;
-    private readonly Dictionary<Cell, char> r_AiMemory;
-    private Cell m_AiSelection;
-    private Cell m_CurrentUserSelection;
-    private Cell m_PreviousUserSelection;
+    private readonly  Dictionary<Cell, char>? r_AiMemory;
+
 
     public GameManager(Player i_Player1, Player i_Player2, int i_Height, int i_Width, eGameModes i_GameMode)
     {
@@ -47,8 +48,8 @@ public class GameManager
     public void ChangeTurn() {
         CurrentPlayer = CurrentPlayer == r_GameData.PlayerOne ? r_GameData.PlayerTwo : r_GameData.PlayerOne;
 
-        getBoardLetterAt(m_CurrentUserSelection).IsRevealed = false;
-        getBoardLetterAt(m_PreviousUserSelection).IsRevealed = false;
+        getBoardLetterAt(CurrentUserSelection).IsRevealed = false;
+        getBoardLetterAt(PreviousUserSelection).IsRevealed = false;
         SelectionNotMatching = false;
     }
 
@@ -65,24 +66,24 @@ public class GameManager
 
     private void UpdateNextTurn(Cell i_UserSelection)
     {
-        m_CurrentUserSelection = i_UserSelection;
+        CurrentUserSelection = i_UserSelection;
 
         if (r_GameMode == eGameModes.singlePlayer)
         {
             if (GameData.GetRandomNumber(0, 100) <= Difficulty)
             {
-                addToAiMemory(m_CurrentUserSelection);
+                addToAiMemory(CurrentUserSelection);
             }
         }
 
         if (IsFirstSelection)
         {
-            m_PreviousUserSelection = m_CurrentUserSelection;
-            getBoardLetterAt(m_CurrentUserSelection).IsRevealed = true;
+            PreviousUserSelection = CurrentUserSelection;
+            getBoardLetterAt(CurrentUserSelection).IsRevealed = true;
             IsFirstSelection = false;
         } else {
-            BoardLetter firstSelectionLetter = getBoardLetterAt(m_PreviousUserSelection);
-            BoardLetter secondSelectionLetter = getBoardLetterAt(m_CurrentUserSelection);
+            BoardLetter firstSelectionLetter = getBoardLetterAt(PreviousUserSelection);
+            BoardLetter secondSelectionLetter = getBoardLetterAt(CurrentUserSelection);
 
             secondSelectionLetter.IsRevealed = true;
 
@@ -90,8 +91,8 @@ public class GameManager
 
             if (!SelectionNotMatching) {
                 if (r_GameMode == eGameModes.singlePlayer) {
-                    r_AiMemory.Remove(m_CurrentUserSelection);
-                    r_AiMemory.Remove(m_PreviousUserSelection);
+                    r_AiMemory?.Remove(CurrentUserSelection);
+                    r_AiMemory?.Remove(PreviousUserSelection);
                 }
                 CurrentPlayer.PlayerScore++;
             }
@@ -101,7 +102,7 @@ public class GameManager
 
     private void addToAiMemory(Cell i_CellToBeAdded)
     {
-        if(!r_AiMemory.ContainsKey(i_CellToBeAdded))
+        if(r_AiMemory != null && !r_AiMemory.ContainsKey(i_CellToBeAdded))
         {
             r_AiMemory.Add(i_CellToBeAdded, Letters[i_CellToBeAdded.Row, i_CellToBeAdded.Column].Letter);
         }
@@ -116,7 +117,7 @@ public class GameManager
      {
         string aiSelection;
 
-        if(r_AiMemory.Count == 0)
+        if(r_AiMemory?.Count == 0)
         {
             AiHasMatches = false;
             aiSelection = GetRandomUnmemorizedCell();
@@ -128,7 +129,7 @@ public class GameManager
     
     private string GetFirstSelection()
     {
-        string firstSelection = null;
+        string firstSelection = string.Empty;
 
         FoundMatch = findLetterMatch(ref firstSelection);
 
@@ -149,9 +150,9 @@ public class GameManager
 
         if(FoundMatch)
         {
-            secondSelection = m_AiSelection.ToString();
+            secondSelection = AiSelection.ToString();
         } else {
-            secondSelection = findLetterInMemory(m_AiSelection);
+            secondSelection = findLetterInMemory(AiSelection);
             if(secondSelection != null)
             {
                 AiHasMatches = true;
@@ -165,7 +166,7 @@ public class GameManager
     
     private string findLetterInMemory(Cell i_FirstSelectionCell)
     {
-        string foundLetter = null;
+        string foundLetter = string.Empty;
 
         foreach(var memorizedLetter in r_AiMemory)
         {
@@ -201,8 +202,8 @@ public class GameManager
             }
          }
         indexOfCellNotInMemory = GameData.GetRandomNumber(0, indexOfCellNotInMemory);
-        m_AiSelection = cellsNotInMemory[indexOfCellNotInMemory];
-        return m_AiSelection.ToString();
+        AiSelection = cellsNotInMemory[indexOfCellNotInMemory];
+        return AiSelection.ToString();
     }
 
     private bool findLetterMatch(ref string i_MemorizedMatchingLetter)
@@ -218,7 +219,7 @@ public class GameManager
                      if (firstMemorizedLetter.Value == secondMemorizedLetter.Value)
                     {
                         i_MemorizedMatchingLetter = firstMemorizedLetter.Key.ToString();
-                        m_AiSelection = secondMemorizedLetter.Key;
+                        AiSelection = secondMemorizedLetter.Key;
                         foundMatch = true;
                     }
                 }
@@ -238,7 +239,6 @@ public class GameManager
     }
 
     private bool validateCellSelection(string i_userInput) {
-        bool isValid = false;
         if(i_userInput.Length != 2)
         {
             Console.WriteLine("Input must have exactly 2 characters");

@@ -10,26 +10,37 @@ public class Menu {
     private void getFirstPlayerName(out string o_fPlayerName) {
         Console.WriteLine("Please enter your name: ");
         o_fPlayerName = Console.ReadLine();
+        while (string.IsNullOrEmpty(o_fPlayerName)) {
+            Console.WriteLine("Invalid input. Please enter a valid name: ");
+            o_fPlayerName = Console.ReadLine();
+        }
         Console.WriteLine("Hi {0}, \nWelcome Aboard! \nPlease choose a game mode: ", o_fPlayerName);
     }
 
     private eGameModes selectGameMode(out string o_sPlayerName) {
         string gameMode = "0";
-         while (gameMode != "1" && gameMode != "2")
-    {
-        Console.WriteLine("1. Single Player (Player vs. Computer)");
-        Console.WriteLine("2. Multiplayer (Head-to-Head)");
-        Console.WriteLine("Please enter 1 or 2 to choose the game mode: ");
-        gameMode = validateGameMode();
-    }
+        bool sNameValid = false;
+        o_sPlayerName = "Computer";
+        while (gameMode != "1" && gameMode != "2")
+        {
+            Console.WriteLine("1. Single Player (Player vs. Computer)");
+            Console.WriteLine("2. Multiplayer (Head-to-Head)");
+            Console.WriteLine("Please enter 1 or 2 to choose the game mode: ");
+            gameMode = validateGameMode();
+        }
 
-        if(gameMode == "2") {
-            Console.WriteLine("Please enter the name of the secod player: ");
-            o_sPlayerName = Console.ReadLine();
+        if (gameMode == "2") {
+            while(!sNameValid) {
+                Console.WriteLine("Please enter the name of the second player: ");
+                o_sPlayerName = Console.ReadLine();
+                sNameValid = !string.IsNullOrEmpty(o_sPlayerName);
+                if (!sNameValid) {
+                    Console.WriteLine("Invalid input.\n");
+                }
+            }
             return eGameModes.multiPlayer;
         }
 
-        o_sPlayerName = "Computer";
         return eGameModes.singlePlayer;
 
     }
@@ -46,7 +57,7 @@ public class Menu {
         };
 
         Console.WriteLine($"You have chosen {modeDescription}");
-        return gameMode;
+        return gameMode!;
     }
  
     public void getBoardSize(out int o_Height, out int o_Width) {
