@@ -4,7 +4,7 @@ namespace MemoryGame {
         public Board Board { get; set; }
         public Player PlayerOne { get; set;}
         public Player PlayerTwo { get; set;}
-        Player CurrentPlayer { get; set; }
+        public Player CurrentPlayer { get; set; }
         public BoardLetter[,] Letters { get; set; }
         void InitializeBoard();
     }
