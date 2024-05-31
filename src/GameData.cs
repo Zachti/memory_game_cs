@@ -11,7 +11,7 @@ namespace MemoryGame {
 
     internal class GameData(Player i_PlayerOne, Player i_PlayerTwo, Board i_Board) : IGameData
     {
-        private static readonly Random m_Random = new Random();
+        private static readonly Random m_Random = new();
         public Player PlayerOne { get; set; } = i_PlayerOne;
         public Player PlayerTwo { get; set; } = i_PlayerTwo;
         public Player CurrentPlayer { get; set; } = i_PlayerOne;
