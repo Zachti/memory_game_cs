@@ -4,9 +4,9 @@
     {
         public static void Main(string[] i_Args)
         {
-            var ServiceProvider = ConfigureServices();
+            IServiceProvider ServiceProvider = ConfigureServices();
 
-            var gameUiManager = ServiceProvider.GetRequiredService<GameUIManager>();
+            GameUIManager gameUiManager = ServiceProvider.GetRequiredService<GameUIManager>();
 
             gameUiManager.StartGame();
         }
