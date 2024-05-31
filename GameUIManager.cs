@@ -1,6 +1,5 @@
 
 using System.Text;
-using Microsoft.Extensions.DependencyInjection;
 
 public class GameUIManager {
       private readonly IMenu r_Menu;
@@ -23,12 +22,13 @@ public class GameUIManager {
     {
         string fPlayerName, sPlayerName;
         int height, width;
+        int? difficulty;
 
-        eGameModes desiredGameMode = r_Menu.Start(out fPlayerName, out sPlayerName, out height, out width);
+        eGameModes desiredGameMode = r_Menu.Start(out fPlayerName, out sPlayerName, out height, out width, out difficulty);
         Player fPlayer = new Player(fPlayerName, ePlayerTypes.Human);
         ePlayerTypes type = desiredGameMode == eGameModes.multiPlayer ? ePlayerTypes.Human : ePlayerTypes.AI;
         Player sPlayer = new Player(sPlayerName, type);
-        m_GameManager.Initializae(fPlayer, sPlayer, new Board(height, width), desiredGameMode);
+        m_GameManager.Initializae(fPlayer, sPlayer, new Board(height, width), desiredGameMode, difficulty);
     }
 
     private void RunGame()

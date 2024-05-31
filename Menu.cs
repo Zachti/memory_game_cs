@@ -1,17 +1,18 @@
+using System.Dynamic;
 using System.Runtime.CompilerServices;
 
 public interface IMenu
 {
-    eGameModes Start(out string o_fPlayerName, out string o_sPlayerName, out int o_Height, out int o_Width);
+    eGameModes Start(out string o_fPlayerName, out string o_sPlayerName, out int o_Height, out int o_Width, out int? o_Difficulty);
     void GetBoardSize(out int o_Height, out int o_Width);
 }
 
 public class Menu : IMenu
 {
-    public eGameModes Start(out string o_fPlayerName, out string o_sPlayerName, out int o_Height, out int o_Width) {
+    public eGameModes Start(out string o_fPlayerName, out string o_sPlayerName, out int o_Height, out int o_Width, out int? o_Difficulty) {
         Console.WriteLine("\nWelcome \nLet's play a memory game! \n");
         GetFirstPlayerName(out o_fPlayerName);
-        eGameModes gameMode = SelectGameMode(out o_sPlayerName);
+        eGameModes gameMode = SelectGameMode(out o_sPlayerName, out o_Difficulty);
         GetBoardSize(out o_Height, out o_Width);
         return gameMode;
     }
@@ -23,9 +24,10 @@ public class Menu : IMenu
         Console.WriteLine("\nHi {0}, \nWelcome Aboard! \nPlease choose a game mode: ", o_fPlayerName);
     }
 
-    private eGameModes SelectGameMode(out string o_sPlayerName) {
-        string gameMode = "0";
+    private eGameModes SelectGameMode(out string o_sPlayerName, out int? o_Difficulty) {
+        string gameMode = String.Empty;
         o_sPlayerName = "AI";
+        o_Difficulty = null;
         while (gameMode != "1" && gameMode != "2")
         {
             Console.WriteLine("1. Single Player (Player vs. AI)");
@@ -39,8 +41,9 @@ public class Menu : IMenu
             return eGameModes.multiPlayer;
         }
 
-        return eGameModes.singlePlayer;
+        o_Difficulty = GetDifficultyLevel();
 
+        return eGameModes.singlePlayer;
     }
 
     private string GetSecondPlayerName() {
@@ -99,4 +102,19 @@ public class Menu : IMenu
     }
     return userInput;
   }
+
+    private int GetDifficultyLevel() {
+        
+        int difficultyLevel = 1;
+        Console.WriteLine("\nPlease choose a difficulty level (between 1 to 100): ");
+        bool isValidInput = false;
+        while (!isValidInput) {
+            isValidInput = int.TryParse(Console.ReadLine(), out difficultyLevel);
+            if (!isValidInput || difficultyLevel < 1 || difficultyLevel > 100) {
+                Console.WriteLine("Invalid input. Please enter a number between 1 and 100.");
+                isValidInput = false;
+            }
+        }
+        return difficultyLevel;
+    }
 }

@@ -1,6 +1,6 @@
 public class GameManager
 {
-    private static int Difficulty { get; } = 50;
+    private static int? Difficulty { get; set; }
     public static int MinBoardWidth { get; } = 4;
     public static int MaxBoardWidth { get; } = 6;
     public static int MinBoardHeight { get; } = 4;
@@ -20,20 +20,16 @@ public class GameManager
 
     private readonly IGameMode r_GameMode;
     private readonly IGameData r_GameData;
-    private readonly  Dictionary<Cell, char>? r_AiMemory;
+    private  Dictionary<Cell, char>? r_AiMemory;
 
 
-    public GameManager(IGameData gameData, IGameMode i_GameMode)
+    public GameManager(IGameData i_GameData, IGameMode i_GameMode)
     {
-        r_GameData = gameData;
+        r_GameData = i_GameData;
         r_GameMode = i_GameMode;
-        if (r_GameMode.Mode == eGameModes.singlePlayer)
-        {
-            r_AiMemory = new Dictionary<Cell, char>();
-        }
     }
 
-    public void Initializae(Player i_PlayerOne, Player i_PlayerTwo, Board i_Board, eGameModes i_GameMode)
+    public void Initializae(Player i_PlayerOne, Player i_PlayerTwo, Board i_Board, eGameModes i_GameMode, int? i_Difficulty)
     {
         r_GameData.PlayerOne = i_PlayerOne;
         r_GameData.PlayerTwo = i_PlayerTwo;
@@ -43,6 +39,11 @@ public class GameManager
         r_GameData.InitializeBoard();
         CurrentGameState = eGameStates.Running;
         r_GameMode.Mode = i_GameMode;
+        if (r_GameMode.Mode == eGameModes.singlePlayer)
+        {
+            Difficulty = i_Difficulty;
+            r_AiMemory = new Dictionary<Cell, char>();
+        }
     }
 
     public void ChangeTurn() {
