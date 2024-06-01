@@ -80,9 +80,7 @@ namespace MemoryGame {
 
         private string getPlayerInput()
         {     
-            return GameManager.CurrentPlayer.Type == ePlayerTypes.Human
-                ? handleHumanInput(GameManager.CurrentPlayer.PlayerName)
-                : handleAiInput();
+            return GameManager.IsCurrentPlayerHuman ? handleHumanInput() : handleAiInput();
         }
 
         private string handleAiInput()
@@ -92,12 +90,12 @@ namespace MemoryGame {
             return aiInput;
         }
 
-        private string handleHumanInput(string i_PlayerName)
+        private string handleHumanInput()
         {
             string userInput;
             do
             {
-                Console.WriteLine($"{i_PlayerName}, Please enter your selection: ");
+                Console.WriteLine($"{GameManager.CurrentPlayer.PlayerName}, Please enter your selection: ");
                 userInput = Console.ReadLine();
             }
             while (!GameManager.ValidatePlayerInput(userInput));
@@ -111,7 +109,7 @@ namespace MemoryGame {
             (i_PlayerInput == "Q" ? (Action)exit : () => GameManager.Update(Cell.Parse(i_PlayerInput)))();
             
 
-            if(GameManager.SelectionNotMatching)
+            if(GameManager.IsSelectionNotMatching)
             {
                 drawBoard();
                 Console.WriteLine("Mismatch, but try to remember!");
@@ -124,7 +122,7 @@ namespace MemoryGame {
         
         private void showAIMessage()
         {
-            if(GameManager.AiHasMatches) 
+            if(GameManager.IsAiHasMatches) 
             {
                 Console.WriteLine("AI has found a match!");
             }

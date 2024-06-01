@@ -3,14 +3,15 @@ namespace MemoryGame {
     {
         private static int? Difficulty { get; set; }
         public static eGameStates CurrentGameState { get; set; } = eGameStates.Menu;
-        private bool FoundMatch { get; set; } = false;
+        private bool IsFoundMatch { get; set; } = false;
         private bool IsFirstSelection { get; set; } = true;
-        public bool AiHasMatches { get; set; } = false;
+        public bool IsAiHasMatches { get; set; } = false;
         public int BoardWidth => IGameData.Board.Width;
         public int BoardHeight => IGameData.Board.Height;
         public BoardLetter[,] Letters => IGameData.Letters;
         public Player CurrentPlayer { get => IGameData.CurrentPlayer; set => IGameData.CurrentPlayer = value; }
-        public bool SelectionNotMatching { get; set; } = false;
+        public bool IsSelectionNotMatching { get; set; } = false;
+        public bool IsCurrentPlayerHuman => CurrentPlayer.Type == ePlayerTypes.Human;
         private Cell AiSelection { get; set; }
         private Cell CurrentUserSelection { get; set; }
         private Cell PreviousUserSelection{ get; set; }
@@ -36,12 +37,12 @@ namespace MemoryGame {
         public void ChangeTurn() {
             CurrentPlayer = CurrentPlayer == IGameData.PlayerOne ? IGameData.PlayerTwo : IGameData.PlayerOne;
 
-            SelectionNotMatching = getBoardLetterAt(CurrentUserSelection).IsRevealed = getBoardLetterAt(PreviousUserSelection).IsRevealed =false;
+            IsSelectionNotMatching = getBoardLetterAt(CurrentUserSelection).IsRevealed = getBoardLetterAt(PreviousUserSelection).IsRevealed =false;
         }
 
         public void Update(Cell i_UserSelection)
         {       
-            if(!SelectionNotMatching) {
+            if(!IsSelectionNotMatching) {
                 updateNextTurn(i_UserSelection);
             }
             if (IGameData.PlayerOne.PlayerScore + IGameData.PlayerTwo.PlayerScore == BoardWidth * BoardHeight / 2)
@@ -71,9 +72,9 @@ namespace MemoryGame {
 
                 secondSelectionLetter.IsRevealed = true;
 
-                SelectionNotMatching = firstSelectionLetter.Letter != secondSelectionLetter.Letter;
+                IsSelectionNotMatching = firstSelectionLetter.Letter != secondSelectionLetter.Letter;
 
-                if (!SelectionNotMatching) {
+                if (!IsSelectionNotMatching) {
                     if (IGameMode.Mode == eGameModes.singlePlayer) {
                         AiMemory?.Remove(CurrentUserSelection);
                         AiMemory?.Remove(PreviousUserSelection);
@@ -96,7 +97,7 @@ namespace MemoryGame {
         {
             bool isMemoryEmpty = AiMemory?.Count == 0;
 
-            AiHasMatches = !isMemoryEmpty && AiHasMatches;
+            IsAiHasMatches = !isMemoryEmpty && IsAiHasMatches;
             return isMemoryEmpty
                 ? getRandomUnmemorizedCell()
                 : (IsFirstSelection ? getFirstSelection() : getSecondSelection());
@@ -106,15 +107,15 @@ namespace MemoryGame {
         {
             string firstSelection = string.Empty;
 
-            AiHasMatches = FoundMatch = findLetterMatch(ref firstSelection);
-            return FoundMatch ? firstSelection : getRandomUnmemorizedCell();
+            IsAiHasMatches = IsFoundMatch = findLetterMatch(ref firstSelection);
+            return IsFoundMatch ? firstSelection : getRandomUnmemorizedCell();
         }
 
         private string getSecondSelection()
         {
-            string secondSelection = FoundMatch ? AiSelection.ToString() : findLetterInMemory(AiSelection);
-            AiHasMatches = secondSelection != "";
-            return AiHasMatches ? secondSelection : getRandomUnmemorizedCell();
+            string secondSelection = IsFoundMatch ? AiSelection.ToString() : findLetterInMemory(AiSelection);
+            IsAiHasMatches = secondSelection != "";
+            return IsAiHasMatches ? secondSelection : getRandomUnmemorizedCell();
         }
         
         private string findLetterInMemory(Cell i_FirstSelectionCell)
@@ -253,7 +254,7 @@ namespace MemoryGame {
         private void initializeLogic()
         {
             IsFirstSelection = true;
-            SelectionNotMatching = AiHasMatches = FoundMatch = false;
+            IsSelectionNotMatching = IsAiHasMatches = IsFoundMatch = false;
             if (IGameMode.Mode == eGameModes.singlePlayer)
             {
                 AiMemory?.Clear();
