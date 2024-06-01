@@ -16,7 +16,7 @@ namespace MemoryGame {
         public eGameModes Start(out string o_fPlayerName, out string o_sPlayerName, out int o_Height, out int o_Width, out int? o_Difficulty) {
             Console.WriteLine("\nWelcome \nLet's play a memory game! \n");
             getFirstPlayerName(out o_fPlayerName);
-            eGameModes gameMode = selectGameMode(out o_sPlayerName, out o_Difficulty);
+            createGameMode(out o_sPlayerName, out eGameModes gameMode, out o_Difficulty);
             GetBoardSize(out o_Height, out o_Width);
             return gameMode;
         }
@@ -28,29 +28,26 @@ namespace MemoryGame {
             Console.WriteLine($"\nHi {o_fPlayerName}, \nWelcome Aboard! \nPlease choose a game mode: ");
         }
 
-        private eGameModes selectGameMode(out string o_sPlayerName, out int? o_Difficulty) {
-            string gameMode = String.Empty;
-            o_sPlayerName = "AI";
-            o_Difficulty = null;
-            eGameModes selectedMode = eGameModes.singlePlayer;
-            while (gameMode != "1" && gameMode != "2")
-            {
-                Console.WriteLine("1. Single Player (Player vs. AI)");
-                Console.WriteLine("2. Multiplayer (Head-to-Head)");
-                Console.WriteLine("\nPlease enter 1 or 2 to choose the game mode: ");
-                gameMode = validateGameMode();
-            }
+        private void createGameMode(out string o_sPlayerName, out eGameModes o_GameMode, out int? o_Difficulty) {
 
-            if (gameMode == "2") 
-            {
-                o_sPlayerName = getSecondPlayerName();
-                selectedMode = eGameModes.multiPlayer;
+            getGameMode(out bool isMultiPlayer);
+
+            o_GameMode = isMultiPlayer ? eGameModes.multiPlayer : eGameModes.singlePlayer;
+            o_sPlayerName = isMultiPlayer ? getSecondPlayerName() : "AI";
+            o_Difficulty = isMultiPlayer ? null : getDifficultyLevel();
+
+        }
+
+        private void getGameMode(out bool o_IsMultiPlayer) {
+
+            string gameMode = String.Empty;
+            while (gameMode != "1" && gameMode != "2") {
+            Console.WriteLine("Please choose a game mode: ");
+            Console.WriteLine("1. Single Player (Player vs. AI)");
+            Console.WriteLine("2. Multiplayer (Head-to-Head)");
+            gameMode = validateGameMode();
             }
-            else
-            {
-                o_Difficulty = getDifficultyLevel();
-            }
-            return selectedMode;
+            o_IsMultiPlayer = gameMode == "2";
         }
 
         private string getSecondPlayerName() {
@@ -73,9 +70,9 @@ namespace MemoryGame {
     
             string modeDescription = gameMode switch
             {
-                "1" => "Single Player (Player vs. AI)",
-                "2" => "Multiplayer (1v1 or Head-to-Head)",
-                _ => "Invalid choice. Please enter 1 or 2."
+                "1" => "single Player (Player vs. AI)",
+                "2" => "multiplayer (1v1 or Head-to-Head)",
+                _ => "invalid choice. Please enter 1 or 2."
             };
 
             Console.WriteLine($"\nYou have chosen {modeDescription}\n");

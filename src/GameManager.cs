@@ -20,10 +20,9 @@ namespace MemoryGame {
 
         public void Initialize(Player i_PlayerOne, Player i_PlayerTwo, Board i_Board, eGameModes i_GameMode, int? i_Difficulty)
         {
-            IGameData.PlayerOne = i_PlayerOne;
+            IGameData.PlayerOne = IGameData.CurrentPlayer = i_PlayerOne;
             IGameData.PlayerTwo = i_PlayerTwo;
             IGameData.Board = i_Board;
-            IGameData.CurrentPlayer = i_PlayerOne;
             IGameData.Letters = new BoardLetter[i_Board.Height, i_Board.Width];
             IGameData.InitializeBoard();
             CurrentGameState = eGameStates.OnGoing;
@@ -31,16 +30,14 @@ namespace MemoryGame {
             if (IGameMode.Mode == eGameModes.singlePlayer)
             {
                 Difficulty = i_Difficulty;
-                AiMemory = new Dictionary<Cell, char>();
+                AiMemory = [];
             }
         }
 
         public void ChangeTurn() {
             CurrentPlayer = CurrentPlayer == IGameData.PlayerOne ? IGameData.PlayerTwo : IGameData.PlayerOne;
 
-            getBoardLetterAt(CurrentUserSelection).IsRevealed = false;
-            getBoardLetterAt(PreviousUserSelection).IsRevealed = false;
-            SelectionNotMatching = false;
+            SelectionNotMatching = getBoardLetterAt(CurrentUserSelection).IsRevealed = getBoardLetterAt(PreviousUserSelection).IsRevealed =false;
         }
 
         public void Update(Cell i_UserSelection)
