@@ -1,4 +1,6 @@
 namespace MemoryGame {
+    internal record GameDataInput(Player PlayerOne, Player PlayerTwo, Board Board);
+
     internal interface IGameData
     {
         public Board Board { get; set; }
@@ -9,14 +11,14 @@ namespace MemoryGame {
         void InitializeBoard();
     }
 
-    internal class GameData(Player i_PlayerOne, Player i_PlayerTwo, Board i_Board) : IGameData
+    internal class GameData(GameDataInput i_Dto) : IGameData
     {
         private static readonly Random m_Random = new();
-        public Player PlayerOne { get; set; } = i_PlayerOne;
-        public Player PlayerTwo { get; set; } = i_PlayerTwo;
-        public Player CurrentPlayer { get; set; } = i_PlayerOne;
-        public BoardLetter[,] Letters { get; set; } = new BoardLetter[i_Board.Height, i_Board.Width];
-        public Board Board { get; set; } = i_Board;
+        public Player PlayerOne { get; set; } = i_Dto.PlayerOne;
+        public Player PlayerTwo { get; set; } = i_Dto.PlayerTwo;
+        public Player CurrentPlayer { get; set; } = i_Dto.PlayerOne;
+        public BoardLetter[,] Letters { get; set; } = new BoardLetter[i_Dto.Board.Height, i_Dto.Board.Width];
+        public Board Board { get; set; } = i_Dto.Board;
 
         public void InitializeBoard()
             {

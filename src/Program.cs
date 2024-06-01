@@ -17,10 +17,11 @@ namespace MemoryGame {
             return new ServiceCollection()
                 .AddSingleton<IMenu, Menu>()
                 .AddTransient<GameUIManager>()
-                .AddSingleton<IGameData>(provider => new GameData(
+                .AddSingleton<IGameData>( provider => 
+                    new GameData(new GameDataInput(
                     new Player("Player One", ePlayerTypes.Human),
                     new Player("Player Two", ePlayerTypes.AI),
-                    new Board(6, 6)))
+                    new Board(6, 6))))
                 .AddTransient<GameManager>()
                 .AddSingleton<IGameMode, GameMode>()
                 .BuildServiceProvider();
