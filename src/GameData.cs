@@ -21,52 +21,43 @@ namespace MemoryGame {
         public Board Board { get; set; } = i_Dto.Board;
 
         public void InitializeBoard()
+        {
+            char[] boardLetters = initializeBoardLetters();
+            List<Cell> randomCells = getRandomCellsList();
+
+            foreach(char letter in boardLetters)
             {
-                char[] boardLetters = initializeBoardLetters();
-                List<Cell> randomCells = getRandomCellsList();
+                getRandomCell(randomCells, out Cell firstCell);
+                getRandomCell(randomCells, out Cell secondCell);
 
-                foreach(char letter in boardLetters)
-                {
-                    int randomSelection = GetRandomNumber(0, randomCells.Count);
-                    Cell firstCell = randomCells[randomSelection];
-                    randomCells.Remove(firstCell);
-
-                    randomSelection = GetRandomNumber(0, randomCells.Count);
-                    Cell secondCell = randomCells[randomSelection];
-                    randomCells.Remove(secondCell);
-
-                    Letters[firstCell.Row, firstCell.Column] = new BoardLetter(letter);
-                    Letters[secondCell.Row, secondCell.Column] = new BoardLetter(letter);
-                }
+                insertLetterToBoard(letter, firstCell);
+                insertLetterToBoard(letter, secondCell);
             }
+        }
+
+        private void getRandomCell(List<Cell> i_RandomCells, out Cell o_Cell)
+        {
+            int randomSelection = GetRandomNumber(0, i_RandomCells.Count);
+            o_Cell = i_RandomCells[randomSelection];
+            i_RandomCells.RemoveAt(randomSelection);
+        }
             
         private List<Cell> getRandomCellsList()
-            {
-                List<Cell> randomCells = new List<Cell>(Board.Height * Board.Width);
-
-                for (int i = 0; i < Board.Height; i++)
-                {
-                    for (int j = 0; j < Board.Width; j++)
-                    {
-                    randomCells.Add(new Cell(i, j));
-                    }
-                }
-
-                return randomCells;
-            }
+        {
+            return Enumerable.Range(0, Board.Height)
+                    .SelectMany(row => Enumerable.Range(0, Board.Width), (row, col) => new Cell(row, col))
+                    .ToList();
+        }
             
         private char[] initializeBoardLetters()
-            {
-                char[] boardLetters = new char[Board.Height * Board.Width / 2];
-
-                for(int i = 0; i < boardLetters.Length; i++)
-                {
-                    boardLetters[i] = (char)('A' + i);
-                }
-
-                return boardLetters;
-            }
+        {
+            return Enumerable.Range(0, Board.Height * Board.Width / 2)
+                    .Select(i => (char)('A' + i))
+                    .ToArray();
+        }
     
+        private void insertLetterToBoard(char i_Letter, Cell i_Cell) => Letters[i_Cell.Row, i_Cell.Column] = new BoardLetter(i_Letter);
+
         public static int GetRandomNumber(int i_RangeStart, int i_RangeEnd) => m_Random.Next(i_RangeStart, i_RangeEnd);
     }
 }
