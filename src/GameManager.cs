@@ -175,24 +175,21 @@ namespace MemoryGame {
         {
             int row = Letters.GetLength(0);
             int column = Letters.GetLength(1);
-            Cell[] cellsNotInMemory = new Cell[(BoardHeight * BoardWidth) - AiMemory!.Count];
-            int indexOfCellNotInMemory = 0;
+            List<Cell> cellsNotInMemory = [];
 
             for (int i = 0; i < row; i++)
             {
                 for(int j = 0; j < column; j++)
                 {
-                    if(!Letters[i, j].IsRevealed)
+                    Cell cell = new Cell(i, j);
+                    if(!(Letters[i, j].IsRevealed || AiMemory!.ContainsKey(cell)))
                     {
-                        if(!AiMemory.ContainsKey(new Cell(i, j)))
-                        {
-                            cellsNotInMemory[indexOfCellNotInMemory++] = new Cell(i, j);
-                        }
+                            cellsNotInMemory.Add(cell);
                     }
                 }
             }
-            indexOfCellNotInMemory = GameData.GetRandomNumber(0, indexOfCellNotInMemory);
-            AiSelection = cellsNotInMemory[indexOfCellNotInMemory];
+            int randomIndex = GameData.GetRandomNumber(0, cellsNotInMemory.Count);
+            AiSelection = cellsNotInMemory[randomIndex];
             return AiSelection.ToString();
         }
 
@@ -204,14 +201,12 @@ namespace MemoryGame {
             {
                 foreach (var secondMemorizedLetter in AiMemory)
                 {
-                    if (!firstMemorizedLetter.Key.Equals(secondMemorizedLetter.Key))
+                    if (!firstMemorizedLetter.Key.Equals(secondMemorizedLetter.Key) 
+                    && firstMemorizedLetter.Value == secondMemorizedLetter.Value)
                     {
-                        if (firstMemorizedLetter.Value == secondMemorizedLetter.Value)
-                        {
                             i_MemorizedMatchingLetter = firstMemorizedLetter.Key.ToString();
                             AiSelection = secondMemorizedLetter.Key;
                             foundMatch = true;
-                        }
                     }
                 }
             }

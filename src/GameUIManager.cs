@@ -135,7 +135,7 @@ namespace MemoryGame {
         private void showAIMessage()
         {
             if(GameManager.AiHasMatches) {
-                Console.WriteLine("AI has found a ma1tch!");
+                Console.WriteLine("AI has found a match!");
                 System.Threading.Thread.Sleep(2000);
                 return;
             }
