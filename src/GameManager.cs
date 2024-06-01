@@ -63,8 +63,9 @@ namespace MemoryGame {
             {
                 PreviousUserSelection = CurrentUserSelection;
                 getBoardLetterAt(CurrentUserSelection).IsRevealed = true;
-                IsFirstSelection = false;
-            } else {
+            } 
+            else 
+            {
                 BoardLetter firstSelectionLetter = getBoardLetterAt(PreviousUserSelection);
                 BoardLetter secondSelectionLetter = getBoardLetterAt(CurrentUserSelection);
 
@@ -79,8 +80,8 @@ namespace MemoryGame {
                     }
                     CurrentPlayer.PlayerScore++;
                 }
-                IsFirstSelection = true;
             }
+            IsFirstSelection = !IsFirstSelection;
         }
 
         private void addToAiMemory(Cell i_CellToBeAdded)
@@ -95,10 +96,7 @@ namespace MemoryGame {
         {
             bool isMemoryEmpty = AiMemory?.Count == 0;
 
-            if(isMemoryEmpty)
-            {
-                AiHasMatches = false;
-            }
+            AiHasMatches = isMemoryEmpty ? false : AiHasMatches;
             return isMemoryEmpty
                 ? getRandomUnmemorizedCell()
                 : (IsFirstSelection ? getFirstSelection() : getSecondSelection());

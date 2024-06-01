@@ -48,7 +48,7 @@ namespace MemoryGame {
             drawTopLetterRow(GameManager.BoardWidth);
             string border = string.Format($"  {new string('=', 4 * GameManager.BoardWidth + 1)}");
             Console.WriteLine(border);
-            for (int i = 0; i < GameManager.BoardHeight; i++)
+            foreach (int i in Enumerable.Range(0, GameManager.BoardHeight))
             {
                 drawRow(i);
                 Console.WriteLine(border);
@@ -59,7 +59,7 @@ namespace MemoryGame {
         {
             StringBuilder topLettersRow = new StringBuilder(" ");
 
-            for (int i = 0; i < i_LengthOfRow; i++)
+            foreach (int i in Enumerable.Range(0, i_LengthOfRow))
             {
                 topLettersRow.Append(string.Format($"   {(char)(i + 'A')}"));
             }
@@ -70,7 +70,7 @@ namespace MemoryGame {
         private void drawRow(int i_Index) {
             StringBuilder row = new StringBuilder();
             row.Append(string.Format($"{i_Index + 1} |"));
-            for (int j = 0; j < GameManager.BoardWidth; j++)
+            foreach (int j in Enumerable.Range(0, GameManager.BoardWidth))
             {
                 BoardLetter currentBoardLetter = GameManager.Letters[i_Index, j];
                 row.Append(string.Format(" {0} |", currentBoardLetter.IsRevealed ? currentBoardLetter.Letter : ' '));
@@ -80,40 +80,36 @@ namespace MemoryGame {
 
         private string getPlayerInput()
         {     
-            string playerInput;
-            if (GameManager.CurrentPlayer.Type == ePlayerTypes.Human)
-            {
-                playerInput = getHumanInput(GameManager.CurrentPlayer.PlayerName);
-            }
-            else
-            {
-                playerInput = GameManager.GetAiInput();
-                showAIMessage();
-            }
-            return playerInput;
+            return GameManager.CurrentPlayer.Type == ePlayerTypes.Human
+                ? handleHumanInput(GameManager.CurrentPlayer.PlayerName)
+                : handleAiInput();
         }
 
-        private string getHumanInput(string i_PlayerName)
+        private string handleAiInput()
         {
-            string userInput = string.Empty;
-            bool isValidInput = false;
-            while (!isValidInput)
+            string aiInput = GameManager.GetAiInput();
+            showAIMessage();
+            return aiInput;
+        }
+
+        private string handleHumanInput(string i_PlayerName)
+        {
+            string userInput;
+            do
             {
                 Console.WriteLine($"{i_PlayerName}, Please enter your selection: ");
                 userInput = Console.ReadLine();
-                isValidInput = GameManager.ValidatePlayerInput(userInput);
             }
+            while (!GameManager.ValidatePlayerInput(userInput));
 
             return userInput!;
         }
 
         private void updateUI(string i_PlayerInput)
         {
-            if(i_PlayerInput == "Q")
-            {
-                exit();
-            }
-            GameManager.Update(Cell.Parse(i_PlayerInput));
+
+            (i_PlayerInput == "Q" ? (Action)exit : () => GameManager.Update(Cell.Parse(i_PlayerInput)))();
+            
 
             if(GameManager.SelectionNotMatching)
             {
@@ -128,7 +124,8 @@ namespace MemoryGame {
         
         private void showAIMessage()
         {
-            if(GameManager.AiHasMatches) {
+            if(GameManager.AiHasMatches) 
+            {
                 Console.WriteLine("AI has found a match!");
             }
             else 
