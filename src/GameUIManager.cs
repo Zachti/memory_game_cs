@@ -19,11 +19,7 @@ namespace MemoryGame {
 
         private void runMenu()
         {
-            string fPlayerName, sPlayerName;
-            int height, width;
-            int? difficulty;
-
-            eGameModes desiredGameMode = IMenu.Start(out fPlayerName, out sPlayerName, out height, out width, out difficulty);
+            eGameModes desiredGameMode = IMenu.Start(out string fPlayerName, out string sPlayerName, out int height, out int width, out int? difficulty);
             Player fPlayer = new Player(fPlayerName, ePlayerTypes.Human);
             ePlayerTypes type = desiredGameMode == eGameModes.multiPlayer ? ePlayerTypes.Human : ePlayerTypes.AI;
             Player sPlayer = new Player(sPlayerName, type);
@@ -48,9 +44,7 @@ namespace MemoryGame {
         private void drawBoard()
         {
             clearWindow();
-            Console.WriteLine();
-            Console.WriteLine($"Current Turn: {GameManager.CurrentPlayer.PlayerName}");
-            Console.WriteLine();    
+            Console.WriteLine($"\nCurrent Turn: {GameManager.CurrentPlayer.PlayerName}\n");
             drawTopLetterRow(GameManager.BoardWidth);
             string border = string.Format($"  {new string('=', 4 * GameManager.BoardWidth + 1)}");
             Console.WriteLine(border);
@@ -136,17 +130,18 @@ namespace MemoryGame {
         {
             if(GameManager.AiHasMatches) {
                 Console.WriteLine("AI has found a match!");
-                System.Threading.Thread.Sleep(2000);
-                return;
             }
-
-            Console.WriteLine("AI is thinking...");
+            else 
+            {
+                Console.WriteLine("AI is thinking...");
+                System.Threading.Thread.Sleep(1000);
+                for (int i = 0; i < 2; i++)
+                {
+                    System.Threading.Thread.Sleep(1000);
+                    Console.Write(".");
+                }
+            }
             System.Threading.Thread.Sleep(2000);
-            System.Threading.Thread.Sleep(1000);
-            Console.Write('.');
-            System.Threading.Thread.Sleep(1000);
-            Console.Write('.');
-            System.Threading.Thread.Sleep(1000);
         }
 
         private void exit()
