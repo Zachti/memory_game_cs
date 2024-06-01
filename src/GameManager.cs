@@ -26,7 +26,7 @@ namespace MemoryGame {
             IGameData.CurrentPlayer = i_PlayerOne;
             IGameData.Letters = new BoardLetter[i_Board.Height, i_Board.Width];
             IGameData.InitializeBoard();
-            CurrentGameState = eGameStates.Running;
+            CurrentGameState = eGameStates.OnGoing;
             IGameMode.Mode = i_GameMode;
             if (IGameMode.Mode == eGameModes.singlePlayer)
             {
@@ -50,7 +50,7 @@ namespace MemoryGame {
             }
             if ((IGameData.PlayerOne.PlayerScore + IGameData.PlayerTwo.PlayerScore) == (BoardWidth * BoardHeight) / 2)
             {
-                CurrentGameState = eGameStates.GameOver;
+                CurrentGameState = eGameStates.Ended;
             }
         }
 
@@ -316,7 +316,7 @@ namespace MemoryGame {
 
             initializeLogic();
 
-            CurrentGameState = eGameStates.Running;
+            CurrentGameState = eGameStates.OnGoing;
         }
 
         private void initializeLogic()

@@ -32,7 +32,7 @@ namespace MemoryGame {
 
         private void runGame()
             {
-                while(GameManager.CurrentGameState == eGameStates.Running)
+                while(GameManager.CurrentGameState == eGameStates.OnGoing)
                 {
                     drawBoard();
                     string playerInput = getPlayerInput();

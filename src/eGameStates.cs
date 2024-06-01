@@ -1,7 +1,7 @@
 namespace MemoryGame {
     internal enum eGameStates {
         Menu,
-        Running,
-        GameOver
+        OnGoing,
+        Ended
     }
 }
