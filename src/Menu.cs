@@ -60,7 +60,7 @@ namespace MemoryGame {
         }
 
         private string getValidName(string? i_name) {
-            while(string.IsNullOrEmpty(i_name)) {
+            while(string.IsNullOrEmpty(i_name) || !i_name.All(char.IsLetter)) {
                 Console.WriteLine("Invalid input. Please enter a valid name: ");
                 i_name = Console.ReadLine();
             }
