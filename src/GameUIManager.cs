@@ -43,7 +43,7 @@ namespace MemoryGame {
         private void drawBoard()
         {
             clearWindow();
-            Console.WriteLine($"\nCurrent Turn: {GameManager.CurrentPlayer.PlayerName}\n");
+            Console.WriteLine($"\nCurrent Turn: {GameManager.CurrentPlayer.Name}\n");
             drawTopLetterRow(GameManager.BoardWidth);
             string border = string.Format($"  {new string('=', 4 * GameManager.BoardWidth + 1)}");
             Console.WriteLine(border);
@@ -94,7 +94,7 @@ namespace MemoryGame {
             string userInput;
             do
             {
-                Console.WriteLine($"{GameManager.CurrentPlayer.PlayerName}, Please enter your selection: ");
+                Console.WriteLine($"{GameManager.CurrentPlayer.Name}, Please enter your selection: ");
                 userInput = Console.ReadLine();
             }
             while (!GameManager.ValidatePlayerInput(userInput));

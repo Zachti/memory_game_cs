@@ -45,7 +45,7 @@ namespace MemoryGame {
             if(!IsSelectionNotMatching) {
                 updateNextTurn(i_UserSelection);
             }
-            if (IGameData.PlayerOne.PlayerScore + IGameData.PlayerTwo.PlayerScore == BoardWidth * BoardHeight / 2)
+            if (IGameData.PlayerOne.Score + IGameData.PlayerTwo.Score == BoardWidth * BoardHeight / 2)
             {
                 CurrentGameState = eGameStates.Ended;
             }
@@ -74,13 +74,13 @@ namespace MemoryGame {
 
                 IsSelectionNotMatching = firstSelectionLetter.Letter != secondSelectionLetter.Letter;
 
-                if (!IsSelectionNotMatching) {
-                    if (IGameMode.Mode == eGameModes.singlePlayer) {
-                        AiMemory?.Remove(CurrentUserSelection);
-                        AiMemory?.Remove(PreviousUserSelection);
-                    }
-                    CurrentPlayer.PlayerScore++;
+                if (!IsSelectionNotMatching && IGameMode.Mode == eGameModes.singlePlayer)
+                {
+                    AiMemory?.Remove(CurrentUserSelection);
+                    AiMemory?.Remove(PreviousUserSelection);
                 }
+
+                CurrentPlayer.Score += !IsSelectionNotMatching ? 1 : 0;
             }
             IsFirstSelection = !IsFirstSelection;
         }
@@ -216,10 +216,10 @@ namespace MemoryGame {
             Player playerOne = IGameData.PlayerOne;
             Player playerTwo = IGameData.PlayerTwo;
 
-            string gameResult = playerOne.PlayerScore.CompareTo(playerTwo.PlayerScore) switch
+            string gameResult = playerOne.Score.CompareTo(playerTwo.Score) switch
             {
-                > 0 => getGameResultText(playerOne.PlayerName),
-                < 0 => getGameResultText(playerTwo.PlayerName),
+                > 0 => getGameResultText(playerOne.Name),
+                < 0 => getGameResultText(playerTwo.Name),
                 _ => getGameResultText(null),
             };
 
@@ -234,11 +234,11 @@ namespace MemoryGame {
 
         public void ResetGame(int i_Height, int i_Width) {
 
-            CurrentPlayer = IGameData.PlayerOne.PlayerScore.CompareTo(IGameData.PlayerTwo.PlayerScore) > 0
+            CurrentPlayer = IGameData.PlayerOne.Score.CompareTo(IGameData.PlayerTwo.Score) > 0
                             ? IGameData.PlayerOne
                             : IGameData.PlayerTwo;
 
-            IGameData.PlayerOne.PlayerScore = IGameData.PlayerTwo.PlayerScore = 0;
+            IGameData.PlayerOne.Score = IGameData.PlayerTwo.Score = 0;
 
             IGameData.Board.Height = i_Height;
             IGameData.Board.Width = i_Width;
@@ -264,6 +264,6 @@ namespace MemoryGame {
         private BoardLetter getBoardLetterAt(Cell i_CellLocation) => Letters[i_CellLocation.Row, i_CellLocation.Column];
 
         private string getScoreboard() =>
-            $"Score: {IGameData.PlayerOne.PlayerName} {IGameData.PlayerOne.PlayerScore} - {IGameData.PlayerTwo.PlayerName} {IGameData.PlayerTwo.PlayerScore}";
+            $"Score: {IGameData.PlayerOne.Name} {IGameData.PlayerOne.Score} - {IGameData.PlayerTwo.Name} {IGameData.PlayerTwo.Score}";
     }
 }
