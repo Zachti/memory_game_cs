@@ -173,21 +173,11 @@ namespace MemoryGame {
 
         private string getRandomUnmemorizedCell()
         {
-            int row = Letters.GetLength(0);
-            int column = Letters.GetLength(1);
-            List<Cell> cellsNotInMemory = [];
-
-            for (int i = 0; i < row; i++)
-            {
-                for(int j = 0; j < column; j++)
-                {
-                    Cell cell = new Cell(i, j);
-                    if(!(Letters[i, j].IsRevealed || AiMemory!.ContainsKey(cell)))
-                    {
-                            cellsNotInMemory.Add(cell);
-                    }
-                }
-            }
+            List<Cell> cellsNotInMemory = Enumerable.Range(0, Letters.GetLength(0))
+                .SelectMany(row => Enumerable.Range(0, Letters.GetLength(1)), (row, column) => new { row, column })
+                .Where(cell => !(Letters[cell.row, cell.column].IsRevealed || AiMemory!.ContainsKey(new Cell(cell.row, cell.column))))
+                .Select(cell => new Cell(cell.row, cell.column))
+                .ToList();
             int randomIndex = GameData.GetRandomNumber(0, cellsNotInMemory.Count);
             AiSelection = cellsNotInMemory[randomIndex];
             return AiSelection.ToString();
