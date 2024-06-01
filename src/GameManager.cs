@@ -55,36 +55,58 @@ namespace MemoryGame {
         {
             CurrentUserSelection = i_UserSelection;
 
-            if (IGameMode.Mode == eGameModes.singlePlayer && GameData.GetRandomNumber(0, 100) <= Difficulty)
+            updateAiMemoryIfNeeded();
+
+            revealCurrentSelection();
+
+            if (!IsFirstSelection)
             {
-                    addToAiMemory(CurrentUserSelection);
+                checkAndHandleMatch();
             }
-
-            if (IsFirstSelection)
-            {
-                PreviousUserSelection = CurrentUserSelection;
-                getBoardLetterAt(CurrentUserSelection).IsRevealed = true;
-            } 
-            else 
-            {
-                BoardLetter firstSelectionLetter = getBoardLetterAt(PreviousUserSelection);
-                BoardLetter secondSelectionLetter = getBoardLetterAt(CurrentUserSelection);
-
-                secondSelectionLetter.IsRevealed = true;
-
-                IsSelectionNotMatching = firstSelectionLetter.Letter != secondSelectionLetter.Letter;
-
-                if (!IsSelectionNotMatching && IGameMode.Mode == eGameModes.singlePlayer)
-                {
-                    AiMemory?.Remove(CurrentUserSelection);
-                    AiMemory?.Remove(PreviousUserSelection);
-                }
-
-                CurrentPlayer.Score += !IsSelectionNotMatching ? 1 : 0;
-            }
+            
             IsFirstSelection = !IsFirstSelection;
         }
 
+        private void updateAiMemoryIfNeeded()
+        {
+            if (IGameMode.Mode == eGameModes.singlePlayer && GameData.GetRandomNumber(0, 100) <= Difficulty)
+            {
+                addToAiMemory(CurrentUserSelection);
+            }
+        }
+
+        private void revealCurrentSelection()
+        {
+            getBoardLetterAt(CurrentUserSelection).IsRevealed = true;
+            if (IsFirstSelection)
+            {
+                PreviousUserSelection = CurrentUserSelection;
+            }
+        }
+
+        private void checkAndHandleMatch()
+        {
+            BoardLetter firstSelectionLetter = getBoardLetterAt(PreviousUserSelection);
+            BoardLetter secondSelectionLetter = getBoardLetterAt(CurrentUserSelection);
+
+            IsSelectionNotMatching = firstSelectionLetter.Letter != secondSelectionLetter.Letter;
+
+            if (!IsSelectionNotMatching)
+            {
+                handleMatchFound();
+            }
+        }
+
+        private void handleMatchFound()
+        {
+            if (IGameMode.Mode == eGameModes.singlePlayer)
+            {
+                AiMemory?.Remove(CurrentUserSelection);
+                AiMemory?.Remove(PreviousUserSelection);
+            }
+            CurrentPlayer.Score++;
+        }
+        
         private void addToAiMemory(Cell i_CellToBeAdded)
         {
             if(AiMemory != null && !AiMemory.ContainsKey(i_CellToBeAdded))
@@ -122,7 +144,7 @@ namespace MemoryGame {
         {
             char firstSelectionLetter = Letters[i_FirstSelectionCell.Row, i_FirstSelectionCell.Column].Letter;
 
-            return AiMemory!
+            return AiMemory?
                 .Where(memorizedLetter => 
                     !memorizedLetter.Key.Equals(i_FirstSelectionCell) &&
                     memorizedLetter.Value == firstSelectionLetter)
