@@ -31,8 +31,7 @@ namespace MemoryGame {
                 while(GameManager.CurrentGameState == eGameStates.OnGoing)
                 {
                     drawBoard();
-                    string playerInput = getPlayerInput();
-                    updateUI(playerInput.ToUpper());
+                    updateUI(getPlayerInput().ToUpper());
                 }
             }
         
