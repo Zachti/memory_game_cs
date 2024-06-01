@@ -238,14 +238,12 @@ namespace MemoryGame {
             Player playerOne = IGameData.PlayerOne;
             Player playerTwo = IGameData.PlayerTwo;
 
-            string gameResult = playerOne.Score.CompareTo(playerTwo.Score) switch
+            return playerOne.Score.CompareTo(playerTwo.Score) switch
             {
                 > 0 => getGameResultText(playerOne.Name),
                 < 0 => getGameResultText(playerTwo.Name),
                 _ => getGameResultText(null),
             };
-
-            return gameResult;
         }
 
         private string getGameResultText(string? i_WinningPlayer)
