@@ -159,15 +159,8 @@ namespace MemoryGame {
 
             Console.WriteLine(GameManager.GetGameOverStatus());
 
-            if(checkForRestart())
-            {
-                clearWindow();
-                restartGame();
-            }
-            else
-            {
-                exit();
-            }
+            (checkForRestart() ? new Action(restartGame) : new Action(exit)).Invoke();
+  
         }
 
         private bool checkForRestart()
@@ -179,6 +172,7 @@ namespace MemoryGame {
 
         private void restartGame()
         {
+            clearWindow();
             IMenu.GetBoardSize(out int height, out int width);
             GameManager.ResetGame(height, width);
             StartGame();
