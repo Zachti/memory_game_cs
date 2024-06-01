@@ -46,9 +46,9 @@ namespace MemoryGame {
         public void Update(Cell i_UserSelection)
         {       
             if(!SelectionNotMatching) {
-                    updateNextTurn(i_UserSelection);
+                updateNextTurn(i_UserSelection);
             }
-            if ((IGameData.PlayerOne.PlayerScore + IGameData.PlayerTwo.PlayerScore) == (BoardWidth * BoardHeight) / 2)
+            if (IGameData.PlayerOne.PlayerScore + IGameData.PlayerTwo.PlayerScore == BoardWidth * BoardHeight / 2)
             {
                 CurrentGameState = eGameStates.Ended;
             }
@@ -95,67 +95,32 @@ namespace MemoryGame {
             }
         }
 
-        private BoardLetter getBoardLetterAt(Cell i_CellLocation)
-        {
-            return Letters[i_CellLocation.Row, i_CellLocation.Column];
-        }
-
         public string GetAiInput()
         {
-            string aiSelection;
+            bool isMemoryEmpty = AiMemory?.Count == 0;
 
-            if(AiMemory?.Count == 0)
+            if(isMemoryEmpty)
             {
                 AiHasMatches = false;
-                aiSelection = getRandomUnmemorizedCell();
-            } else {
-                aiSelection = IsFirstSelection ? getFirstSelection() : getSecondSelection();
             }
-            return aiSelection;
+            return isMemoryEmpty
+                ? getRandomUnmemorizedCell()
+                : (IsFirstSelection ? getFirstSelection() : getSecondSelection());
         }
         
         private string getFirstSelection()
         {
             string firstSelection = string.Empty;
 
-            FoundMatch = findLetterMatch(ref firstSelection);
-
-            if(FoundMatch)
-            {
-                AiHasMatches = true;
-            } 
-            else 
-            {
-                AiHasMatches = false;
-                firstSelection = getRandomUnmemorizedCell();
-            }
-
-            return firstSelection;
+            AiHasMatches = FoundMatch = findLetterMatch(ref firstSelection);
+            return FoundMatch ? firstSelection : getRandomUnmemorizedCell();
         }
 
         private string getSecondSelection()
         {
-            string secondSelection;
-
-            if(FoundMatch)
-            {
-                secondSelection = AiSelection.ToString();
-            } 
-            else 
-            {
-                secondSelection = findLetterInMemory(AiSelection);
-
-                if(secondSelection != "")
-                {
-                    AiHasMatches = true;
-                } 
-                else 
-                {
-                    AiHasMatches = false;
-                    secondSelection = getRandomUnmemorizedCell();
-                }
-            }
-            return secondSelection;
+            string secondSelection = FoundMatch ? AiSelection.ToString() : findLetterInMemory(AiSelection);
+            AiHasMatches = secondSelection != "";
+            return AiHasMatches ? secondSelection : getRandomUnmemorizedCell();
         }
         
         private string findLetterInMemory(Cell i_FirstSelectionCell)
@@ -199,66 +164,57 @@ namespace MemoryGame {
                     i_MemorizedMatchingLetter = firstMemorizedLetter.Key.ToString();
                     AiSelection = matchingLetter.Key;
                     foundMatch = true;
+                    break;
                 }
             }
             return foundMatch;
         }
 
         public bool ValidatePlayerInput(string? i_userInput) {
-            bool isValid = true;
-            if (i_userInput == null) {
+            bool isInvalid = i_userInput == null;
+            if (isInvalid) {
                 Console.WriteLine("Input must not be empty");
-                isValid = false;
             }
             i_userInput = i_userInput.ToUpper();
-            return isValid && ( i_userInput == "Q" || ( validateCellSelection(i_userInput) && validateCellIsHidden(i_userInput) ) );
+            return !isInvalid && ( i_userInput == "Q" || ( validateCellSelection(i_userInput) && validateCellIsHidden(i_userInput) ) );
         }
 
         private bool validateCellSelection(string i_userInput) {
-            bool isValid = true;
-            if(i_userInput.Length != 2)
+            bool isInvalid = i_userInput.Length != 2;
+            if(isInvalid)
             {
                 Console.WriteLine("Input must have exactly 2 characters");
-                isValid = false;
             }
-            return isValid && checkIfLetterInRange(i_userInput[0]) && checkIfDigitInRange(i_userInput[1]);
+            return !isInvalid && checkIfLetterInRange(i_userInput[0]) && checkIfDigitInRange(i_userInput[1]);
         }
 
         private bool checkIfLetterInRange(char i_Letter) {
-            bool isValid = true;
             char lastLetter = (char)('A' + BoardWidth - 1);
-            if (i_Letter < 'A' || i_Letter > lastLetter) {
+            bool isInvalid = i_Letter < 'A' || i_Letter > lastLetter;
+            if (isInvalid) {
                 Console.WriteLine($"Invalid input, letter must be between A and {lastLetter}");
-                isValid = false;
             }
-            return isValid;
+            return !isInvalid;
         }
 
         private bool checkIfDigitInRange(char i_Digit) {
-            bool isValid = true;
             char lastDigit = (char)('0' + BoardHeight);
-            if (i_Digit < '1' || i_Digit > lastDigit) {
+            bool isInvalid = i_Digit < '1' || i_Digit > lastDigit;
+            if (isInvalid) {
                 Console.WriteLine($"Invalid input, digit must be between 1 and {lastDigit}");
-                isValid = false;
             }
-            return isValid;
+            return !isInvalid;
         }
 
         private bool validateCellIsHidden(string i_userInput) {
             int column = i_userInput[0] - 'A';
             int row = i_userInput[1] - '1';
-            bool isValid = !IGameData.Letters[row, column].IsRevealed;
-            if (!isValid)
+            bool isInvalid = IGameData.Letters[row, column].IsRevealed;
+            if (isInvalid)
             {
             Console.WriteLine($"Cell {i_userInput} is already revealed");
             }
-            return isValid;
-        }
-
-        private string getScoreboard()
-        {
-            return string.Format(
-                $"Score: {IGameData.PlayerOne.PlayerName} {IGameData.PlayerOne.PlayerScore} - {IGameData.PlayerTwo.PlayerName} {IGameData.PlayerTwo.PlayerScore}");
+            return !isInvalid;
         }
 
         public string GetGameOverStatus() {
@@ -287,8 +243,7 @@ namespace MemoryGame {
                             ? IGameData.PlayerOne
                             : IGameData.PlayerTwo;
 
-            IGameData.PlayerOne.PlayerScore = 0;
-            IGameData.PlayerTwo.PlayerScore = 0;
+            IGameData.PlayerOne.PlayerScore = IGameData.PlayerTwo.PlayerScore = 0;
 
             IGameData.Board.Height = i_Height;
             IGameData.Board.Width = i_Width;
@@ -304,14 +259,16 @@ namespace MemoryGame {
         private void initializeLogic()
         {
             IsFirstSelection = true;
-            SelectionNotMatching = false;
-            AiHasMatches = false;
-            FoundMatch = false;
+            SelectionNotMatching = AiHasMatches = FoundMatch = false;
             if (IGameMode.Mode == eGameModes.singlePlayer)
             {
                 AiMemory?.Clear();
             }
         }
         
+        private BoardLetter getBoardLetterAt(Cell i_CellLocation) => Letters[i_CellLocation.Row, i_CellLocation.Column];
+
+        private string getScoreboard() =>
+            $"Score: {IGameData.PlayerOne.PlayerName} {IGameData.PlayerOne.PlayerScore} - {IGameData.PlayerTwo.PlayerName} {IGameData.PlayerTwo.PlayerScore}";
     }
 }
