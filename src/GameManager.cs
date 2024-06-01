@@ -58,12 +58,9 @@ namespace MemoryGame {
         {
             CurrentUserSelection = i_UserSelection;
 
-            if (IGameMode.Mode == eGameModes.singlePlayer)
+            if (IGameMode.Mode == eGameModes.singlePlayer && GameData.GetRandomNumber(0, 100) <= Difficulty)
             {
-                if (GameData.GetRandomNumber(0, 100) <= Difficulty)
-                {
                     addToAiMemory(CurrentUserSelection);
-                }
             }
 
             if (IsFirstSelection)
@@ -126,10 +123,12 @@ namespace MemoryGame {
             if(FoundMatch)
             {
                 AiHasMatches = true;
-            } else {
-                    AiHasMatches = false;
-                    firstSelection = getRandomUnmemorizedCell();
-                }
+            } 
+            else 
+            {
+                AiHasMatches = false;
+                firstSelection = getRandomUnmemorizedCell();
+            }
 
             return firstSelection;
         }
@@ -141,12 +140,17 @@ namespace MemoryGame {
             if(FoundMatch)
             {
                 secondSelection = AiSelection.ToString();
-            } else {
+            } 
+            else 
+            {
                 secondSelection = findLetterInMemory(AiSelection);
+
                 if(secondSelection != "")
                 {
                     AiHasMatches = true;
-                } else {
+                } 
+                else 
+                {
                     AiHasMatches = false;
                     secondSelection = getRandomUnmemorizedCell();
                 }
@@ -156,19 +160,15 @@ namespace MemoryGame {
         
         private string findLetterInMemory(Cell i_FirstSelectionCell)
         {
-            string foundLetter = string.Empty;
+            char firstSelectionLetter = Letters[i_FirstSelectionCell.Row, i_FirstSelectionCell.Column].Letter;
 
-            foreach(var memorizedLetter in AiMemory!)
-            {
-                Cell currentKey = memorizedLetter.Key;
-                char firstSelectionLetter = Letters[i_FirstSelectionCell.Row, i_FirstSelectionCell.Column].Letter;
-
-                if(!currentKey.Equals(i_FirstSelectionCell) && memorizedLetter.Value == firstSelectionLetter) 
-                {
-                    foundLetter = memorizedLetter.Key.ToString();
-                }
-            }
-            return foundLetter;
+            return AiMemory!
+                .Where(memorizedLetter => 
+                    !memorizedLetter.Key.Equals(i_FirstSelectionCell) &&
+                    memorizedLetter.Value == firstSelectionLetter)
+                .Select(memorizedLetter => memorizedLetter.Key.ToString())
+                .FirstOrDefault() 
+                ?? string.Empty;
         }
 
         private string getRandomUnmemorizedCell()
