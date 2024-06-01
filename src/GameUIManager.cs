@@ -123,7 +123,7 @@ namespace MemoryGame {
             {
                 exit();
             }
-            GameManager.Update(Cell.Parse(i_PlayerInput));
+            GameManager.Update(Cell.Parse(i_PlayerInput.ToUpper()));
 
             if(GameManager.SelectionNotMatching)
             {
