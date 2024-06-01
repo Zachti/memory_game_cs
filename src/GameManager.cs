@@ -16,7 +16,7 @@ namespace MemoryGame {
         private Cell PreviousUserSelection{ get; set; }
         private IGameMode IGameMode { get; } = i_GameMode;
         private IGameData IGameData { get; } = i_GameData;
-        private  Dictionary<Cell, char>? AiMemory { get; set; }
+        private  Dictionary<Cell, char>? AiMemory { get; set; } = [];
 
         public void Initialize(Player i_PlayerOne, Player i_PlayerTwo, Board i_Board, eGameModes i_GameMode, int? i_Difficulty)
         {
@@ -30,7 +30,6 @@ namespace MemoryGame {
             if (IGameMode.Mode == eGameModes.singlePlayer)
             {
                 Difficulty = i_Difficulty;
-                AiMemory = [];
             }
         }
 

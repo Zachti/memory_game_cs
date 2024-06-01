@@ -21,7 +21,7 @@ namespace MemoryGame {
                     new GameData(new GameDataInput(
                     new Player("Player One", ePlayerTypes.Human),
                     new Player("Player Two", ePlayerTypes.AI),
-                    new Board(6, 6))))
+                    new Board(4, 4))))
                 .AddTransient<GameManager>()
                 .AddSingleton<IGameMode, GameMode>()
                 .BuildServiceProvider();
