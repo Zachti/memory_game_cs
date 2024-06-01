@@ -242,7 +242,7 @@ namespace MemoryGame {
             bool isValid = true;
             char lastLetter = (char)('A' + BoardWidth - 1);
             if (i_Letter < 'A' || i_Letter > lastLetter) {
-                Console.WriteLine("Invalid input, letter must be between A and {0}", lastLetter);
+                Console.WriteLine($"Invalid input, letter must be between A and {lastLetter}");
                 isValid = false;
             }
             return isValid;
@@ -252,7 +252,7 @@ namespace MemoryGame {
             bool isValid = true;
             char lastDigit = (char)('0' + BoardHeight);
             if (i_Digit < '1' || i_Digit > lastDigit) {
-                Console.WriteLine("Invalid input, digit must be between 1 and {0}", lastDigit);
+                Console.WriteLine($"Invalid input, digit must be between 1 and {lastDigit}");
                 isValid = false;
             }
             return isValid;
@@ -264,7 +264,7 @@ namespace MemoryGame {
             bool isValid = !IGameData.Letters[row, column].IsRevealed;
             if (!isValid)
             {
-            Console.WriteLine("Cell {0} is already revealed", i_userInput);
+            Console.WriteLine($"Cell {i_userInput} is already revealed");
             }
             return isValid;
         }
@@ -272,11 +272,7 @@ namespace MemoryGame {
         private string getScoreboard()
         {
             return string.Format(
-                "Score: {0} {1} - {2} {3}",
-                IGameData.PlayerOne.PlayerName,
-                IGameData.PlayerOne.PlayerScore,
-                IGameData.PlayerTwo.PlayerName,
-                IGameData.PlayerTwo.PlayerScore );
+                $"Score: {IGameData.PlayerOne.PlayerName} {IGameData.PlayerOne.PlayerScore} - {IGameData.PlayerTwo.PlayerName} {IGameData.PlayerTwo.PlayerScore}");
         }
 
         public string GetGameOverStatus() {

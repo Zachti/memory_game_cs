@@ -52,7 +52,7 @@ namespace MemoryGame {
             Console.WriteLine($"Current Turn: {GameManager.CurrentPlayer.PlayerName}");
             Console.WriteLine();    
             drawTopLetterRow(GameManager.BoardWidth);
-            string border = string.Format("  {0}", new string('=', 4 * GameManager.BoardWidth + 1));
+            string border = string.Format($"  {new string('=', 4 * GameManager.BoardWidth + 1)}");
             Console.WriteLine(border);
             for (int i = 0; i < GameManager.BoardHeight; i++)
             {
@@ -67,7 +67,7 @@ namespace MemoryGame {
 
             for (int i = 0; i < i_LengthOfRow; i++)
             {
-                topLettersRow.Append(string.Format("   {0}", (char)(i + 'A')));
+                topLettersRow.Append(string.Format($"   {(char)(i + 'A')}"));
             }
 
             Console.WriteLine(topLettersRow.ToString());
@@ -75,7 +75,7 @@ namespace MemoryGame {
 
         private void drawRow(int i_Index) {
             StringBuilder row = new StringBuilder();
-            row.Append(string.Format("{0} |", i_Index + 1));
+            row.Append(string.Format($"{i_Index + 1} |"));
             for (int j = 0; j < GameManager.BoardWidth; j++)
             {
                 BoardLetter currentBoardLetter = GameManager.Letters[i_Index, j];
@@ -105,13 +105,9 @@ namespace MemoryGame {
             bool isValidInput = false;
             while (!isValidInput)
             {
-                Console.WriteLine("{0}, Please enter your selection: ", i_PlayerName);
+                Console.WriteLine($"{i_PlayerName}, Please enter your selection: ");
                 userInput = Console.ReadLine();
                 isValidInput = GameManager.ValidatePlayerInput(userInput);
-                if (!isValidInput)
-                {
-                    Console.WriteLine("\nInvalid input. Please enter a valid selection.");
-                }
             }
 
             return userInput!;
@@ -139,7 +135,7 @@ namespace MemoryGame {
         private void showAIMessage()
         {
             if(GameManager.AiHasMatches) {
-                Console.WriteLine("AI has found a match!");
+                Console.WriteLine("AI has found a ma1tch!");
                 System.Threading.Thread.Sleep(2000);
                 return;
             }

@@ -25,7 +25,7 @@ namespace MemoryGame {
             Console.WriteLine("Please enter your name: ");
             o_fPlayerName = Console.ReadLine();
             o_fPlayerName = getValidName(o_fPlayerName);
-            Console.WriteLine("\nHi {0}, \nWelcome Aboard! \nPlease choose a game mode: ", o_fPlayerName);
+            Console.WriteLine($"\nHi {o_fPlayerName}, \nWelcome Aboard! \nPlease choose a game mode: ");
         }
 
         private eGameModes selectGameMode(out string o_sPlayerName, out int? o_Difficulty) {
