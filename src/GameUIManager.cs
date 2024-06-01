@@ -6,6 +6,10 @@ namespace MemoryGame {
     {
         private IMenu IMenu { get; } = i_Menu;
         private GameManager GameManager { get; } = i_GameManager;
+        private Action<string> Display { get; } = Console.WriteLine;
+        private Action<int> Rest { get; } =  System.Threading.Thread.Sleep;
+        private Action ClearUI { get; } = Console.Clear;    
+        private Func<string> Read { get; } = () => Console.ReadLine() ?? string.Empty;
 
         public void StartGame()
         {
@@ -35,22 +39,17 @@ namespace MemoryGame {
                 }
             }
         
-        private void clearWindow()
-        {
-        Console.Clear();
-        }
-
         private void drawBoard()
         {
-            clearWindow();
-            Console.WriteLine($"\nCurrent Turn: {GameManager.CurrentPlayer.Name}\n");
+            ClearUI();
+            Display($"\nCurrent Turn: {GameManager.CurrentPlayer.Name}\n");
             drawTopLetterRow(GameManager.BoardWidth);
             string border = string.Format($"  {new string('=', 4 * GameManager.BoardWidth + 1)}");
-            Console.WriteLine(border);
+            Display(border);
             foreach (int i in Enumerable.Range(0, GameManager.BoardHeight))
             {
                 drawRow(i);
-                Console.WriteLine(border);
+                Display(border);
             }
         }
 
@@ -63,7 +62,7 @@ namespace MemoryGame {
                 topLettersRow.Append(string.Format($"   {(char)(i + 'A')}"));
             }
 
-            Console.WriteLine(topLettersRow.ToString());
+            Display(topLettersRow.ToString());
         }
 
         private void drawRow(int i_Index) {
@@ -74,7 +73,7 @@ namespace MemoryGame {
                 BoardLetter currentBoardLetter = GameManager.Letters[i_Index, j];
                 row.Append(string.Format(" {0} |", currentBoardLetter.IsRevealed ? currentBoardLetter.Letter : ' '));
             }
-            Console.WriteLine(row.ToString());
+            Display(row.ToString());
         }
 
         private string getPlayerInput()
@@ -94,8 +93,8 @@ namespace MemoryGame {
             string userInput;
             do
             {
-                Console.WriteLine($"{GameManager.CurrentPlayer.Name}, Please enter your selection: ");
-                userInput = Console.ReadLine();
+                Display($"{GameManager.CurrentPlayer.Name}, Please enter your selection: ");
+                userInput = Read();
             }
             while (!GameManager.ValidatePlayerInput(userInput));
 
@@ -111,9 +110,9 @@ namespace MemoryGame {
             if(GameManager.IsSelectionNotMatching)
             {
                 drawBoard();
-                Console.WriteLine("Mismatch, but try to remember!");
+                Display("Mismatch, but try to remember!");
 
-                System.Threading.Thread.Sleep(2000);
+                Rest(2000);
 
                 GameManager.ChangeTurn();
             }
@@ -121,28 +120,27 @@ namespace MemoryGame {
         
         private void showAIMessage()
         {
-            if(GameManager.IsAiHasMatches) 
+            string message = GameManager.IsAiHasMatches ? "AI has found a match!" : "AI is thinking...";
+            Display(message);
+            
+            if (!GameManager.IsAiHasMatches)
             {
-                Console.WriteLine("AI has found a match!");
-            }
-            else 
-            {
-                Console.WriteLine("AI is thinking...");
-                System.Threading.Thread.Sleep(1000);
+                Rest(1000);
                 for (int i = 0; i < 2; i++)
                 {
-                    System.Threading.Thread.Sleep(1000);
+                    Rest(1000);
                     Console.Write(".");
                 }
             }
-            System.Threading.Thread.Sleep(2000);
+            
+            Rest(2000);
         }
 
         private void exit()
         {
-            Console.WriteLine("Goodbye!");
-            Console.WriteLine("We hope to see you soon again!");
-            System.Threading.Thread.Sleep(2000);
+            Display("Goodbye!");
+            Display("We hope to see you soon again!");
+            Rest(2000);
             Environment.Exit(0);
         }
 
@@ -151,25 +149,25 @@ namespace MemoryGame {
 
             drawBoard();
 
-            Console.WriteLine(GameManager.GetGameOverStatus());
+            Display(GameManager.GetGameOverStatus());
 
-            (checkForRestart() ? new Action(restartGame) : new Action(exit)).Invoke();
+            (checkForRestart() ?  (Action)restartGame :  (Action)exit).Invoke();
   
         }
 
         private bool checkForRestart()
         {
-            Console.WriteLine("Would you like to play again? (Y/N)");
-            string userInput = Console.ReadLine();
+            Display("Would you like to play again? (Y/N)");
+            string userInput = Read();
             return userInput?.ToUpper() == "Y";
         }
 
         private void restartGame()
         {
-            clearWindow();
+            ClearUI();
             IMenu.GetBoardSize(out int height, out int width);
             GameManager.ResetGame(height, width);
             StartGame();
         }   
-    }
+   }
 }

@@ -12,9 +12,11 @@ namespace MemoryGame {
     {
         private static int MinBoardSize { get; } = 4;
         private static int MaxBoardSize { get; } = 6;
+        private Action<string> Display { get; } = Console.WriteLine;
+        private Func<string> Read { get; } = () => Console.ReadLine() ?? string.Empty;
 
         public eGameModes Start(out string o_fPlayerName, out string o_sPlayerName, out int o_Height, out int o_Width, out int? o_Difficulty) {
-            Console.WriteLine("\nWelcome \nLet's play a memory game! \n");
+            Display("\nWelcome \nLet's play a memory game! \n");
             getFirstPlayerName(out o_fPlayerName);
             createGameMode(out o_sPlayerName, out eGameModes gameMode, out o_Difficulty);
             GetBoardSize(out o_Height, out o_Width);
@@ -22,10 +24,10 @@ namespace MemoryGame {
         }
 
         private void getFirstPlayerName(out string o_fPlayerName) {
-            Console.WriteLine("Please enter your name: ");
-            o_fPlayerName = Console.ReadLine();
+            Display("Please enter your name: ");
+            o_fPlayerName = Read();
             o_fPlayerName = getValidName(o_fPlayerName);
-            Console.WriteLine($"\nHi {o_fPlayerName}, \nWelcome Aboard! \nPlease choose a game mode: ");
+            Display($"\nHi {o_fPlayerName}, \nWelcome Aboard! \nPlease choose a game mode: ");
         }
 
         private void createGameMode(out string o_sPlayerName, out eGameModes o_GameMode, out int? o_Difficulty) {
@@ -41,32 +43,33 @@ namespace MemoryGame {
         private void getGameMode(out bool o_IsMultiPlayer) {
 
             string gameMode = String.Empty;
-            while (gameMode != "1" && gameMode != "2") {
-            Console.WriteLine("Please choose a game mode: ");
-            Console.WriteLine("1. Single Player (Player vs. AI)");
-            Console.WriteLine("2. Multiplayer (Head-to-Head)");
+            while (gameMode != "1" && gameMode != "2") 
+            {
+            Display("Please choose a game mode: ");
+            Display("1. Single Player (Player vs. AI)");
+            Display("2. Multiplayer (Head-to-Head)");
             gameMode = validateGameMode();
             }
             o_IsMultiPlayer = gameMode == "2";
         }
 
         private string getSecondPlayerName() {
-            Console.WriteLine("Please enter the name of the second player: ");
-            string? sPlayerName = Console.ReadLine();
+            Display("Please enter the name of the second player: ");
+            string sPlayerName = Read();
             return getValidName(sPlayerName);
         }
 
-        private string getValidName(string? i_name) {
+        private string getValidName(string i_name) {
             while(string.IsNullOrEmpty(i_name) || !i_name.All(char.IsLetter)) {
-                Console.WriteLine("Invalid input. Please enter a valid name: ");
-                i_name = Console.ReadLine();
+                Display("Invalid input. Please enter a valid name: ");
+                i_name = Read();
             }
             return $"{char.ToUpper(i_name[0])}{i_name.Substring(1).ToLower()}";
         }
         
         private string validateGameMode() { 
         
-            string? gameMode = Console.ReadLine();
+            string gameMode = Read();
     
             string modeDescription = gameMode switch
             {
@@ -75,7 +78,7 @@ namespace MemoryGame {
                 _ => "invalid choice. Please enter 1 or 2."
             };
 
-            Console.WriteLine($"\nYou have chosen {modeDescription}\n");
+            Display($"\nYou have chosen {modeDescription}\n");
             return gameMode!;
         }
     
@@ -87,7 +90,7 @@ namespace MemoryGame {
                 o_Width = validateNumberInRange();
                 isEven = (o_Height * o_Width) % 2 == 0;
                 if (!isEven) {
-                    Console.WriteLine("Invalid input. Please enter an even number.");
+                    Display("Invalid input. Please enter an even number.");
                 }
             }
         }
@@ -97,11 +100,11 @@ namespace MemoryGame {
             bool isNumber = false;
             bool isWithinRange = false;
             while (!isNumber || !isWithinRange) {
-                Console.WriteLine("Please enter a value (must be between 4 and 6): ");
-                isNumber = int.TryParse(Console.ReadLine(), out userInput); 
+                Display("Please enter a value (must be between 4 and 6): ");
+                isNumber = int.TryParse(Read(), out userInput); 
                 isWithinRange = userInput >= MinBoardSize && userInput <= MaxBoardSize;
                 if (!isNumber || !isWithinRange) {
-                    Console.WriteLine("Invalid input. Please enter a number between 4 and 6.");
+                    Display("Invalid input. Please enter a number between 4 and 6.");
             }
         }
         return userInput;
@@ -110,12 +113,12 @@ namespace MemoryGame {
         private int getDifficultyLevel() {
             
             int difficultyLevel = 1;
-            Console.WriteLine("\nPlease choose a difficulty level (between 1 to 100): ");
+            Display("\nPlease choose a difficulty level (between 1 to 100): ");
             bool isValidInput = false;
             while (!isValidInput) {
-                isValidInput = int.TryParse(Console.ReadLine(), out difficultyLevel);
+                isValidInput = int.TryParse(Read(), out difficultyLevel);
                 if (!isValidInput || difficultyLevel < 1 || difficultyLevel > 100) {
-                    Console.WriteLine("Invalid input. Please enter a number between 1 and 100.");
+                    Display("Invalid input. Please enter a number between 1 and 100.");
                     isValidInput = false;
                 }
             }

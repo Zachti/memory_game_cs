@@ -187,8 +187,8 @@ namespace MemoryGame {
             return foundMatch;
         }
 
-        public bool ValidatePlayerInput(string? i_userInput) {
-            bool isInvalid = i_userInput == null;
+        public bool ValidatePlayerInput(string i_userInput) {
+            bool isInvalid = i_userInput == string.Empty;
             if (isInvalid) {
                 Console.WriteLine("Input must not be empty");
             }
