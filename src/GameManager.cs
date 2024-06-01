@@ -199,15 +199,16 @@ namespace MemoryGame {
 
             foreach (var firstMemorizedLetter in AiMemory!)
             {
-                foreach (var secondMemorizedLetter in AiMemory)
+                KeyValuePair<Cell, char> matchingLetter = AiMemory
+                    .FirstOrDefault(secondMemorizedLetter =>
+                        !firstMemorizedLetter.Key.Equals(secondMemorizedLetter.Key) &&
+                        firstMemorizedLetter.Value == secondMemorizedLetter.Value);
+
+                if (!matchingLetter.Equals(default(KeyValuePair<Cell, char>)))
                 {
-                    if (!firstMemorizedLetter.Key.Equals(secondMemorizedLetter.Key) 
-                    && firstMemorizedLetter.Value == secondMemorizedLetter.Value)
-                    {
-                            i_MemorizedMatchingLetter = firstMemorizedLetter.Key.ToString();
-                            AiSelection = secondMemorizedLetter.Key;
-                            foundMatch = true;
-                    }
+                    i_MemorizedMatchingLetter = firstMemorizedLetter.Key.ToString();
+                    AiSelection = matchingLetter.Key;
+                    foundMatch = true;
                 }
             }
             return foundMatch;
