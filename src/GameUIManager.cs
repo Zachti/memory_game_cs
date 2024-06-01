@@ -36,7 +36,7 @@ namespace MemoryGame {
                 {
                     drawBoard();
                     string playerInput = getPlayerInput();
-                    updateUI(playerInput);
+                    updateUI(playerInput.ToUpper());
                 }
             }
         
@@ -119,7 +119,7 @@ namespace MemoryGame {
             {
                 exit();
             }
-            GameManager.Update(Cell.Parse(i_PlayerInput.ToUpper()));
+            GameManager.Update(Cell.Parse(i_PlayerInput));
 
             if(GameManager.SelectionNotMatching)
             {
