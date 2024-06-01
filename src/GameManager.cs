@@ -96,7 +96,7 @@ namespace MemoryGame {
         {
             bool isMemoryEmpty = AiMemory?.Count == 0;
 
-            AiHasMatches = isMemoryEmpty ? false : AiHasMatches;
+            AiHasMatches = !isMemoryEmpty && AiHasMatches;
             return isMemoryEmpty
                 ? getRandomUnmemorizedCell()
                 : (IsFirstSelection ? getFirstSelection() : getSecondSelection());
