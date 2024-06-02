@@ -152,7 +152,7 @@ namespace MemoryGame {
 
         private bool checkForRestart()
         {
-            Display("Would you like to play again? (Y/N)");
+            Display("Press 'Y' to play again, or any other key to exit.");
             string userInput = Read();
             return userInput?.ToUpper() == "Y";
         }
