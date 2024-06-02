@@ -3,14 +3,14 @@ namespace MemoryGame {
     {
         private static int? Difficulty { get; set; }
         public static eGameStates CurrentGameState { get; set; } = eGameStates.Menu;
-        private bool IsFoundMatch { get; set; } = false;
+        private bool IsFoundMatch { get; set; }
         private bool IsFirstSelection { get; set; } = true;
-        public bool IsAiHasMatches { get; set; } = false;
+        public bool IsAiHasMatches { get; set; }
         public int BoardWidth => IGameData.Board.Width;
         public int BoardHeight => IGameData.Board.Height;
         public BoardLetter[,] Letters => IGameData.Board.Letters;
         public Player CurrentPlayer { get => IGameData.CurrentPlayer; set => IGameData.CurrentPlayer = value; }
-        public bool IsSelectionNotMatching { get; set; } = false;
+        public bool IsSelectionNotMatching { get; set; }
         public bool IsCurrentPlayerHuman => CurrentPlayer.Type == ePlayerTypes.Human;
         private Cell AiSelection { get; set; }
         private Cell CurrentUserSelection { get; set; }
