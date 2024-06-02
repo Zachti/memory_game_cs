@@ -76,11 +76,6 @@ namespace MemoryGame {
             Display(row.ToString());
         }
 
-        private string getPlayerInput()
-        {     
-            return GameManager.IsCurrentPlayerHuman ? handleHumanInput() : handleAiInput();
-        }
-
         private string handleAiInput()
         {
             string aiInput = GameManager.GetAiInput();
@@ -168,6 +163,9 @@ namespace MemoryGame {
             IMenu.GetBoardSize(out int height, out int width);
             GameManager.ResetGame(height, width);
             StartGame();
-        }   
+        } 
+
+        private string getPlayerInput() => GameManager.IsCurrentPlayerHuman ? handleHumanInput() : handleAiInput();
+  
    }
 }

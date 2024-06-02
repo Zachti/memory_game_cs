@@ -92,11 +92,8 @@ namespace MemoryGame {
 
         private void handleMatchFound()
         {
-            if (IGameMode.Mode == eGameModes.singlePlayer)
-            {
-                AiMemory?.Remove(CurrentUserSelection);
-                AiMemory?.Remove(PreviousUserSelection);
-            }
+            AiMemory?.Remove(CurrentUserSelection);
+            AiMemory?.Remove(PreviousUserSelection);
             CurrentPlayer.Score++;
         }
         
@@ -262,10 +259,7 @@ namespace MemoryGame {
         {
             IsFirstSelection = true;
             IsSelectionNotMatching = IsAiHasMatches = IsFoundMatch = false;
-            if (IGameMode.Mode == eGameModes.singlePlayer)
-            {
-                AiMemory?.Clear();
-            }
+            AiMemory?.Clear();
         }
         
         private ref BoardLetter getBoardLetterAt(Cell i_CellLocation) => ref Letters[i_CellLocation.Row, i_CellLocation.Column];
