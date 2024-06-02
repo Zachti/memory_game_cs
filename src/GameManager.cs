@@ -235,13 +235,11 @@ namespace MemoryGame {
         }
 
         public string GetGameOverStatus() {
-            Player playerOne = IGameData.PlayerOne;
-            Player playerTwo = IGameData.PlayerTwo;
 
-            return playerOne.Score.CompareTo(playerTwo.Score) switch
+            return IGameData.PlayerOne.Score.CompareTo(IGameData.PlayerTwo.Score) switch
             {
-                > 0 => getGameResultText(playerOne.Name),
-                < 0 => getGameResultText(playerTwo.Name),
+                > 0 => getGameResultText(IGameData.PlayerOne.Name),
+                < 0 => getGameResultText(IGameData.PlayerTwo.Name),
                 _ => getGameResultText(null),
             };
         }
