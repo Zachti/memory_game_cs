@@ -3,7 +3,7 @@ namespace MemoryGame {
         public bool HasMatches { get; set; }
         private Cell Selection { get; set; }
         private  Dictionary<Cell, char> Memory { get; set; } = [];
-        private Mutex MemoryMutex { get; } = new Mutex();
+        private Mutex MemoryMutex { get; }= new Mutex();
         private bool IsFoundMatch { get; set; }
 
 
@@ -48,10 +48,6 @@ namespace MemoryGame {
                 MemoryMutex.ReleaseMutex();
             }
         }
-
-        public void CheckIfMatchFound() {
-            HasMatches = !IsMemoryEmpty() && HasMatches;
-        }
     
         public void ResetMemory() {
             MemoryMutex.WaitOne();
@@ -65,9 +61,11 @@ namespace MemoryGame {
         }
     
         public string MakeSelection(BoardLetter[,] i_Letters , bool i_IsFirstSelection) {
-            CheckIfMatchFound(); 
 
-            return IsMemoryEmpty()
+            bool isMemoryEmpty = IsMemoryEmpty();
+            HasMatches = !isMemoryEmpty && HasMatches;
+
+            return isMemoryEmpty
                 ? getRandomUnmemorizedCell(i_Letters)
                 : (i_IsFirstSelection ? getFirstSelection(i_Letters) : getSecondSelection(i_Letters));
         }
