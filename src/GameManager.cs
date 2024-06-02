@@ -35,7 +35,9 @@ namespace MemoryGame {
         public void ChangeTurn() {
             CurrentPlayer = CurrentPlayer == IGameData.PlayerOne ? IGameData.PlayerTwo : IGameData.PlayerOne;
 
-            IsSelectionNotMatching = getBoardLetterAt(CurrentUserSelection).IsRevealed = getBoardLetterAt(PreviousUserSelection).IsRevealed =false;
+            IsSelectionNotMatching = false;
+            getBoardLetterAt(CurrentUserSelection).Flip();
+            getBoardLetterAt(PreviousUserSelection).Flip();
         }
 
         public void Update(Cell i_UserSelection)
@@ -75,7 +77,7 @@ namespace MemoryGame {
 
         private void revealCurrentSelection()
         {
-            getBoardLetterAt(CurrentUserSelection).IsRevealed = true;
+            getBoardLetterAt(CurrentUserSelection).Flip();
             if (IsFirstSelection)
             {
                 PreviousUserSelection = CurrentUserSelection;
