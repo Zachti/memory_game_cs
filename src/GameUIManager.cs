@@ -166,6 +166,5 @@ namespace MemoryGame {
         } 
 
         private string getPlayerInput() => GameManager.IsCurrentPlayerHuman ? handleHumanInput() : handleAiInput();
-  
    }
 }

@@ -15,10 +15,10 @@ namespace MemoryGame {
         private static IServiceProvider configureServices()
         {
             return new ServiceCollection()
-                .AddSingleton<IMenu, Menu>()
                 .AddTransient<GameUIManager>()
-                .AddSingleton<IGameData, GameData>()
                 .AddTransient<GameManager>()
+                .AddSingleton<IMenu, Menu>()
+                .AddSingleton<IGameData, GameData>()
                 .AddSingleton(provider => new GameManagerInput(provider.GetRequiredService<IGameData>(), eGameModes.singlePlayer))
                 .AddSingleton(provider => new GameDataInput(
                     new Player("Player One", ePlayerTypes.Human),
