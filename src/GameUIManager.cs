@@ -165,8 +165,6 @@ namespace MemoryGame {
             StartGame();
         } 
 
-        private string getPlayerInput() => GameManager.IsCurrentPlayerHuman ? handleHumanInput() : handleAiInput();
-  
         private bool ValidatePlayerInput(string i_userInput) {
             bool isInvalid = i_userInput == string.Empty;
             if (isInvalid) {
@@ -202,5 +200,7 @@ namespace MemoryGame {
             }
             return !isInvalid;
         }
+        
+        private string getPlayerInput() => GameManager.IsCurrentPlayerHuman ? handleHumanInput() : handleAiInput();
    }
 }
