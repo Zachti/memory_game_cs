@@ -28,8 +28,8 @@ namespace MemoryGame {
                 getRandomCell(randomCells, out Cell firstCell);
                 getRandomCell(randomCells, out Cell secondCell);
 
-                insertLetterToBoard(letter, firstCell);
-                insertLetterToBoard(letter, secondCell);
+                Board.InsertLetterToBoard(letter, firstCell);
+                Board.InsertLetterToBoard(letter, secondCell);
             }
         }
 
@@ -53,8 +53,6 @@ namespace MemoryGame {
                     .Select(i => (char)('A' + i))
                     .ToArray();
         }
-    
-        private void insertLetterToBoard(char i_Letter, Cell i_Cell) => Board.Letters[i_Cell.Row, i_Cell.Column] = new BoardLetter(i_Letter);
 
         public static int GetRandomNumber(int i_RangeStart, int i_RangeEnd) => m_Random.Next(i_RangeStart, i_RangeEnd);
     }
