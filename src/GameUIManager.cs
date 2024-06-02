@@ -91,7 +91,7 @@ namespace MemoryGame {
                 Display($"{GameManager.CurrentPlayer.Name}, Please enter your selection: ");
                 userInput = Read();
             }
-            while (!GameManager.ValidatePlayerInput(userInput));
+            while (!ValidatePlayerInput(userInput));
 
             return userInput!;
         }
@@ -166,5 +166,41 @@ namespace MemoryGame {
         } 
 
         private string getPlayerInput() => GameManager.IsCurrentPlayerHuman ? handleHumanInput() : handleAiInput();
+  
+        private bool ValidatePlayerInput(string i_userInput) {
+            bool isInvalid = i_userInput == string.Empty;
+            if (isInvalid) {
+                Console.WriteLine("Input must not be empty");
+            }
+            i_userInput = i_userInput.ToUpper();
+            return !isInvalid && ( i_userInput == "Q" || ( validateCellSelection(i_userInput) && GameManager.ValidateCellIsHidden(i_userInput) ) );
+        }
+
+        private bool validateCellSelection(string i_userInput) {
+            bool isInvalid = i_userInput.Length != 2;
+            if(isInvalid)
+            {
+                Console.WriteLine("Input must have exactly 2 characters");
+            }
+            return !isInvalid && checkIfLetterInRange(i_userInput[0]) && checkIfDigitInRange(i_userInput[1]);
+        }
+
+        private bool checkIfLetterInRange(char i_Letter) {
+            char lastLetter = (char)('A' + GameManager.BoardWidth - 1);
+            bool isInvalid = i_Letter < 'A' || i_Letter > lastLetter;
+            if (isInvalid) {
+                Console.WriteLine($"Invalid input, letter must be between A and {lastLetter}");
+            }
+            return !isInvalid;
+        }
+
+        private bool checkIfDigitInRange(char i_Digit) {
+            char lastDigit = (char)('0' + GameManager.BoardHeight);
+            bool isInvalid = i_Digit < '1' || i_Digit > lastDigit;
+            if (isInvalid) {
+                Console.WriteLine($"Invalid input, digit must be between 1 and {lastDigit}");
+            }
+            return !isInvalid;
+        }
    }
 }
