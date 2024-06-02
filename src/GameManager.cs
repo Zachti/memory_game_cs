@@ -27,10 +27,7 @@ namespace MemoryGame {
             IGameData.InitializeBoard();
             CurrentGameState = eGameStates.OnGoing;
             IGameMode.Mode = i_GameMode;
-            if (IGameMode.Mode == eGameModes.singlePlayer)
-            {
-                Difficulty = i_Difficulty;
-            }
+            Difficulty = i_Difficulty;
         }
 
         public void ChangeTurn() {
