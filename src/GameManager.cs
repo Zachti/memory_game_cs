@@ -86,10 +86,7 @@ namespace MemoryGame {
 
         private void checkAndHandleMatch()
         {
-            BoardLetter firstSelectionLetter = getBoardLetterAt(PreviousUserSelection);
-            BoardLetter secondSelectionLetter = getBoardLetterAt(CurrentUserSelection);
-
-            IsSelectionNotMatching = firstSelectionLetter.Letter != secondSelectionLetter.Letter;
+            IsSelectionNotMatching = getBoardLetterAt(PreviousUserSelection).Letter != getBoardLetterAt(CurrentUserSelection).Letter;
 
             if (!IsSelectionNotMatching)
             {
@@ -257,10 +254,7 @@ namespace MemoryGame {
                             : IGameData.PlayerTwo;
 
             IGameData.PlayerOne.Score = IGameData.PlayerTwo.Score = 0;
-
-            IGameData.Board.Height = i_Height;
-            IGameData.Board.Width = i_Width;
-
+            IGameData.Board = new Board(i_Width, i_Height);
             IGameData.Letters = new BoardLetter[i_Height, i_Width];
             IGameData.InitializeBoard();
 
