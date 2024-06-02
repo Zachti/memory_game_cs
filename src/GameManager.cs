@@ -1,5 +1,7 @@
 namespace MemoryGame {
-    internal class GameManager(IGameData i_GameData, IGameMode i_GameMode)
+    internal record GameManagerInput(IGameData i_GameData, eGameModes i_GameMode);
+    
+    internal class GameManager(GameManagerInput i_Dto)
     {
         private static int? Difficulty { get; set; }
         public static eGameStates CurrentGameState { get; set; } = eGameStates.Menu;
@@ -15,8 +17,8 @@ namespace MemoryGame {
         private Cell AiSelection { get; set; }
         private Cell CurrentUserSelection { get; set; }
         private Cell PreviousUserSelection{ get; set; }
-        private IGameMode IGameMode { get; } = i_GameMode;
-        private IGameData IGameData { get; } = i_GameData;
+        private eGameModes SelectedMode { get; set; } = i_Dto.i_GameMode;
+        private IGameData IGameData { get; } = i_Dto.i_GameData;
         private  Dictionary<Cell, char>? AiMemory { get; set; } = [];
 
         public void Initialize(Player i_PlayerOne, Player i_PlayerTwo, Board i_Board, eGameModes i_GameMode, int? i_Difficulty)
@@ -26,7 +28,7 @@ namespace MemoryGame {
             IGameData.Board = i_Board;
             IGameData.InitializeBoard();
             CurrentGameState = eGameStates.OnGoing;
-            IGameMode.SelectedMode = i_GameMode;
+            SelectedMode = i_GameMode;
             Difficulty = i_Difficulty;
         }
 
@@ -65,7 +67,7 @@ namespace MemoryGame {
 
         private void updateAiMemoryIfNeeded()
         {
-            if (IGameMode.SelectedMode == eGameModes.singlePlayer && GameData.GetRandomNumber(0, 100) <= Difficulty)
+            if (SelectedMode == eGameModes.singlePlayer && GameData.GetRandomNumber(0, 100) <= Difficulty)
             {
                 addToAiMemory(CurrentUserSelection);
             }

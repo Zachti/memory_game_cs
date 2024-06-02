@@ -17,13 +17,13 @@ namespace MemoryGame {
             return new ServiceCollection()
                 .AddSingleton<IMenu, Menu>()
                 .AddTransient<GameUIManager>()
-                .AddSingleton<IGameData>( provider => 
-                    new GameData(new GameDataInput(
+                .AddSingleton<IGameData, GameData>()
+                .AddTransient<GameManager>()
+                .AddSingleton(provider => new GameManagerInput(provider.GetRequiredService<IGameData>(), eGameModes.singlePlayer))
+                .AddSingleton(provider => new GameDataInput(
                     new Player("Player One", ePlayerTypes.Human),
                     new Player("Player Two", ePlayerTypes.AI),
-                    new Board(4, 4))))
-                .AddTransient<GameManager>()
-                .AddSingleton<IGameMode, GameMode>()
+                    new Board(4, 4)))
                 .BuildServiceProvider();
         }   
     }
