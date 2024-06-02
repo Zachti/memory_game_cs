@@ -3,7 +3,7 @@ namespace MemoryGame {
         public bool HasMatches { get; set; }
         private Cell Selection { get; set; }
         private  Dictionary<Cell, char> Memory { get; set; } = [];
-        private Mutex MemoryMutex { get; }= new Mutex();
+        private Mutex MemoryMutex { get; } = new Mutex();
         private bool IsFoundMatch { get; set; }
 
 
