@@ -8,7 +8,7 @@ namespace MemoryGame {
         public bool IsAiHasMatches { get; set; } = false;
         public int BoardWidth => IGameData.Board.Width;
         public int BoardHeight => IGameData.Board.Height;
-        public BoardLetter[,] Letters => IGameData.Letters;
+        public BoardLetter[,] Letters => IGameData.Board.Letters;
         public Player CurrentPlayer { get => IGameData.CurrentPlayer; set => IGameData.CurrentPlayer = value; }
         public bool IsSelectionNotMatching { get; set; } = false;
         public bool IsCurrentPlayerHuman => CurrentPlayer.Type == ePlayerTypes.Human;
@@ -24,7 +24,6 @@ namespace MemoryGame {
             IGameData.PlayerOne = IGameData.CurrentPlayer = i_PlayerOne;
             IGameData.PlayerTwo = i_PlayerTwo;
             IGameData.Board = i_Board;
-            IGameData.Letters = new BoardLetter[i_Board.Height, i_Board.Width];
             IGameData.InitializeBoard();
             CurrentGameState = eGameStates.OnGoing;
             IGameMode.Mode = i_GameMode;
@@ -223,7 +222,7 @@ namespace MemoryGame {
         private bool validateCellIsHidden(string i_userInput) {
             int column = i_userInput[0] - 'A';
             int row = i_userInput[1] - '1';
-            bool isInvalid = IGameData.Letters[row, column].IsRevealed;
+            bool isInvalid = IGameData.Board.Letters[row, column].IsRevealed;
             if (isInvalid)
             {
             Console.WriteLine($"Cell {i_userInput} is already revealed");
@@ -255,7 +254,6 @@ namespace MemoryGame {
 
             IGameData.PlayerOne.Score = IGameData.PlayerTwo.Score = 0;
             IGameData.Board = new Board(i_Width, i_Height);
-            IGameData.Letters = new BoardLetter[i_Height, i_Width];
             IGameData.InitializeBoard();
 
             initializeLogic();
@@ -273,7 +271,7 @@ namespace MemoryGame {
             }
         }
         
-        private BoardLetter getBoardLetterAt(Cell i_CellLocation) => Letters[i_CellLocation.Row, i_CellLocation.Column];
+        private ref BoardLetter getBoardLetterAt(Cell i_CellLocation) => ref Letters[i_CellLocation.Row, i_CellLocation.Column];
 
         private string getScoreboard() =>
             $"Score: {IGameData.PlayerOne.Name} {IGameData.PlayerOne.Score} - {IGameData.PlayerTwo.Name} {IGameData.PlayerTwo.Score}";

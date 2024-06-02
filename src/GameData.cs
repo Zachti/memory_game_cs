@@ -7,7 +7,6 @@ namespace MemoryGame {
         public Player PlayerOne { get; set;}
         public Player PlayerTwo { get; set;}
         public Player CurrentPlayer { get; set; }
-        public BoardLetter[,] Letters { get; set; }
         void InitializeBoard();
     }
 
@@ -17,7 +16,6 @@ namespace MemoryGame {
         public Player PlayerOne { get; set; } = i_Dto.PlayerOne;
         public Player PlayerTwo { get; set; } = i_Dto.PlayerTwo;
         public Player CurrentPlayer { get; set; } = i_Dto.PlayerOne;
-        public BoardLetter[,] Letters { get; set; } = new BoardLetter[i_Dto.Board.Height, i_Dto.Board.Width];
         public Board Board { get; set; } = i_Dto.Board;
 
         public void InitializeBoard()
@@ -56,7 +54,7 @@ namespace MemoryGame {
                     .ToArray();
         }
     
-        private void insertLetterToBoard(char i_Letter, Cell i_Cell) => Letters[i_Cell.Row, i_Cell.Column] = new BoardLetter(i_Letter);
+        private void insertLetterToBoard(char i_Letter, Cell i_Cell) => Board.Letters[i_Cell.Row, i_Cell.Column] = new BoardLetter(i_Letter);
 
         public static int GetRandomNumber(int i_RangeStart, int i_RangeEnd) => m_Random.Next(i_RangeStart, i_RangeEnd);
     }
