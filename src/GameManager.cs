@@ -5,21 +5,20 @@ namespace MemoryGame {
     {
         private static int? Difficulty { get; set; }
         public static eGameStates CurrentGameState { get; set; } = eGameStates.Menu;
-        private bool IsFoundMatch { get; set; }
         private bool IsFirstSelection { get; set; } = true;
-        public bool IsAiHasMatches { get; set; }
         public int BoardWidth => IGameData.Board.Width;
         public int BoardHeight => IGameData.Board.Height;
         public BoardLetter[,] Letters => IGameData.Board.Letters;
         public Player CurrentPlayer { get => IGameData.CurrentPlayer; set => IGameData.CurrentPlayer = value; }
         public bool IsSelectionNotMatching { get; set; }
         public bool IsCurrentPlayerHuman => CurrentPlayer.Type == ePlayerTypes.Human;
-        private Cell AiSelection { get; set; }
         private Cell CurrentUserSelection { get; set; }
         private Cell PreviousUserSelection{ get; set; }
         private eGameModes SelectedMode { get; set; } = i_Dto.i_GameMode;
         private IGameData IGameData { get; } = i_Dto.i_GameData;
-        private  Dictionary<Cell, char>? AiMemory { get; set; } = [];
+        private AI? AI { get; set; }
+        public bool IsAiHasMatches => AI!.HasMatches;
+
 
         public void Initialize(Player i_PlayerOne, Player i_PlayerTwo, Board i_Board, eGameModes i_GameMode, int? i_Difficulty)
         {
@@ -29,7 +28,11 @@ namespace MemoryGame {
             IGameData.InitializeBoard();
             CurrentGameState = eGameStates.OnGoing;
             SelectedMode = i_GameMode;
-            Difficulty = i_Difficulty;
+            if (SelectedMode == eGameModes.singlePlayer)
+            {
+                AI = new AI();
+                Difficulty = i_Difficulty;
+            }
         }
 
         public void ChangeTurn() {
@@ -71,7 +74,8 @@ namespace MemoryGame {
         {
             if (SelectedMode == eGameModes.singlePlayer && GameData.GetRandomNumber(0, 100) <= Difficulty)
             {
-                addToAiMemory(CurrentUserSelection);
+                char letter = getBoardLetterAt(CurrentUserSelection).Letter;
+                AI?.RememberCell(CurrentUserSelection, letter);
             }
         }
 
@@ -96,91 +100,11 @@ namespace MemoryGame {
 
         private void handleMatchFound()
         {
-            AiMemory?.Remove(CurrentUserSelection);
-            AiMemory?.Remove(PreviousUserSelection);
+            AI?.ForgetCell(CurrentUserSelection);
+            AI?.ForgetCell(PreviousUserSelection);
             CurrentPlayer.Score++;
         }
         
-        private void addToAiMemory(Cell i_CellToBeAdded)
-        {
-            if(!AiMemory!.ContainsKey(i_CellToBeAdded))
-            {
-                AiMemory.Add(i_CellToBeAdded, Letters[i_CellToBeAdded.Row, i_CellToBeAdded.Column].Letter);
-            }
-        }
-
-        public string GetAiInput()
-        {
-            bool isMemoryEmpty = AiMemory?.Count == 0;
-
-            IsAiHasMatches = !isMemoryEmpty && IsAiHasMatches;
-            return isMemoryEmpty
-                ? getRandomUnmemorizedCell()
-                : (IsFirstSelection ? getFirstSelection() : getSecondSelection());
-        }
-        
-        private string getFirstSelection()
-        {
-            string firstSelection = string.Empty;
-
-            IsAiHasMatches = IsFoundMatch = findLetterMatch(ref firstSelection);
-            return IsFoundMatch ? firstSelection : getRandomUnmemorizedCell();
-        }
-
-        private string getSecondSelection()
-        {
-            string secondSelection = IsFoundMatch ? AiSelection.ToString() : findLetterInMemory(AiSelection);
-            IsAiHasMatches = secondSelection != "";
-            return IsAiHasMatches ? secondSelection : getRandomUnmemorizedCell();
-        }
-        
-        private string findLetterInMemory(Cell i_FirstSelectionCell)
-        {
-            char firstSelectionLetter = Letters[i_FirstSelectionCell.Row, i_FirstSelectionCell.Column].Letter;
-
-            return AiMemory?
-                .Where(memorizedLetter => 
-                    !memorizedLetter.Key.Equals(i_FirstSelectionCell) &&
-                    memorizedLetter.Value == firstSelectionLetter)
-                .Select(memorizedLetter => memorizedLetter.Key.ToString())
-                .FirstOrDefault() 
-                ?? string.Empty;
-        }
-
-        private string getRandomUnmemorizedCell()
-        {
-            List<Cell> cellsNotInMemory = Enumerable.Range(0, Letters.GetLength(0))
-                .SelectMany(row => Enumerable.Range(0, Letters.GetLength(1)), (row, column) => new { row, column })
-                .Where(cell => !(Letters[cell.row, cell.column].IsRevealed || AiMemory!.ContainsKey(new Cell(cell.row, cell.column))))
-                .Select(cell => new Cell(cell.row, cell.column))
-                .ToList();
-            int randomIndex = GameData.GetRandomNumber(0, cellsNotInMemory.Count);
-            AiSelection = cellsNotInMemory[randomIndex];
-            return AiSelection.ToString();
-        }
-
-        private bool findLetterMatch(ref string i_MemorizedMatchingLetter)
-        {
-            bool foundMatch = false;
-
-            foreach (var firstMemorizedLetter in AiMemory!)
-            {
-                KeyValuePair<Cell, char> matchingLetter = AiMemory
-                    .FirstOrDefault(secondMemorizedLetter =>
-                        !firstMemorizedLetter.Key.Equals(secondMemorizedLetter.Key) &&
-                        firstMemorizedLetter.Value == secondMemorizedLetter.Value);
-
-                if (!matchingLetter.Equals(default(KeyValuePair<Cell, char>)))
-                {
-                    i_MemorizedMatchingLetter = firstMemorizedLetter.Key.ToString();
-                    AiSelection = matchingLetter.Key;
-                    foundMatch = true;
-                    break;
-                }
-            }
-            return foundMatch;
-        }
-
         public bool ValidateCellIsHidden(string i_userInput) {
             int column = i_userInput[0] - 'A';
             int row = i_userInput[1] - '1';
@@ -219,6 +143,7 @@ namespace MemoryGame {
             IGameData.InitializeBoard();
 
             initializeLogic();
+            AI?.ResetMemory();
 
             CurrentGameState = eGameStates.OnGoing;
         }
@@ -226,13 +151,14 @@ namespace MemoryGame {
         private void initializeLogic()
         {
             IsFirstSelection = true;
-            IsSelectionNotMatching = IsAiHasMatches = IsFoundMatch = false;
-            AiMemory?.Clear();
+            IsSelectionNotMatching = false;
         }
         
-        private ref BoardLetter getBoardLetterAt(Cell i_CellLocation) => ref Letters[i_CellLocation.Row, i_CellLocation.Column];
+        private ref BoardLetter getBoardLetterAt(Cell i_Cell) => ref Letters[i_Cell.Row, i_Cell.Column];
 
         private string getScoreboard() =>
             $"Score: {IGameData.PlayerOne.Name} {IGameData.PlayerOne.Score} - {IGameData.PlayerTwo.Name} {IGameData.PlayerTwo.Score}";
+    
+        public string GetAiInput() => AI!.MakeSelection(Letters , IsFirstSelection);
     }
 }

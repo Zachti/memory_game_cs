@@ -12,7 +12,7 @@ namespace MemoryGame {
 
     internal class GameData(GameDataInput i_Dto) : IGameData
     {
-        private static readonly Random m_Random = new();
+        private static readonly Random m_Random = new Random();
         public Player PlayerOne { get; set; } = i_Dto.PlayerOne;
         public Player PlayerTwo { get; set; } = i_Dto.PlayerTwo;
         public Player CurrentPlayer { get; set; } = i_Dto.PlayerOne;
