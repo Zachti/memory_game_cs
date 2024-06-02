@@ -8,7 +8,7 @@ namespace MemoryGame {
         private bool IsFirstSelection { get; set; } = true;
         public int BoardWidth => IGameData.Board.Width;
         public int BoardHeight => IGameData.Board.Height;
-        public BoardLetter[,] Letters => IGameData.Board.Letters;
+        public Board Board => IGameData.Board;
         public Player CurrentPlayer { get => IGameData.CurrentPlayer; set => IGameData.CurrentPlayer = value; }
         public bool IsSelectionNotMatching { get; set; }
         public bool IsCurrentPlayerHuman => CurrentPlayer.Type == ePlayerTypes.Human;
@@ -36,8 +36,8 @@ namespace MemoryGame {
             CurrentPlayer = CurrentPlayer == IGameData.PlayerOne ? IGameData.PlayerTwo : IGameData.PlayerOne;
 
             IsSelectionNotMatching = false;
-            getBoardLetterAt(CurrentUserSelection).Flip();
-            getBoardLetterAt(PreviousUserSelection).Flip();
+            Board[CurrentUserSelection].Flip();
+            Board[PreviousUserSelection].Flip();
         }
 
         public void Update(Cell i_UserSelection)
@@ -71,14 +71,14 @@ namespace MemoryGame {
         {
             if (SelectedMode == eGameModes.singlePlayer && GameData.GetRandomNumber(0, 100) <= Difficulty)
             {
-                char letter = getBoardLetterAt(CurrentUserSelection).Letter;
+                char letter = Board[CurrentUserSelection].Letter;
                 AI?.RememberCell(CurrentUserSelection, letter);
             }
         }
 
         private void revealCurrentSelection()
         {
-            getBoardLetterAt(CurrentUserSelection).Flip();
+            Board[CurrentUserSelection].Flip();
             if (IsFirstSelection)
             {
                 PreviousUserSelection = CurrentUserSelection;
@@ -87,7 +87,7 @@ namespace MemoryGame {
 
         private void checkAndHandleMatch()
         {
-            IsSelectionNotMatching = getBoardLetterAt(PreviousUserSelection).Letter != getBoardLetterAt(CurrentUserSelection).Letter;
+            IsSelectionNotMatching = Board[PreviousUserSelection].Letter != Board[CurrentUserSelection].Letter;
 
             if (!IsSelectionNotMatching)
             {
@@ -105,7 +105,7 @@ namespace MemoryGame {
         public bool ValidateCellIsHidden(string i_userInput) {
             int column = i_userInput[0] - 'A';
             int row = i_userInput[1] - '1';
-            bool isInvalid = IGameData.Board.Letters[row, column].IsRevealed;
+            bool isInvalid = Board.Letters[row, column].IsRevealed;
             if (isInvalid)
             {
             Console.WriteLine($"Cell {i_userInput} is already revealed");
@@ -151,11 +151,9 @@ namespace MemoryGame {
             IsSelectionNotMatching = false;
         }
         
-        private ref BoardLetter getBoardLetterAt(Cell i_Cell) => ref Letters[i_Cell.Row, i_Cell.Column];
-
         private string getScoreboard() =>
             $"Score: {IGameData.PlayerOne.Name} {IGameData.PlayerOne.Score} - {IGameData.PlayerTwo.Name} {IGameData.PlayerTwo.Score}";
     
-        public string GetAiInput() => AI!.MakeSelection(Letters , IsFirstSelection);
+        public string GetAiInput() => AI!.MakeSelection(Board.Letters , IsFirstSelection);
     }
 }
