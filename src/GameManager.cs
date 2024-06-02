@@ -99,7 +99,7 @@ namespace MemoryGame {
         
         private void addToAiMemory(Cell i_CellToBeAdded)
         {
-            if(AiMemory != null && !AiMemory.ContainsKey(i_CellToBeAdded))
+            if(!AiMemory!.ContainsKey(i_CellToBeAdded))
             {
                 AiMemory.Add(i_CellToBeAdded, Letters[i_CellToBeAdded.Row, i_CellToBeAdded.Column].Letter);
             }
