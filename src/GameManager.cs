@@ -28,11 +28,8 @@ namespace MemoryGame {
             IGameData.InitializeBoard();
             CurrentGameState = eGameStates.OnGoing;
             SelectedMode = i_GameMode;
-            if (SelectedMode == eGameModes.singlePlayer)
-            {
-                AI = new AI();
-                Difficulty = i_Difficulty;
-            }
+            Difficulty = i_Difficulty;
+            AI = Difficulty != null ? new AI() : null;
         }
 
         public void ChangeTurn() {
