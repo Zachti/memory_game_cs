@@ -26,7 +26,7 @@ namespace MemoryGame {
             IGameData.Board = i_Board;
             IGameData.InitializeBoard();
             CurrentGameState = eGameStates.OnGoing;
-            IGameMode.Mode = i_GameMode;
+            IGameMode.SelectedMode = i_GameMode;
             Difficulty = i_Difficulty;
         }
 
@@ -65,7 +65,7 @@ namespace MemoryGame {
 
         private void updateAiMemoryIfNeeded()
         {
-            if (IGameMode.Mode == eGameModes.singlePlayer && GameData.GetRandomNumber(0, 100) <= Difficulty)
+            if (IGameMode.SelectedMode == eGameModes.singlePlayer && GameData.GetRandomNumber(0, 100) <= Difficulty)
             {
                 addToAiMemory(CurrentUserSelection);
             }
