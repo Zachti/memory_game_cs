@@ -39,8 +39,7 @@ namespace MemoryGame {
         
         private void initializeGameData(List<Player> i_players, Board i_Board) {
             IGameData.Players = i_players;
-            IGameData.Board = i_Board;
-            IGameData.InitializeBoard();
+            IGameData.InitializeBoard(i_Board);
             IGameData.TurnsOrder = new Queue<Player>(IGameData.Players);
             CurrentPlayer = IGameData.TurnsOrder.Peek();
         }
@@ -69,7 +68,7 @@ namespace MemoryGame {
         {
             CurrentUserSelection = i_UserSelection;
 
-           Task.WaitAll([
+            Task.WaitAll([
                 Task.Run(updateAiMemoryIfNeeded),
                 Task.Run(revealCurrentSelection),
                 Task.Run(() => {
@@ -113,7 +112,7 @@ namespace MemoryGame {
 
         private void handleMatchFound()
         {
-           Task.WaitAll([
+            Task.WaitAll([
                 Task.Run(() => AI?.ForgetCell(CurrentUserSelection)),
                 Task.Run(() => AI?.ForgetCell(PreviousUserSelection))
             ]);
@@ -152,12 +151,11 @@ namespace MemoryGame {
 
             IGameData.CreateNewTurnsOrder();
             IGameData.Players.ForEach(player => player.Score = 0);
-            IGameData.Board = new Board(i_Width, i_Height);
 
-             Task.WaitAll([
+            Task.WaitAll([
                 Task.Run(() => AI?.ResetMemory()),
                 Task.Run(initializeLogic),
-                Task.Run(IGameData.InitializeBoard)
+                Task.Run(() => IGameData.InitializeBoard(new Board(i_Width, i_Height)))
             ]);
         }
 
@@ -169,7 +167,7 @@ namespace MemoryGame {
         }
         
         private string getScoreboard()
-    {
+        {
         StringBuilder scoreboard = new StringBuilder("Scoreboard:\n");
 
         foreach (var player in IGameData.Players)
@@ -178,7 +176,7 @@ namespace MemoryGame {
         }
 
         return scoreboard.ToString();
-    }
+        }
         
         public string GetAiInput() => AI!.MakeSelection(Board.Letters , IsFirstSelection);
     }

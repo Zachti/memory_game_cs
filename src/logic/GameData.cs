@@ -6,7 +6,7 @@ namespace MemoryGame {
         public Board Board { get; set; }
         public List<Player> Players { get; set;}
         public Queue<Player> TurnsOrder { get; set; }   
-        void InitializeBoard();
+        void InitializeBoard(Board i_Boards);
         Player GetNextPlayer();
         void CreateNewTurnsOrder();
     }
@@ -18,8 +18,9 @@ namespace MemoryGame {
         public Queue<Player> TurnsOrder { get; set; } = new Queue<Player>(i_Dto.Players);
         public Board Board { get; set; } = i_Dto.Board;
 
-        public void InitializeBoard()
+        public void InitializeBoard(Board i_Board)
         {
+            Board = i_Board;
             char[] boardLetters = initializeBoardLetters();
             List<Cell> randomCells = getRandomCellsList();
 
