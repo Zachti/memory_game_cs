@@ -65,9 +65,16 @@ namespace MemoryGame {
             bool isMemoryEmpty = IsMemoryEmpty();
             HasMatches = !isMemoryEmpty && HasMatches;
 
-            return isMemoryEmpty
-                ? getRandomUnmemorizedCell(i_Letters)
-                : (i_IsFirstSelection ? getFirstSelection(i_Letters) : getSecondSelection(i_Letters));
+            MemoryMutex.WaitOne();
+
+            try {
+                return isMemoryEmpty
+                    ? getRandomUnmemorizedCell(i_Letters)
+                    : (i_IsFirstSelection ? getFirstSelection(i_Letters) : getSecondSelection(i_Letters));
+            }
+            finally {
+                MemoryMutex.ReleaseMutex();
+            }
         }
 
         private string getFirstSelection(BoardLetter[,] i_Letters)
