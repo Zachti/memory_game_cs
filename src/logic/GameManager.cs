@@ -149,7 +149,7 @@ namespace MemoryGame {
             CurrentGameState = eGameStates.OnGoing;
         }
 
-        public List<Player> GetPlayersOrderByScore() => IGameData.Players.OrderByDescending( player => player.Score).ToList();
+        public List<Player> GetPlayersOrderByScore() => [.. IGameData.Players.OrderByDescending( player => player.Score)];
     
         public string GetAiInput() => AI!.MakeSelection(Board.Cards , IsFirstSelection);
     }
