@@ -2,7 +2,7 @@ namespace MemoryGame {
     internal class AI {
         public bool HasMatches { get; set; }
         private Cell Selection { get; set; }
-        private  Dictionary<Cell, char> Memory { get; set; } = [];
+        private Dictionary<Cell, char> Memory { get; set; } = [];
         private Mutex MemoryMutex { get; } = new Mutex();
         private bool IsFoundMatch { get; set; }
 
@@ -10,7 +10,7 @@ namespace MemoryGame {
         public void ForgetCell(Cell i_Selection) {
             MemoryMutex.WaitOne();
             try {
-                Memory?.Remove(i_Selection);
+                Memory.Remove(i_Selection);
             }
             finally {
                 MemoryMutex.ReleaseMutex();
@@ -21,7 +21,7 @@ namespace MemoryGame {
             MemoryMutex.WaitOne();
             try {
                 if (!isCellInMemory(i_CellToBeAdded)) {
-                    Memory?.Add(i_CellToBeAdded, i_Letter);
+                    Memory.Add(i_CellToBeAdded, i_Letter);
                 }
             }
             finally {
@@ -32,7 +32,7 @@ namespace MemoryGame {
         private bool isCellInMemory(Cell i_Cell) {
             MemoryMutex.WaitOne();
             try {
-                return Memory!.ContainsKey(i_Cell);
+                return Memory.ContainsKey(i_Cell);
             }
             finally {
                 MemoryMutex.ReleaseMutex();
@@ -42,7 +42,7 @@ namespace MemoryGame {
         public bool IsMemoryEmpty() {
             MemoryMutex.WaitOne();
             try {
-                return Memory?.Count == 0;
+                return Memory.Count == 0;
             }
             finally {
                 MemoryMutex.ReleaseMutex();
@@ -53,7 +53,7 @@ namespace MemoryGame {
             MemoryMutex.WaitOne();
             try {
                 IsFoundMatch = HasMatches = false;  
-                Memory?.Clear();
+                Memory.Clear();
             }
             finally {
                 MemoryMutex.ReleaseMutex();
