@@ -23,7 +23,7 @@ namespace MemoryGame {
         private void runMenu()
         {
             eGameModes desiredGameMode = IMenu.Start(out List<Player> players, out int height, out int width, out int? difficulty);
-            GameManager.Initialize(players, new Board(height, width), desiredGameMode, difficulty);
+            GameManager.Initialize(players, new Board(height, width), difficulty);
         }
 
         private void runGame()
@@ -222,10 +222,10 @@ namespace MemoryGame {
         private string getGameResult()
         {
             List<Player> players = GameManager.GetPlayersOrderByScore();
-
-            string gameResult = players[1].Score == players[0].Score ? "It's a tie!" : $"{players[0].Name} wins!";
-            return $"{gameResult}\n{drawScoreboard(players)}";
-        }
+            StringBuilder gameResult = new(players[1].Score == players[0].Score ? "It's a tie!" : $"{players[0].Name} wins!");
+            gameResult.AppendLine().Append(drawScoreboard(players));
+            return gameResult.ToString();
+            }
         
         private void generateScoreBoardHeaders(out StringBuilder io_Scoreboard, out string[] io_ScoreBoardHeaders) {
             io_ScoreBoardHeaders = Enum.GetNames(typeof(eScoreBoardHeaders));

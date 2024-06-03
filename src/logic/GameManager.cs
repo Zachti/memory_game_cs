@@ -1,34 +1,30 @@
 namespace MemoryGame {
-    internal record GameManagerInput(IGameData i_GameData, eGameModes i_GameMode);
-    
-    internal class GameManager(GameManagerInput i_Dto)
+    internal class GameManager(IGameData i_GameData)
     {
         public static eGameStates CurrentGameState { get; set; } = eGameStates.Menu;
         private bool IsFirstSelection { get; set; } = true;
         public int BoardWidth => IGameData.Board.Width;
         public int BoardHeight => IGameData.Board.Height;
         public Board Board => IGameData.Board;
-        public Player CurrentPlayer { get; set; } = i_Dto.i_GameData.Players.First();
+        public Player CurrentPlayer { get; set; } = i_GameData.Players.First();
         public bool IsSelectionNotMatching { get; set; }
         public bool IsCurrentPlayerHuman => CurrentPlayer.Type == ePlayerTypes.Human;
         private Cell CurrentUserSelection { get; set; }
         private Cell PreviousUserSelection{ get; set; }
-        private eGameModes SelectedMode { get; set; } = i_Dto.i_GameMode;
-        private IGameData IGameData { get; } = i_Dto.i_GameData;
+        private IGameData IGameData { get; } = i_GameData;
         private AI? AI { get; set; }
         public bool IsAiHasMatches => AI!.HasMatches;
 
-        public void Initialize(List<Player> i_Players, Board i_Board, eGameModes i_GameMode, int? i_Difficulty)
+        public void Initialize(List<Player> i_Players, Board i_Board, int? i_Difficulty)
         {
            Task.WaitAll([
-                Task.Run(() => initializeMode(i_GameMode, i_Difficulty)),
+                Task.Run(() => initializeMode(i_Difficulty)),
                 Task.Run(() => initializeGameData(i_Players, i_Board))
             ]);
         }
 
-        private void initializeMode(eGameModes i_GameMode, int? i_Difficulty) {
+        private void initializeMode(int? i_Difficulty) {
             CurrentGameState = eGameStates.OnGoing;
-            SelectedMode = i_GameMode;
             AI = i_Difficulty != null ? new AI((int)i_Difficulty) : null;
         }
         
@@ -129,6 +125,7 @@ namespace MemoryGame {
         public void ResetGame(int i_Height, int i_Width) {
 
             IGameData.CreateNewTurnsOrder();
+            CurrentPlayer = IGameData.TurnsOrder.Peek();
             IGameData.Players.ForEach(player => player.Score = 0);
 
             Task.WaitAll([

@@ -68,11 +68,7 @@ namespace MemoryGame {
             Player Winner = Players.MaxBy(player => player.Score)!;
             int winnerIndex = Players.FindIndex(player => player == Winner);
 
-            TurnsOrder = new Queue<Player>(Players
-                .Take(winnerIndex)
-                .Concat(Players.Skip(winnerIndex))
-                .ToList());
-            TurnsOrder.Enqueue(TurnsOrder.Dequeue());
+            TurnsOrder =  new Queue<Player>([Winner, ..Players.Skip(winnerIndex+1).Concat(Players.Take(winnerIndex)).ToList()]);
         }
     }
 }
