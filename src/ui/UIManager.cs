@@ -200,13 +200,22 @@ namespace MemoryGame {
         
         private string drawScoreboard(List<Player> i_Players)
         {
-            StringBuilder scoreboard = new StringBuilder("Scoreboard:\n");
+            generateScoreBoardHeaders(out StringBuilder scoreboard, out string[] scoreBoardHeaders);
 
-            foreach (var player in i_Players)
+            foreach (Player player in i_Players)
             {
-                scoreboard.AppendLine($"{player.Name}: {player.Score}");
+                scoreboard.Append("| ");
+                foreach (string header in scoreBoardHeaders)
+                {
+                    scoreboard.Append(header switch
+                    {
+                        nameof(eScoreBoardHeaders.PlayerName) => player.Name.PadRight(header.Length),
+                        nameof(eScoreBoardHeaders.Score) => player.Score.ToString().PadRight(header.Length),
+                        _ => string.Empty
+                    }).Append(" | ");
+                }
+                scoreboard.AppendLine();
             }
-
             return scoreboard.ToString();
         }
 
@@ -217,7 +226,20 @@ namespace MemoryGame {
             string gameResult = players[1].Score == players[0].Score ? "It's a tie!" : $"{players[0].Name} wins!";
             return $"{gameResult}\n{drawScoreboard(players)}";
         }
-
+        
+        private void generateScoreBoardHeaders(out StringBuilder io_Scoreboard, out string[] io_ScoreBoardHeaders) {
+            io_ScoreBoardHeaders = Enum.GetNames(typeof(eScoreBoardHeaders));
+            io_Scoreboard = new StringBuilder("\nScoreboard:\n\n").Append("| ");
+            foreach (string header in io_ScoreBoardHeaders) {
+                io_Scoreboard.Append(header.PadRight(header.Length)).Append(" | ");
+            }
+            io_Scoreboard.AppendLine().Append('+');
+            foreach (string header in io_ScoreBoardHeaders) {
+                io_Scoreboard.Append('-', header.Length + 2).Append('+');
+            }
+            io_Scoreboard.AppendLine();
+        }
+                
         private string getPlayerInput() => GameManager.IsCurrentPlayerHuman ? handleHumanInput() : handleAiInput();
 
         private string getInput() => Console.ReadLine() ?? string.Empty;
