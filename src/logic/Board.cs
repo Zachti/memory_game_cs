@@ -12,8 +12,6 @@ namespace MemoryGame {
 
         public void InsertLetterToBoard(char i_Letter, Cell i_Cell) => Letters[i_Cell.Row, i_Cell.Column] = new BoardLetter(i_Letter);
 
-        public void IncrementRevealedSquaresCounter() {
-            RevealedSquaresCounter += 2;
-    }
+        public void IncrementRevealedSquaresCounter() => RevealedSquaresCounter += 2;
     }
 }
