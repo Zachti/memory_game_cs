@@ -1,5 +1,5 @@
 namespace MemoryGame {
-    internal struct BoardLetter(char i_Letter)
+    internal struct Card(char i_Letter)
     {
         public char Letter { get; set; } = i_Letter;
         public bool IsRevealed { get; set; }

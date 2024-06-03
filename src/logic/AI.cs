@@ -60,7 +60,7 @@ namespace MemoryGame {
             }
         }
     
-        public string MakeSelection(BoardLetter[,] i_Letters , bool i_IsFirstSelection) {
+        public string MakeSelection(Card[,] i_Cards , bool i_IsFirstSelection) {
 
             bool isMemoryEmpty = IsMemoryEmpty();
             HasMatches = !isMemoryEmpty && HasMatches;
@@ -69,27 +69,27 @@ namespace MemoryGame {
 
             try {
                 return isMemoryEmpty
-                    ? getRandomUnmemorizedCell(i_Letters)
-                    : (i_IsFirstSelection ? getFirstSelection(i_Letters) : getSecondSelection(i_Letters));
+                    ? getRandomUnmemorizedCell(i_Cards)
+                    : (i_IsFirstSelection ? getFirstSelection(i_Cards) : getSecondSelection(i_Cards));
             }
             finally {
                 MemoryMutex.ReleaseMutex();
             }
         }
 
-        private string getFirstSelection(BoardLetter[,] i_Letters)
+        private string getFirstSelection(Card[,] i_Cards)
         {
             string firstSelection = string.Empty;
 
             HasMatches = IsFoundMatch = findLetterMatch(ref firstSelection);
-            return HasMatches ? firstSelection : getRandomUnmemorizedCell(i_Letters);
+            return HasMatches ? firstSelection : getRandomUnmemorizedCell(i_Cards);
         }
 
-        private string getSecondSelection(BoardLetter[,] i_Letters)
+        private string getSecondSelection(Card[,] i_Cards)
         {
             string secondSelection = IsFoundMatch ? Selection.ToString() : findLetterInMemory();
             HasMatches = secondSelection != "";
-            return HasMatches ? secondSelection : getRandomUnmemorizedCell(i_Letters);
+            return HasMatches ? secondSelection : getRandomUnmemorizedCell(i_Cards);
         }
     
         private string findLetterInMemory()
@@ -104,11 +104,11 @@ namespace MemoryGame {
                 ?? string.Empty;
         }
 
-        private string getRandomUnmemorizedCell(BoardLetter[,] i_Letters)
+        private string getRandomUnmemorizedCell(Card[,] i_Cards)
         {
-            List<Cell> cellsNotInMemory = Enumerable.Range(0, i_Letters.GetLength(0))
-                .SelectMany(row => Enumerable.Range(0, i_Letters.GetLength(1)), (row, column) => new { row, column })
-                .Where(cell => !(i_Letters[cell.row, cell.column].IsRevealed || Memory.ContainsKey(new Cell(cell.row, cell.column))))
+            List<Cell> cellsNotInMemory = Enumerable.Range(0, i_Cards.GetLength(0))
+                .SelectMany(row => Enumerable.Range(0, i_Cards.GetLength(1)), (row, column) => new { row, column })
+                .Where(cell => !(i_Cards[cell.row, cell.column].IsRevealed || Memory.ContainsKey(new Cell(cell.row, cell.column))))
                 .Select(cell => new Cell(cell.row, cell.column))
                 .ToList();
             int randomIndex = GameData.GetRandomNumber(0, cellsNotInMemory.Count);

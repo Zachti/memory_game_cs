@@ -67,7 +67,7 @@ namespace MemoryGame {
             row.Append(string.Format($"{i_Index + 1} |"));
             foreach (int j in Enumerable.Range(0, GameManager.BoardWidth))
             {
-                BoardLetter currentBoardLetter = GameManager.Board.Letters[i_Index, j];
+                Card currentBoardLetter = GameManager.Board.Cards[i_Index, j];
                 row.Append(string.Format(" {0} |", currentBoardLetter.IsRevealed ? currentBoardLetter.Letter : ' '));
             }
             Display(row.ToString());

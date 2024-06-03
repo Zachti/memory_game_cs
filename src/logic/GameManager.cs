@@ -124,7 +124,7 @@ namespace MemoryGame {
         public bool ValidateCellIsHidden(string i_userInput) {
             int column = i_userInput[0] - 'A';
             int row = i_userInput[1] - '1';
-            bool isInvalid = Board.Letters[row, column].IsRevealed;
+            bool isInvalid = Board.Cards[row, column].IsRevealed;
             if (isInvalid)
             {
             Console.WriteLine($"Cell {i_userInput} is already revealed");
@@ -178,6 +178,6 @@ namespace MemoryGame {
         return scoreboard.ToString();
         }
         
-        public string GetAiInput() => AI!.MakeSelection(Board.Letters , IsFirstSelection);
+        public string GetAiInput() => AI!.MakeSelection(Board.Cards , IsFirstSelection);
     }
 }

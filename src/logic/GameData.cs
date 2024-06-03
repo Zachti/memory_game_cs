@@ -21,10 +21,10 @@ namespace MemoryGame {
         public void InitializeBoard(Board i_Board)
         {
             Board = i_Board;
-            char[] boardLetters = initializeBoardLetters();
+            char[] Letters = initializeBoardLetters();
             List<Cell> randomCells = getRandomCellsList();
 
-            foreach(char letter in boardLetters)
+            foreach(char letter in Letters)
             {
                 getRandomCell(randomCells, out Cell firstCell);
                 getRandomCell(randomCells, out Cell secondCell);
