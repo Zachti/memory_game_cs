@@ -55,15 +55,19 @@ namespace MemoryGame {
         {
             CurrentUserSelection = i_UserSelection;
 
-            updateAiMemoryIfNeeded();
+            List<Task> tasks = [
+                Task.Run(updateAiMemoryIfNeeded),
+                Task.Run(revealCurrentSelection),
+                Task.Run(() => {
+                    if (!IsFirstSelection)
+                    {
+                        checkAndHandleMatch();
+                    }
+                })
+            ];
 
-            revealCurrentSelection();
+            Task.WaitAll([.. tasks]);
 
-            if (!IsFirstSelection)
-            {
-                checkAndHandleMatch();
-            }
-            
             IsFirstSelection = !IsFirstSelection;
         }
 
@@ -97,8 +101,12 @@ namespace MemoryGame {
 
         private void handleMatchFound()
         {
-            AI?.ForgetCell(CurrentUserSelection);
-            AI?.ForgetCell(PreviousUserSelection);
+            List<Task> tasks = [
+                Task.Run(() => AI?.ForgetCell(CurrentUserSelection)),
+                Task.Run(() => AI?.ForgetCell(PreviousUserSelection))
+            ];
+
+            Task.WaitAll([.. tasks]);
             CurrentPlayer.Score++;
         }
         
@@ -137,11 +145,14 @@ namespace MemoryGame {
 
             IGameData.PlayerOne.Score = IGameData.PlayerTwo.Score = 0;
             IGameData.Board = new Board(i_Width, i_Height);
-            IGameData.InitializeBoard();
 
-            initializeLogic();
-            AI?.ResetMemory();
+            List<Task> tasks = [
+                Task.Run(() => AI?.ResetMemory()),
+                Task.Run(initializeLogic),
+                Task.Run(IGameData.InitializeBoard)
+            ];
 
+            Task.WaitAll([.. tasks]);
         }
 
         private void initializeLogic()
