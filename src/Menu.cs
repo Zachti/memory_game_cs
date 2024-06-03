@@ -80,45 +80,43 @@ namespace MemoryGame {
         }
     
         public void GetBoardSize(out int o_Height, out int o_Width) {
-            bool isEven = false;
-            o_Height = o_Width = 1;
-            while(!isEven) {
+            bool isEven;
+            do {
                 o_Height = validateNumberInRange();
                 o_Width = validateNumberInRange();
-                isEven = (o_Height * o_Width) % 2 == 0;
+                isEven = o_Height * o_Width % 2 == 0;
                 if (!isEven) {
                     Display("Invalid input. Please enter an even number.");
                 }
-            }
+            } while(!isEven);
         }
 
         private int validateNumberInRange() {
-            int userInput = 0;
-            bool isNumber = false;
-            bool isWithinRange = false;
-            while (!isNumber || !isWithinRange) {
+            bool isNumber, isWithinRange;
+            int userInput;
+            do {
                 Display("Please enter a value (must be between 4 and 6): ");
                 isNumber = int.TryParse(Read(), out userInput); 
                 isWithinRange = userInput >= MinBoardSize && userInput <= MaxBoardSize;
                 if (!isNumber || !isWithinRange) {
                     Display("Invalid input. Please enter a number between 4 and 6.");
-            }
-        }
+            } 
+        } while (!isNumber || !isWithinRange);
         return userInput;
     }
 
         private int getDifficultyLevel() {
             
-            int difficultyLevel = 1;
+            int difficultyLevel;
+            bool isValidInput;
             Display("\nPlease choose a difficulty level (between 1 to 100): ");
-            bool isValidInput = false;
-            while (!isValidInput) {
+            do {
                 isValidInput = int.TryParse(Read(), out difficultyLevel);
                 if (!isValidInput || difficultyLevel < 1 || difficultyLevel > 100) {
                     Display("Invalid input. Please enter a number between 1 and 100.");
                     isValidInput = false;
                 }
-            }
+            } while (!isValidInput);
             return difficultyLevel;
         }
     }

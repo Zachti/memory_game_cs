@@ -7,6 +7,6 @@ namespace MemoryGame {
 
         public readonly ref BoardLetter this[Cell cell] { get => ref Letters[cell.Row, cell.Column]; }
         
-        public void InsertLetterToBoard(char i_Letter, Cell i_Cell) => Letters[i_Cell.Row, i_Cell.Column] = new BoardLetter(i_Letter);
+        public readonly void InsertLetterToBoard(char i_Letter, Cell i_Cell) => Letters[i_Cell.Row, i_Cell.Column] = new BoardLetter(i_Letter);
     }
 }
