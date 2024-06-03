@@ -7,7 +7,7 @@ namespace MemoryGame {
         private IMenu IMenu { get; } = i_Menu;
         private GameManager GameManager { get; } = i_GameManager;
         private Action<string> Display { get; } = Console.WriteLine;
-        private Action<int> Rest { get; } =  System.Threading.Thread.Sleep;
+        private Action<int> Rest { get; } = Thread.Sleep;
         private Action ClearUI { get; } = Ex02.ConsoleUtils.Screen.Clear;    
         private Func<string> Read { get; } = () => Console.ReadLine() ?? string.Empty;
 
