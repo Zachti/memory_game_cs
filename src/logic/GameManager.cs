@@ -21,7 +21,6 @@ namespace MemoryGame {
         private AI? AI { get; set; }
         public bool IsAiHasMatches => AI!.HasMatches;
 
-
         public void Initialize(List<Player> i_players, Board i_Board, eGameModes i_GameMode, int? i_Difficulty)
         {
            Task.WaitAll([
@@ -122,9 +121,8 @@ namespace MemoryGame {
         }
         
         public bool ValidateCellIsHidden(string i_userInput) {
-            int column = i_userInput[0] - 'A';
-            int row = i_userInput[1] - '1';
-            bool isInvalid = Board.Cards[row, column].IsRevealed;
+            Cell cell = Cell.Parse(i_userInput);
+            bool isInvalid = Board[cell].IsRevealed;
             if (isInvalid)
             {
             Console.WriteLine($"Cell {i_userInput} is already revealed");
