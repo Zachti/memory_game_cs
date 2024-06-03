@@ -3,7 +3,6 @@ namespace MemoryGame {
     
     internal class GameManager(GameManagerInput i_Dto)
     {
-        private static int? Difficulty { get; set; }
         public static eGameStates CurrentGameState { get; set; } = eGameStates.Menu;
         private bool IsFirstSelection { get; set; } = true;
         public int BoardWidth => IGameData.Board.Width;
@@ -30,8 +29,7 @@ namespace MemoryGame {
         private void initializeMode(eGameModes i_GameMode, int? i_Difficulty) {
             CurrentGameState = eGameStates.OnGoing;
             SelectedMode = i_GameMode;
-            Difficulty = i_Difficulty;
-            AI = Difficulty != null ? new AI() : null;
+            AI = i_Difficulty != null ? new AI((int)i_Difficulty) : null;
         }
         
         private void initializeGameData(List<Player> i_Players, Board i_Board) {
@@ -81,7 +79,7 @@ namespace MemoryGame {
 
         private void updateAiMemoryIfNeeded()
         {
-            if (SelectedMode == eGameModes.singlePlayer && GameData.GetRandomNumber(0, 100) <= Difficulty)
+            if (GameData.GetRandomNumber(0, 100) <= AI?.DifficultyLevel)
             {
                 char letter = Board[CurrentUserSelection].Letter;
                 AI?.RememberCell(CurrentUserSelection, letter);

@@ -1,11 +1,11 @@
 namespace MemoryGame {
-    internal class AI {
+    internal class AI(int i_Difficulty) {
         public bool HasMatches { get; set; }
+        public int DifficultyLevel { get; set; } = i_Difficulty;
         private Cell Selection { get; set; }
         private Dictionary<Cell, char> Memory { get; set; } = [];
         private Mutex MemoryMutex { get; } = new Mutex();
         private bool IsFoundMatch { get; set; }
-
 
         public void ForgetCell(Cell i_Selection) {
             MemoryMutex.WaitOne();
@@ -120,7 +120,7 @@ namespace MemoryGame {
         {
             bool foundMatch = false;
 
-            foreach (var firstMemorizedLetter in Memory)
+            foreach (KeyValuePair<Cell, char> firstMemorizedLetter in Memory)
             {
                 KeyValuePair<Cell, char> matchingLetter = Memory
                     .FirstOrDefault(secondMemorizedLetter =>
