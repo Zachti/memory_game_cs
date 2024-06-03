@@ -40,7 +40,8 @@ namespace MemoryGame {
             ClearUI();
             Display($"\nCurrent Turn: {GameManager.CurrentPlayer.Name}\n");
             drawTopLetterRow(GameManager.BoardWidth);
-            string border = string.Format($"  {new string('=', 4 * GameManager.BoardWidth + 1)}");
+            StringBuilder borderBuilder = new StringBuilder(" ").Append('=', 4 * GameManager.BoardWidth + 1);
+            string border = borderBuilder.ToString();
             Display(border);
             foreach (int i in Enumerable.Range(0, GameManager.BoardHeight))
             {
@@ -55,19 +56,20 @@ namespace MemoryGame {
 
             foreach (int i in Enumerable.Range(0, i_LengthOfRow))
             {
-                topLettersRow.Append(string.Format($"   {(char)(i + 'A')}"));
+                topLettersRow.Append("   ").Append((char)(i + 'A'));
             }
 
             Display(topLettersRow.ToString());
         }
 
         private void drawRow(int i_Index) {
-            StringBuilder row = new StringBuilder();
-            row.Append(string.Format($"{i_Index + 1} |"));
+            StringBuilder row = new StringBuilder(i_Index + 1).Append(" |");
             foreach (int j in Enumerable.Range(0, GameManager.BoardWidth))
             {
                 Card currentBoardLetter = GameManager.Board.Cards[i_Index, j];
-                row.Append(string.Format(" {0} |", currentBoardLetter.IsRevealed ? currentBoardLetter.Letter : ' '));
+                row.Append(' ')
+                .Append( currentBoardLetter.IsRevealed ? currentBoardLetter.Letter : ' ')
+                .Append(" |");
             }
             Display(row.ToString());
         }
