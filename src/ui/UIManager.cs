@@ -168,7 +168,7 @@ namespace MemoryGame {
                 Console.WriteLine("Input must not be empty");
             }
             i_UserInput = i_UserInput.ToUpper();
-            return !isInvalid && ( i_UserInput == "Q" || ( validateCellSelection(i_UserInput) && GameManager.ValidateCellIsHidden(i_UserInput) ) );
+            return !isInvalid && ( i_UserInput == "Q" || ( validateCellSelection(i_UserInput) && validateCellIsHidden(i_UserInput) ) );
         }
 
         private bool validateCellSelection(string i_UserInput) {
@@ -194,6 +194,16 @@ namespace MemoryGame {
             bool isInvalid = i_Digit < '1' || i_Digit > lastDigit;
             if (isInvalid) {
                 Console.WriteLine($"Invalid input, digit must be between 1 and {lastDigit}");
+            }
+            return !isInvalid;
+        }
+        
+        private bool validateCellIsHidden(string i_UserInput) {
+            Cell cell = Cell.Parse(i_UserInput);
+            bool isInvalid = GameManager.IsCellRevealed(cell);
+            if (isInvalid)
+            {
+                Display($"Cell {i_UserInput} is already revealed!\nPlease choose a hidden cell.");
             }
             return !isInvalid;
         }

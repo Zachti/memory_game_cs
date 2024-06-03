@@ -111,16 +111,6 @@ namespace MemoryGame {
             CurrentPlayer.Score++;
             Board.IncrementRevealedSquaresCounter();
         }
-        
-        public bool ValidateCellIsHidden(string i_UserInput) {
-            Cell cell = Cell.Parse(i_UserInput);
-            bool isInvalid = Board[cell].IsRevealed;
-            if (isInvalid)
-            {
-            Console.WriteLine($"Cell {i_UserInput} is already revealed");
-            }
-            return !isInvalid;
-        }
 
         public void ResetGame(int i_Height, int i_Width) {
 
@@ -145,5 +135,7 @@ namespace MemoryGame {
         public List<Player> GetPlayersOrderByScore() => [.. IGameData.Players.OrderByDescending( player => player.Score)];
     
         public string GetAiInput() => AI!.MakeSelection(Board.Cards , IsFirstSelection);
+
+        public bool IsCellRevealed(Cell i_Cell) => Board[i_Cell].IsRevealed;
     }
 }
