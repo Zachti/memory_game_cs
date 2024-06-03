@@ -142,13 +142,13 @@ namespace MemoryGame {
             initializeLogic();
             AI?.ResetMemory();
 
-            CurrentGameState = eGameStates.OnGoing;
         }
 
         private void initializeLogic()
         {
             IsFirstSelection = true;
             IsSelectionNotMatching = false;
+            CurrentGameState = eGameStates.OnGoing;
         }
         
         private string getScoreboard() =>
