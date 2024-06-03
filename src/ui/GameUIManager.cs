@@ -8,7 +8,7 @@ namespace MemoryGame {
         private GameManager GameManager { get; } = i_GameManager;
         private Action<string> Display { get; } = Console.WriteLine;
         private Action<int> Rest { get; } = Thread.Sleep;
-        private Action ClearUI { get; } = Ex02.ConsoleUtils.Screen.Clear;    
+        private Action ClearUI { get; } = Console.Clear; //Ex02.ConsoleUtils.Screen.Clear;    
         private Func<string> Read { get; } = () => Console.ReadLine() ?? string.Empty;
 
         public void StartGame()
@@ -141,7 +141,7 @@ namespace MemoryGame {
 
             drawBoard();
 
-            Display(GameManager.GetGameOverStatus());
+            Display(getGameResult());
 
             (checkForRestart() ?  (Action)restartGame :  (Action)exit).Invoke();
   
@@ -198,6 +198,26 @@ namespace MemoryGame {
             return !isInvalid;
         }
         
+        private string drawScoreboard(List<Player> i_Players)
+        {
+            StringBuilder scoreboard = new StringBuilder("Scoreboard:\n");
+
+            foreach (var player in i_Players)
+            {
+                scoreboard.AppendLine($"{player.Name}: {player.Score}");
+            }
+
+            return scoreboard.ToString();
+        }
+
+        private string getGameResult()
+        {
+            List<Player> players = GameManager.GetPlayersOrderByScore();
+
+            string gameResult = players[1].Score == players[0].Score ? "It's a tie!" : $"{players[0].Name} wins!";
+            return $"{gameResult}\n{drawScoreboard(players)}";
+        }
+
         private string getPlayerInput() => GameManager.IsCurrentPlayerHuman ? handleHumanInput() : handleAiInput();
    }
 }

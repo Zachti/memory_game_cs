@@ -130,21 +130,6 @@ namespace MemoryGame {
             return !isInvalid;
         }
 
-        public string GetGameOverStatus() {
-
-            Player winner = IGameData.Players.MaxBy(player => player.Score)!;
-            bool isTie = IGameData.Players.Any(player => player.Score == winner.Score && player != winner);
-
-
-            return isTie ? getGameResultText(null) : getGameResultText(winner.Name);
-        }
-
-        private string getGameResultText(string? i_WinningPlayer)
-        {
-            string gameResult = i_WinningPlayer == null ? "It's a tie!" : $"{i_WinningPlayer} wins!";
-            return $"{gameResult}\n{getScoreboard()}";
-        }
-
         public void ResetGame(int i_Height, int i_Width) {
 
             IGameData.CreateNewTurnsOrder();
@@ -163,19 +148,9 @@ namespace MemoryGame {
             IsSelectionNotMatching = false;
             CurrentGameState = eGameStates.OnGoing;
         }
-        
-        private string getScoreboard()
-        {
-        StringBuilder scoreboard = new StringBuilder("Scoreboard:\n");
 
-        foreach (var player in IGameData.Players)
-        {
-            scoreboard.AppendLine($"{player.Name}: {player.Score}");
-        }
-
-        return scoreboard.ToString();
-        }
-        
+        public List<Player> GetPlayersOrderByScore() => IGameData.Players.OrderByDescending( player => player.Score).ToList();
+    
         public string GetAiInput() => AI!.MakeSelection(Board.Cards , IsFirstSelection);
     }
 }
