@@ -22,17 +22,29 @@ namespace MemoryGame {
 
         public void Initialize(Player i_PlayerOne, Player i_PlayerTwo, Board i_Board, eGameModes i_GameMode, int? i_Difficulty)
         {
-            IGameData.PlayerOne = IGameData.CurrentPlayer = i_PlayerOne;
-            IGameData.PlayerTwo = i_PlayerTwo;
-            IGameData.Board = i_Board;
-            IGameData.InitializeBoard();
+            List<Task> tasks = [
+                Task.Run(() => initializeMode(i_GameMode, i_Difficulty)),
+                Task.Run(() => initializeGameData(i_PlayerOne, i_PlayerTwo, i_Board))
+            ];
+            Task.WaitAll([.. tasks]);
+        }
+
+        private void initializeMode(eGameModes i_GameMode, int? i_Difficulty) {
             CurrentGameState = eGameStates.OnGoing;
             SelectedMode = i_GameMode;
             Difficulty = i_Difficulty;
             AI = Difficulty != null ? new AI() : null;
         }
-
-        public void ChangeTurn() {
+        
+        private void initializeGameData(Player i_PlayerOne, Player i_PlayerTwo, Board i_Board) {
+            IGameData.PlayerOne = IGameData.CurrentPlayer = i_PlayerOne;
+            IGameData.PlayerTwo = i_PlayerTwo;
+            IGameData.Board = i_Board;
+            IGameData.InitializeBoard();
+        }
+        
+        public void ChangeTurn() 
+        {
             CurrentPlayer = CurrentPlayer == IGameData.PlayerOne ? IGameData.PlayerTwo : IGameData.PlayerOne;
 
             IsSelectionNotMatching = false;
