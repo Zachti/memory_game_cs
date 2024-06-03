@@ -1,6 +1,9 @@
 using System.Text;
 
 namespace MemoryGame {
+
+    internal record DifficultyOptions(eSinglePlayerDifficulty Difficulty, int Index);
+    
     internal interface IMenu
     {
         eGameModes Start(out List<Player> io_Players, out int o_Height, out int o_Width, out int? o_Difficulty);
@@ -41,7 +44,7 @@ namespace MemoryGame {
 
             else {
                 i_Players.Add(new Player("AI", ePlayerTypes.AI));
-                o_Difficulty = getDifficultyLevel();
+                getDifficultyLevel(out o_Difficulty);
             }
 
             o_GameMode = isMultiPlayer ? eGameModes.multiPlayer : eGameModes.singlePlayer;  
@@ -116,19 +119,10 @@ namespace MemoryGame {
         return userInput;
     }
 
-        private int getDifficultyLevel() {
+        private void getDifficultyLevel(out int? o_Difficulty) {
             
-            var difficultyOptions = Enum.GetValues(typeof(eSinglePlayerDifficulty))
-                                        .Cast<eSinglePlayerDifficulty>()
-                                        .Select((value, index) => new { Value = value, Index = index + 1 })
-                                        .ToArray();
+            displayDifficultyOptions(out DifficultyOptions[] difficultyOptions);
 
-            StringBuilder difficultyOptionsMessage = new StringBuilder("\nPlease choose a difficulty level:\n");
-            Array.ForEach(difficultyOptions, option => 
-            difficultyOptionsMessage.Append($"{option.Index}. {option.Value}\n"));
-            Display(difficultyOptionsMessage.ToString());
-
-            eSinglePlayerDifficulty difficultyLevel = 0;
             bool isValidInput;
 
             do {
@@ -136,17 +130,27 @@ namespace MemoryGame {
                 isValidInput = int.TryParse(getInput(), out int selectedOption)
                     && difficultyOptions.Any(option => option.Index == selectedOption);
 
-                if (isValidInput)
-                {
-                    difficultyLevel = difficultyOptions.First(option => option.Index == selectedOption).Value;
-                }
-                else
-                {
+                o_Difficulty = isValidInput ? 
+                (int)difficultyOptions.First(option => option.Index == selectedOption).Difficulty 
+                : null;
+                
+                if (!isValidInput) {
                     Display("Invalid input. Please enter a valid option.");
                 }
             } while (!isValidInput);
+        }
 
-            return (int)difficultyLevel;
+        private void displayDifficultyOptions(out DifficultyOptions[] io_DifficultyOptions) {
+
+            io_DifficultyOptions = Enum.GetValues(typeof(eSinglePlayerDifficulty))
+                                        .Cast<eSinglePlayerDifficulty>()
+                                        .Select((value, index) => new DifficultyOptions(value, index + 1))
+                                        .ToArray();
+
+            StringBuilder difficultyOptionsMessage = new StringBuilder("\nPlease choose a difficulty level:\n");
+            Array.ForEach(io_DifficultyOptions, option => 
+            difficultyOptionsMessage.Append($"{option.Index}. {option.Difficulty}\n"));
+            Display(difficultyOptionsMessage.ToString());
         }
     
         private void getAllPlayers(List<Player> i_Players) {
