@@ -47,8 +47,7 @@ namespace MemoryGame {
         
         public void ChangeTurn() 
         {
-            IGameData.TurnsOrder.Enqueue(IGameData.TurnsOrder.Dequeue());
-            CurrentPlayer = IGameData.TurnsOrder.Peek();
+            CurrentPlayer = IGameData.GetNextPlayer();
 
             IsSelectionNotMatching = false;
             Board[CurrentUserSelection].Flip();
@@ -60,7 +59,7 @@ namespace MemoryGame {
             if(!IsSelectionNotMatching) {
                 updateNextTurn(i_UserSelection);
             }
-            if (IGameData.Players.Sum(player => player.Score) == BoardWidth * BoardHeight / 2)
+            if (Board.IsBoardFinished)
             {
                 CurrentGameState = eGameStates.Ended;
             }
@@ -120,6 +119,7 @@ namespace MemoryGame {
             ]);
 
             CurrentPlayer.Score++;
+            Board.IncrementRevealedSquaresCounter();
         }
         
         public bool ValidateCellIsHidden(string i_userInput) {
@@ -150,7 +150,7 @@ namespace MemoryGame {
 
         public void ResetGame(int i_Height, int i_Width) {
 
-            createNewTurnsOrder();
+            IGameData.CreateNewTurnsOrder();
             IGameData.Players.ForEach(player => player.Score = 0);
             IGameData.Board = new Board(i_Width, i_Height);
 
@@ -166,18 +166,6 @@ namespace MemoryGame {
             IsFirstSelection = true;
             IsSelectionNotMatching = false;
             CurrentGameState = eGameStates.OnGoing;
-        }
-        
-        private void createNewTurnsOrder()
-        {
-            CurrentPlayer = IGameData.Players.MaxBy(player => player.Score)!;
-            int winnerIndex = IGameData.Players.FindIndex(player => player == CurrentPlayer);
-
-            IGameData.TurnsOrder = new Queue<Player>(IGameData.Players
-                .Take(winnerIndex)
-                .Concat(IGameData.Players.Skip(winnerIndex))
-                .ToList());
-            IGameData.TurnsOrder.Enqueue(IGameData.TurnsOrder.Dequeue());
         }
         
         private string getScoreboard()

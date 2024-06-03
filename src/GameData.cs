@@ -7,6 +7,8 @@ namespace MemoryGame {
         public List<Player> Players { get; set;}
         public Queue<Player> TurnsOrder { get; set; }   
         void InitializeBoard();
+        Player GetNextPlayer();
+        void CreateNewTurnsOrder();
     }
 
     internal class GameData(GameDataInput i_Dto) : IGameData
@@ -53,5 +55,23 @@ namespace MemoryGame {
         }
 
         public static int GetRandomNumber(int i_RangeStart, int i_RangeEnd) => m_Random.Next(i_RangeStart, i_RangeEnd);
+    
+        public Player GetNextPlayer()
+        {
+            TurnsOrder.Enqueue(TurnsOrder.Dequeue());
+            return TurnsOrder.Peek();
+        }
+
+        public void CreateNewTurnsOrder()
+        {
+            Player Winner = Players.MaxBy(player => player.Score)!;
+            int winnerIndex = Players.FindIndex(player => player == Winner);
+
+            TurnsOrder = new Queue<Player>(Players
+                .Take(winnerIndex)
+                .Concat(Players.Skip(winnerIndex))
+                .ToList());
+            TurnsOrder.Enqueue(TurnsOrder.Dequeue());
+        }
     }
 }
