@@ -10,7 +10,6 @@ namespace MemoryGame {
         private static int MinBoardDimension { get; } = (int)eBoardDimensionRange.Min;
         private static int MaxBoardDimension { get; } = (int)eBoardDimensionRange.Max;
         private Action<string> Display { get; } = Console.WriteLine;
-        private Func<string> Read { get; } = () => Console.ReadLine() ?? string.Empty;
 
         public eGameModes Start(out List<Player> io_Players, out int o_Height, out int o_Width, out int? o_Difficulty) {
             io_Players = [];
@@ -23,7 +22,7 @@ namespace MemoryGame {
 
         private void getFirstPlayerName(List<Player> i_Players) {
             Display("Please enter your name: ");
-            string playerName = Read();
+            string playerName = getInput();
             playerName = getValidName(playerName);
             i_Players.Add(new Player(playerName, ePlayerTypes.Human));
             Display($"\nHi {playerName}, \nWelcome Aboard! \nPlease choose a game mode: ");
@@ -59,24 +58,24 @@ namespace MemoryGame {
             o_IsMultiPlayer = gameMode == "2";
         }
 
-        private void addPlayer(int i_index, List<Player> i_Players) {
-            Display($"Please enter the name of player {i_index + 2}: ");
-            string playerName = Read();
+        private void addPlayer(int i_Index, List<Player> i_Players) {
+            Display($"Please enter the name of player {i_Index + 2}: ");
+            string playerName = getInput();
             playerName = getValidName(playerName);
             i_Players.Add(new Player(playerName, ePlayerTypes.Human));
         }
 
-        private string getValidName(string i_name) {
-            while(string.IsNullOrEmpty(i_name) || !i_name.All(char.IsLetter)) {
+        private string getValidName(string i_Name) {
+            while(string.IsNullOrEmpty(i_Name) || !i_Name.All(char.IsLetter)) {
                 Display("Invalid input. Please enter a valid name: ");
-                i_name = Read();
+                i_Name = getInput();
             }
-            return $"{char.ToUpper(i_name[0])}{i_name.Substring(1).ToLower()}";
+            return $"{char.ToUpper(i_Name[0])}{i_Name.Substring(1).ToLower()}";
         }
         
         private string validateGameMode() { 
         
-            string gameMode = Read();
+            string gameMode = getInput();
     
             string modeDescription = gameMode switch
             {
@@ -106,7 +105,7 @@ namespace MemoryGame {
             int userInput;
             do {
                 Display("Please enter a value (must be between 4 and 6): ");
-                isNumber = int.TryParse(Read(), out userInput); 
+                isNumber = int.TryParse(getInput(), out userInput); 
                 isWithinRange = userInput >= MinBoardDimension && userInput <= MaxBoardDimension;
                 if (!isNumber || !isWithinRange) {
                     Display("Invalid input. Please enter a number between 4 and 6.");
@@ -121,7 +120,7 @@ namespace MemoryGame {
             bool isValidInput;
             Display("\nPlease choose a difficulty level (between 1 to 100): ");
             do {
-                isValidInput = int.TryParse(Read(), out difficultyLevel);
+                isValidInput = int.TryParse(getInput(), out difficultyLevel);
                 if (!isValidInput || difficultyLevel < 1 || difficultyLevel > 100) {
                     Display("Invalid input. Please enter a number between 1 and 100.");
                     isValidInput = false;
@@ -136,7 +135,7 @@ namespace MemoryGame {
 
             do {
                 Display("Please enter the number of players: ");
-                isNumber = int.TryParse(Read(), out numOfPlayers); 
+                isNumber = int.TryParse(getInput(), out numOfPlayers); 
                 if (!isNumber || numOfPlayers < 2) {
                 Display("Invalid input. Please enter a number greater than 2.");
                 }
@@ -147,5 +146,7 @@ namespace MemoryGame {
                 addPlayer(i, i_Players);
             }
         }
+    
+        private string getInput() => Console.ReadLine() ?? string.Empty;
     }
 }

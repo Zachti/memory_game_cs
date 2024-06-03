@@ -8,7 +8,7 @@ namespace MemoryGame {
         private GameManager GameManager { get; } = i_GameManager;
         private Action<string> Display { get; } = Console.WriteLine;
         private Action<eUiPauseInterval> Rest { get; } = interval => Thread.Sleep((int)interval);
-        private Action ClearUI { get; } = Ex02.ConsoleUtils.Screen.Clear;    
+        private Action ClearUI { get; } = Console.Clear; //Ex02.ConsoleUtils.Screen.Clear;    
 
         public void StartGame()
         {
@@ -160,22 +160,22 @@ namespace MemoryGame {
             StartGame();
         } 
 
-        private bool ValidatePlayerInput(string i_userInput) {
-            bool isInvalid = i_userInput == string.Empty;
+        private bool ValidatePlayerInput(string i_UserInput) {
+            bool isInvalid = i_UserInput == string.Empty;
             if (isInvalid) {
                 Console.WriteLine("Input must not be empty");
             }
-            i_userInput = i_userInput.ToUpper();
-            return !isInvalid && ( i_userInput == "Q" || ( validateCellSelection(i_userInput) && GameManager.ValidateCellIsHidden(i_userInput) ) );
+            i_UserInput = i_UserInput.ToUpper();
+            return !isInvalid && ( i_UserInput == "Q" || ( validateCellSelection(i_UserInput) && GameManager.ValidateCellIsHidden(i_UserInput) ) );
         }
 
-        private bool validateCellSelection(string i_userInput) {
-            bool isInvalid = i_userInput.Length != 2;
+        private bool validateCellSelection(string i_UserInput) {
+            bool isInvalid = i_UserInput.Length != 2;
             if(isInvalid)
             {
                 Console.WriteLine("Input must have exactly 2 characters");
             }
-            return !isInvalid && checkIfLetterInRange(i_userInput[0]) && checkIfDigitInRange(i_userInput[1]);
+            return !isInvalid && checkIfLetterInRange(i_UserInput[0]) && checkIfDigitInRange(i_UserInput[1]);
         }
 
         private bool checkIfLetterInRange(char i_Letter) {

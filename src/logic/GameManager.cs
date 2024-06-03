@@ -21,11 +21,11 @@ namespace MemoryGame {
         private AI? AI { get; set; }
         public bool IsAiHasMatches => AI!.HasMatches;
 
-        public void Initialize(List<Player> i_players, Board i_Board, eGameModes i_GameMode, int? i_Difficulty)
+        public void Initialize(List<Player> i_Players, Board i_Board, eGameModes i_GameMode, int? i_Difficulty)
         {
            Task.WaitAll([
                 Task.Run(() => initializeMode(i_GameMode, i_Difficulty)),
-                Task.Run(() => initializeGameData(i_players, i_Board))
+                Task.Run(() => initializeGameData(i_Players, i_Board))
             ]);
         }
 
@@ -36,8 +36,8 @@ namespace MemoryGame {
             AI = Difficulty != null ? new AI() : null;
         }
         
-        private void initializeGameData(List<Player> i_players, Board i_Board) {
-            IGameData.Players = i_players;
+        private void initializeGameData(List<Player> i_Players, Board i_Board) {
+            IGameData.Players = i_Players;
             IGameData.InitializeBoard(i_Board);
             IGameData.TurnsOrder = new Queue<Player>(IGameData.Players);
             CurrentPlayer = IGameData.TurnsOrder.Peek();
@@ -120,12 +120,12 @@ namespace MemoryGame {
             Board.IncrementRevealedSquaresCounter();
         }
         
-        public bool ValidateCellIsHidden(string i_userInput) {
-            Cell cell = Cell.Parse(i_userInput);
+        public bool ValidateCellIsHidden(string i_UserInput) {
+            Cell cell = Cell.Parse(i_UserInput);
             bool isInvalid = Board[cell].IsRevealed;
             if (isInvalid)
             {
-            Console.WriteLine($"Cell {i_userInput} is already revealed");
+            Console.WriteLine($"Cell {i_UserInput} is already revealed");
             }
             return !isInvalid;
         }

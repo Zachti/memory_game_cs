@@ -1,12 +1,12 @@
 namespace MemoryGame {
-    internal record GameDataInput(List<Player> Players, Board Board);
+    internal record GameDataInput(List<Player> i_Players, Board i_Board);
 
     internal interface IGameData
     {
         public Board Board { get; set; }
         public List<Player> Players { get; set;}
         public Queue<Player> TurnsOrder { get; set; }   
-        void InitializeBoard(Board i_Boards);
+        void InitializeBoard(Board i_Board);
         Player GetNextPlayer();
         void CreateNewTurnsOrder();
     }
@@ -14,9 +14,9 @@ namespace MemoryGame {
     internal class GameData(GameDataInput i_Dto) : IGameData
     {
         private static readonly Random m_Random = new Random();
-        public List<Player> Players { get; set; } = i_Dto.Players;
+        public List<Player> Players { get; set; } = i_Dto.i_Players;
         public Queue<Player> TurnsOrder { get; set; } = [];
-        public Board Board { get; set; } = i_Dto.Board;
+        public Board Board { get; set; } = i_Dto.i_Board;
 
         public void InitializeBoard(Board i_Board)
         {
