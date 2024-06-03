@@ -8,7 +8,7 @@ namespace MemoryGame {
         private GameManager GameManager { get; } = i_GameManager;
         private Action<string> Display { get; } = Console.WriteLine;
         private Action<eUiPauseInterval> Rest { get; } = interval => Thread.Sleep((int)interval);
-        private Action ClearUI { get; } = Console.Clear; //Ex02.ConsoleUtils.Screen.Clear;    
+        private Action ClearUI { get; } = Ex02.ConsoleUtils.Screen.Clear;    
 
         public void StartGame()
         {
