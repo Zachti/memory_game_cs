@@ -7,8 +7,8 @@ namespace MemoryGame {
 
     internal class Menu : IMenu
     {
-        private static int MinBoardSize { get; } = 4;
-        private static int MaxBoardSize { get; } = 6;
+        private static int MinBoardDimension { get; } = (int)eBoardDimensionRange.Min;
+        private static int MaxBoardDimension { get; } = (int)eBoardDimensionRange.Max;
         private Action<string> Display { get; } = Console.WriteLine;
         private Func<string> Read { get; } = () => Console.ReadLine() ?? string.Empty;
 
@@ -107,7 +107,7 @@ namespace MemoryGame {
             do {
                 Display("Please enter a value (must be between 4 and 6): ");
                 isNumber = int.TryParse(Read(), out userInput); 
-                isWithinRange = userInput >= MinBoardSize && userInput <= MaxBoardSize;
+                isWithinRange = userInput >= MinBoardDimension && userInput <= MaxBoardDimension;
                 if (!isNumber || !isWithinRange) {
                     Display("Invalid input. Please enter a number between 4 and 6.");
             } 
