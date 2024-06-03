@@ -15,7 +15,7 @@ namespace MemoryGame {
     {
         private static readonly Random m_Random = new Random();
         public List<Player> Players { get; set; } = i_Dto.Players;
-        public Queue<Player> TurnsOrder { get; set; } = new Queue<Player>(i_Dto.Players);
+        public Queue<Player> TurnsOrder { get; set; } = [];
         public Board Board { get; set; } = i_Dto.Board;
 
         public void InitializeBoard(Board i_Board)
