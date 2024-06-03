@@ -9,7 +9,6 @@ namespace MemoryGame {
         private Action<string> Display { get; } = Console.WriteLine;
         private Action<eUiPauseInterval> Rest { get; } = interval => Thread.Sleep((int)interval);
         private Action ClearUI { get; } = Ex02.ConsoleUtils.Screen.Clear;    
-        private Func<string> Read { get; } = () => Console.ReadLine() ?? string.Empty;
 
         public void StartGame()
         {
@@ -86,7 +85,7 @@ namespace MemoryGame {
             do
             {
                 Display($"{GameManager.CurrentPlayer.Name}, Please enter your selection: ");
-                userInput = Read();
+                userInput = getInput();
             }
             while (!ValidatePlayerInput(userInput));
 
@@ -150,8 +149,7 @@ namespace MemoryGame {
         private bool checkForRestart()
         {
             Display("Press 'Y' to play again, or any other key to exit.");
-            string userInput = Read();
-            return userInput?.ToUpper() == "Y";
+            return getInput().ToUpper() == "Y";
         }
 
         private void restartGame()
@@ -219,5 +217,7 @@ namespace MemoryGame {
         }
 
         private string getPlayerInput() => GameManager.IsCurrentPlayerHuman ? handleHumanInput() : handleAiInput();
+
+        private string getInput() => Console.ReadLine() ?? string.Empty;
    }
 }
