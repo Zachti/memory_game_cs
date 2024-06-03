@@ -1,7 +1,7 @@
 namespace MemoryGame {
     internal interface IMenu
     {
-        eGameModes Start(out string o_fPlayerName, out string o_sPlayerName, out int o_Height, out int o_Width, out int? o_Difficulty);
+        eGameModes Start(out List<Player> io_Players, out int o_Height, out int o_Width, out int? o_Difficulty);
         void GetBoardSize(out int o_Height, out int o_Width);
     }
 
@@ -12,29 +12,38 @@ namespace MemoryGame {
         private Action<string> Display { get; } = Console.WriteLine;
         private Func<string> Read { get; } = () => Console.ReadLine() ?? string.Empty;
 
-        public eGameModes Start(out string o_fPlayerName, out string o_sPlayerName, out int o_Height, out int o_Width, out int? o_Difficulty) {
+        public eGameModes Start(out List<Player> io_Players, out int o_Height, out int o_Width, out int? o_Difficulty) {
+            io_Players = [];
             Display("\nWelcome \nLet's play a memory game! \n");
-            getFirstPlayerName(out o_fPlayerName);
-            createGameMode(out o_sPlayerName, out eGameModes gameMode, out o_Difficulty);
+            getFirstPlayerName(io_Players);
+            createGameMode(io_Players, out eGameModes gameMode, out o_Difficulty);
             GetBoardSize(out o_Height, out o_Width);
             return gameMode;
         }
 
-        private void getFirstPlayerName(out string o_fPlayerName) {
+        private void getFirstPlayerName(List<Player> i_Players) {
             Display("Please enter your name: ");
-            o_fPlayerName = Read();
-            o_fPlayerName = getValidName(o_fPlayerName);
-            Display($"\nHi {o_fPlayerName}, \nWelcome Aboard! \nPlease choose a game mode: ");
+            string playerName = Read();
+            playerName = getValidName(playerName);
+            i_Players.Add(new Player(playerName, ePlayerTypes.Human));
+            Display($"\nHi {playerName}, \nWelcome Aboard! \nPlease choose a game mode: ");
         }
 
-        private void createGameMode(out string o_sPlayerName, out eGameModes o_GameMode, out int? o_Difficulty) {
+        private void createGameMode(List<Player> i_Players, out eGameModes o_GameMode, out int? o_Difficulty) {
 
             getGameMode(out bool isMultiPlayer);
 
-            o_GameMode = isMultiPlayer ? eGameModes.multiPlayer : eGameModes.singlePlayer;
-            o_sPlayerName = isMultiPlayer ? getSecondPlayerName() : "AI";
-            o_Difficulty = isMultiPlayer ? null : getDifficultyLevel();
+            if (isMultiPlayer) {
+                getAllPlayers(i_Players);
+                o_Difficulty = null;
+            }
 
+            else {
+                i_Players.Add(new Player("AI", ePlayerTypes.AI));
+                o_Difficulty = getDifficultyLevel();
+            }
+
+            o_GameMode = isMultiPlayer ? eGameModes.multiPlayer : eGameModes.singlePlayer;  
         }
 
         private void getGameMode(out bool o_IsMultiPlayer) {
@@ -50,10 +59,11 @@ namespace MemoryGame {
             o_IsMultiPlayer = gameMode == "2";
         }
 
-        private string getSecondPlayerName() {
-            Display("Please enter the name of the second player: ");
-            string sPlayerName = Read();
-            return getValidName(sPlayerName);
+        private void addPlayer(int i_index, List<Player> i_Players) {
+            Display($"Please enter the name of player {i_index + 2}: ");
+            string playerName = Read();
+            playerName = getValidName(playerName);
+            i_Players.Add(new Player(playerName, ePlayerTypes.Human));
         }
 
         private string getValidName(string i_name) {
@@ -118,6 +128,24 @@ namespace MemoryGame {
                 }
             } while (!isValidInput);
             return difficultyLevel;
+        }
+    
+        private void getAllPlayers(List<Player> i_Players) {
+            int numOfPlayers;
+            bool isNumber;
+
+            do {
+                Display("Please enter the number of players: ");
+                isNumber = int.TryParse(Read(), out numOfPlayers); 
+                if (!isNumber || numOfPlayers < 2) {
+                Display("Invalid input. Please enter a number greater than 2.");
+                }
+            } while (!isNumber || numOfPlayers < 2);
+
+            foreach (int i in Enumerable.Range(0, numOfPlayers - 1)) 
+            {
+                addPlayer(i, i_Players);
+            }
         }
     }
 }

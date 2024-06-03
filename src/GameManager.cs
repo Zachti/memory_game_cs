@@ -1,3 +1,5 @@
+using System.Text;
+
 namespace MemoryGame {
     internal record GameManagerInput(IGameData i_GameData, eGameModes i_GameMode);
     
@@ -9,7 +11,7 @@ namespace MemoryGame {
         public int BoardWidth => IGameData.Board.Width;
         public int BoardHeight => IGameData.Board.Height;
         public Board Board => IGameData.Board;
-        public Player CurrentPlayer { get => IGameData.CurrentPlayer; set => IGameData.CurrentPlayer = value; }
+        public Player CurrentPlayer { get; set; } = i_Dto.i_GameData.Players.First();
         public bool IsSelectionNotMatching { get; set; }
         public bool IsCurrentPlayerHuman => CurrentPlayer.Type == ePlayerTypes.Human;
         private Cell CurrentUserSelection { get; set; }
@@ -20,13 +22,12 @@ namespace MemoryGame {
         public bool IsAiHasMatches => AI!.HasMatches;
 
 
-        public void Initialize(Player i_PlayerOne, Player i_PlayerTwo, Board i_Board, eGameModes i_GameMode, int? i_Difficulty)
+        public void Initialize(List<Player> i_players, Board i_Board, eGameModes i_GameMode, int? i_Difficulty)
         {
-            List<Task> tasks = [
+           Task.WaitAll([
                 Task.Run(() => initializeMode(i_GameMode, i_Difficulty)),
-                Task.Run(() => initializeGameData(i_PlayerOne, i_PlayerTwo, i_Board))
-            ];
-            Task.WaitAll([.. tasks]);
+                Task.Run(() => initializeGameData(i_players, i_Board))
+            ]);
         }
 
         private void initializeMode(eGameModes i_GameMode, int? i_Difficulty) {
@@ -36,16 +37,18 @@ namespace MemoryGame {
             AI = Difficulty != null ? new AI() : null;
         }
         
-        private void initializeGameData(Player i_PlayerOne, Player i_PlayerTwo, Board i_Board) {
-            IGameData.PlayerOne = IGameData.CurrentPlayer = i_PlayerOne;
-            IGameData.PlayerTwo = i_PlayerTwo;
+        private void initializeGameData(List<Player> i_players, Board i_Board) {
+            IGameData.Players = i_players;
             IGameData.Board = i_Board;
             IGameData.InitializeBoard();
+            IGameData.TurnsOrder = new Queue<Player>(IGameData.Players);
+            CurrentPlayer = IGameData.TurnsOrder.Peek();
         }
         
         public void ChangeTurn() 
         {
-            CurrentPlayer = CurrentPlayer == IGameData.PlayerOne ? IGameData.PlayerTwo : IGameData.PlayerOne;
+            IGameData.TurnsOrder.Enqueue(IGameData.TurnsOrder.Dequeue());
+            CurrentPlayer = IGameData.TurnsOrder.Peek();
 
             IsSelectionNotMatching = false;
             Board[CurrentUserSelection].Flip();
@@ -57,7 +60,7 @@ namespace MemoryGame {
             if(!IsSelectionNotMatching) {
                 updateNextTurn(i_UserSelection);
             }
-            if (IGameData.PlayerOne.Score + IGameData.PlayerTwo.Score == BoardWidth * BoardHeight / 2)
+            if (IGameData.Players.Sum(player => player.Score) == BoardWidth * BoardHeight / 2)
             {
                 CurrentGameState = eGameStates.Ended;
             }
@@ -67,7 +70,7 @@ namespace MemoryGame {
         {
             CurrentUserSelection = i_UserSelection;
 
-            List<Task> tasks = [
+           Task.WaitAll([
                 Task.Run(updateAiMemoryIfNeeded),
                 Task.Run(revealCurrentSelection),
                 Task.Run(() => {
@@ -76,9 +79,7 @@ namespace MemoryGame {
                         checkAndHandleMatch();
                     }
                 })
-            ];
-
-            Task.WaitAll([.. tasks]);
+            ]);
 
             IsFirstSelection = !IsFirstSelection;
         }
@@ -113,12 +114,11 @@ namespace MemoryGame {
 
         private void handleMatchFound()
         {
-            List<Task> tasks = [
+           Task.WaitAll([
                 Task.Run(() => AI?.ForgetCell(CurrentUserSelection)),
                 Task.Run(() => AI?.ForgetCell(PreviousUserSelection))
-            ];
+            ]);
 
-            Task.WaitAll([.. tasks]);
             CurrentPlayer.Score++;
         }
         
@@ -135,12 +135,11 @@ namespace MemoryGame {
 
         public string GetGameOverStatus() {
 
-            return IGameData.PlayerOne.Score.CompareTo(IGameData.PlayerTwo.Score) switch
-            {
-                > 0 => getGameResultText(IGameData.PlayerOne.Name),
-                < 0 => getGameResultText(IGameData.PlayerTwo.Name),
-                _ => getGameResultText(null),
-            };
+            Player winner = IGameData.Players.MaxBy(player => player.Score)!;
+            bool isTie = IGameData.Players.Any(player => player.Score == winner.Score && player != winner);
+
+
+            return isTie ? getGameResultText(null) : getGameResultText(winner.Name);
         }
 
         private string getGameResultText(string? i_WinningPlayer)
@@ -151,20 +150,15 @@ namespace MemoryGame {
 
         public void ResetGame(int i_Height, int i_Width) {
 
-            CurrentPlayer = IGameData.PlayerOne.Score.CompareTo(IGameData.PlayerTwo.Score) > 0
-                            ? IGameData.PlayerOne
-                            : IGameData.PlayerTwo;
-
-            IGameData.PlayerOne.Score = IGameData.PlayerTwo.Score = 0;
+            createNewTurnsOrder();
+            IGameData.Players.ForEach(player => player.Score = 0);
             IGameData.Board = new Board(i_Width, i_Height);
 
-            List<Task> tasks = [
+             Task.WaitAll([
                 Task.Run(() => AI?.ResetMemory()),
                 Task.Run(initializeLogic),
                 Task.Run(IGameData.InitializeBoard)
-            ];
-
-            Task.WaitAll([.. tasks]);
+            ]);
         }
 
         private void initializeLogic()
@@ -174,9 +168,30 @@ namespace MemoryGame {
             CurrentGameState = eGameStates.OnGoing;
         }
         
-        private string getScoreboard() =>
-            $"Score: {IGameData.PlayerOne.Name} {IGameData.PlayerOne.Score} - {IGameData.PlayerTwo.Name} {IGameData.PlayerTwo.Score}";
-    
+        private void createNewTurnsOrder()
+        {
+            CurrentPlayer = IGameData.Players.MaxBy(player => player.Score)!;
+            int winnerIndex = IGameData.Players.FindIndex(player => player == CurrentPlayer);
+
+            IGameData.TurnsOrder = new Queue<Player>(IGameData.Players
+                .Take(winnerIndex)
+                .Concat(IGameData.Players.Skip(winnerIndex))
+                .ToList());
+            IGameData.TurnsOrder.Enqueue(IGameData.TurnsOrder.Dequeue());
+        }
+        
+        private string getScoreboard()
+    {
+        StringBuilder scoreboard = new StringBuilder("Scoreboard:\n");
+
+        foreach (var player in IGameData.Players)
+        {
+            scoreboard.AppendLine($"{player.Name}: {player.Score}");
+        }
+
+        return scoreboard.ToString();
+    }
+        
         public string GetAiInput() => AI!.MakeSelection(Board.Letters , IsFirstSelection);
     }
 }

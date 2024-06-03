@@ -1,21 +1,19 @@
 namespace MemoryGame {
-    internal record GameDataInput(Player PlayerOne, Player PlayerTwo, Board Board);
+    internal record GameDataInput(List<Player> Players, Board Board);
 
     internal interface IGameData
     {
         public Board Board { get; set; }
-        public Player PlayerOne { get; set;}
-        public Player PlayerTwo { get; set;}
-        public Player CurrentPlayer { get; set; }
+        public List<Player> Players { get; set;}
+        public Queue<Player> TurnsOrder { get; set; }   
         void InitializeBoard();
     }
 
     internal class GameData(GameDataInput i_Dto) : IGameData
     {
         private static readonly Random m_Random = new Random();
-        public Player PlayerOne { get; set; } = i_Dto.PlayerOne;
-        public Player PlayerTwo { get; set; } = i_Dto.PlayerTwo;
-        public Player CurrentPlayer { get; set; } = i_Dto.PlayerOne;
+        public List<Player> Players { get; set; } = i_Dto.Players;
+        public Queue<Player> TurnsOrder { get; set; } = new Queue<Player>(i_Dto.Players);
         public Board Board { get; set; } = i_Dto.Board;
 
         public void InitializeBoard()

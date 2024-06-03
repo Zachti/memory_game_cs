@@ -23,11 +23,8 @@ namespace MemoryGame {
 
         private void runMenu()
         {
-            eGameModes desiredGameMode = IMenu.Start(out string fPlayerName, out string sPlayerName, out int height, out int width, out int? difficulty);
-            ePlayerTypes type = desiredGameMode == eGameModes.multiPlayer ? ePlayerTypes.Human : ePlayerTypes.AI;
-            Player fPlayer = new Player(fPlayerName, ePlayerTypes.Human);
-            Player sPlayer = new Player(sPlayerName, type);
-            GameManager.Initialize(fPlayer, sPlayer, new Board(height, width), desiredGameMode, difficulty);
+            eGameModes desiredGameMode = IMenu.Start(out List<Player> players, out int height, out int width, out int? difficulty);
+            GameManager.Initialize(players, new Board(height, width), desiredGameMode, difficulty);
         }
 
         private void runGame()
