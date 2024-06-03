@@ -2,12 +2,12 @@
 using System.Text;
 
 namespace MemoryGame {
-    internal class GameUIManager(IMenu i_Menu, GameManager i_GameManager)
+    internal class UIManager(IMenu i_Menu, GameManager i_GameManager)
     {
         private IMenu IMenu { get; } = i_Menu;
         private GameManager GameManager { get; } = i_GameManager;
         private Action<string> Display { get; } = Console.WriteLine;
-        private Action<int> Rest { get; } = Thread.Sleep;
+        private Action<eUiPauseInterval> Rest { get; } = interval => Thread.Sleep((int)interval);
         private Action ClearUI { get; } = Ex02.ConsoleUtils.Screen.Clear;    
         private Func<string> Read { get; } = () => Console.ReadLine() ?? string.Empty;
 
@@ -104,7 +104,7 @@ namespace MemoryGame {
                 drawBoard();
                 Display("Mismatch, but try to remember!");
 
-                Rest(2000);
+                Rest(eUiPauseInterval.TwoSeconds);
 
                 GameManager.ChangeTurn();
             }
@@ -117,22 +117,22 @@ namespace MemoryGame {
             
             if (!GameManager.IsAiHasMatches)
             {
-                Rest(1000);
+                Rest(eUiPauseInterval.OneSecond);
                 for (int i = 0; i < 2; i++)
                 {
-                    Rest(1000);
+                    Rest(eUiPauseInterval.OneSecond);
                     Console.Write(".");
                 }
             }
             
-            Rest(2000);
+            Rest(eUiPauseInterval.TwoSeconds);
         }
 
         private void exit()
         {
             Display("Goodbye!");
             Display("We hope to see you soon again!");
-            Rest(2000);
+            Rest(eUiPauseInterval.TwoSeconds);
             Environment.Exit(0);
         }
 

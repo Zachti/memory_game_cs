@@ -7,15 +7,15 @@ namespace MemoryGame {
         {
             IServiceProvider ServiceProvider = configureServices();
 
-            GameUIManager gameUiManager = ServiceProvider.GetRequiredService<GameUIManager>();
+            UIManager uiManager = ServiceProvider.GetRequiredService<UIManager>();
 
-            gameUiManager.StartGame();
+            uiManager.StartGame();
         }
 
         private static IServiceProvider configureServices()
         {
             return new ServiceCollection()
-                .AddTransient<GameUIManager>()
+                .AddTransient<UIManager>()
                 .AddTransient<GameManager>()
                 .AddSingleton<IMenu, Menu>()
                 .AddSingleton<IGameData, GameData>()
