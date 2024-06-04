@@ -109,11 +109,11 @@ namespace MemoryGame {
             bool isNumber, isWithinRange;
             int userInput;
             do {
-                Display("Please enter a value (must be between 4 and 6): ");
+                Display($"Please enter a value (must be between {MinBoardDimension} and {MaxBoardDimension}): ");
                 isNumber = int.TryParse(getInput(), out userInput); 
                 isWithinRange = userInput >= MinBoardDimension && userInput <= MaxBoardDimension;
                 if (!isNumber || !isWithinRange) {
-                    Display("Invalid input. Please enter a number between 4 and 6.");
+                    Display($"Invalid input. Please enter a number between {MinBoardDimension} and {MaxBoardDimension}.");
             } 
         } while (!isNumber || !isWithinRange);
         return userInput;
