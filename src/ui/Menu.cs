@@ -94,15 +94,15 @@ namespace MemoryGame {
         }
     
         public void GetBoardSize(out int o_Height, out int o_Width) {
-            bool isEven;
+            bool isValid;
             do {
                 o_Height = validateNumberInRange();
                 o_Width = validateNumberInRange();
-                isEven = o_Height * o_Width % 2 == 0;
-                if (!isEven) {
+                isValid = Board.IsValid(o_Width, o_Height);
+                if (!isValid) {
                     Display("Invalid input. Please enter an even number.");
                 }
-            } while(!isEven);
+            } while(!isValid);
         }
 
         private int validateNumberInRange() {

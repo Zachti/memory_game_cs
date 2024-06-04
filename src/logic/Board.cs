@@ -13,5 +13,7 @@ namespace MemoryGame {
         public void InsertLetterToBoard(char i_Letter, Cell i_Cell) => Cards[i_Cell.Row, i_Cell.Column] = new Card(i_Letter);
 
         public void IncrementRevealedSquaresCounter() => RevealedSquaresCounter += 2;
+
+        public static bool IsValid(int i_Width, int i_Height) => i_Width * i_Height % 2 == 0;
     }
 }
