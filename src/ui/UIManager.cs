@@ -8,7 +8,7 @@ namespace MemoryGame {
         private GameManager GameManager { get; } = i_GameManager;
         private Action<string> Display { get; } = Console.WriteLine;
         private Action<eUiPauseInterval> Rest { get; } = interval => Thread.Sleep((int)interval);
-        private Action ClearUI { get; } = Ex02.ConsoleUtils.Screen.Clear;    
+        private Action ClearUI { get; } = Console.Clear; //Ex02.ConsoleUtils.Screen.Clear;    
 
         public void StartGame()
         {
@@ -39,7 +39,7 @@ namespace MemoryGame {
         {
             ClearUI();
             Display($"\nCurrent Turn: {GameManager.CurrentPlayer.Name}\n");
-            drawTopLetterRow(GameManager.BoardWidth);
+            drawTopSymbolsRow(GameManager.BoardWidth);
             StringBuilder borderBuilder = new StringBuilder(" ").Append('=', 4 * GameManager.BoardWidth + 1);
             string border = borderBuilder.ToString();
             Display(border);
@@ -50,25 +50,25 @@ namespace MemoryGame {
             }
         }
 
-        private void drawTopLetterRow(int i_LengthOfRow)
+        private void drawTopSymbolsRow(int i_LengthOfRow)
         {
-            StringBuilder topLettersRow = new StringBuilder(" ");
+            StringBuilder topSymbolsRow = new StringBuilder(" ");
 
             foreach (int i in Enumerable.Range(0, i_LengthOfRow))
             {
-                topLettersRow.Append("   ").Append((char)(i + 'A'));
+                topSymbolsRow.Append("   ").Append((char)(i + 'A'));
             }
 
-            Display(topLettersRow.ToString());
+            Display(topSymbolsRow.ToString());
         }
 
         private void drawRow(int i_Index) {
             StringBuilder row = new StringBuilder(i_Index + 1).Append(" |");
             foreach (int j in Enumerable.Range(0, GameManager.BoardWidth))
             {
-                Card currentBoardLetter = GameManager.Board.Cards[i_Index, j];
+                Card<char> currentBoardSymbol = GameManager.Board.Cards[i_Index, j];
                 row.Append(' ')
-                .Append( currentBoardLetter.IsRevealed ? currentBoardLetter.Letter : ' ')
+                .Append( currentBoardSymbol.IsRevealed ? currentBoardSymbol.Symbol : ' ')
                 .Append(" |");
             }
             Display(row.ToString());
@@ -134,7 +134,6 @@ namespace MemoryGame {
             Display("Goodbye!");
             Display("We hope to see you soon again!");
             Rest(eUiPauseInterval.TwoSeconds);
-            Environment.Exit(0);
         }
 
         private void gameOver()
@@ -177,14 +176,14 @@ namespace MemoryGame {
             {
                 Console.WriteLine("Input must have exactly 2 characters");
             }
-            return !isInvalid && checkIfLetterInRange(i_UserInput[0]) && checkIfDigitInRange(i_UserInput[1]);
+            return !isInvalid && checkIfSymbolInRange(i_UserInput[0]) && checkIfDigitInRange(i_UserInput[1]);
         }
 
-        private bool checkIfLetterInRange(char i_Letter) {
-            char lastLetter = (char)('A' + GameManager.BoardWidth - 1);
-            bool isInvalid = i_Letter < 'A' || i_Letter > lastLetter;
+        private bool checkIfSymbolInRange(char i_Symbol) {
+            char lastSymbol = (char)('A' + GameManager.BoardWidth - 1);
+            bool isInvalid = i_Symbol < 'A' || i_Symbol > lastSymbol;
             if (isInvalid) {
-                Console.WriteLine($"Invalid input, letter must be between A and {lastLetter}");
+                Console.WriteLine($"Invalid input, Symbol must be between A and {lastSymbol}");
             }
             return !isInvalid;
         }

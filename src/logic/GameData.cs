@@ -21,16 +21,16 @@ namespace MemoryGame {
         public void InitializeBoard(Board i_Board)
         {
             Board = i_Board;
-            char[] Letters = initializeBoardLetters();
+            char[] Symbols = initializeBoardSymbols();
             List<Cell> randomCells = getRandomCellsList();
 
-            foreach(char letter in Letters)
+            foreach(char symbol in Symbols)
             {
                 getRandomCell(randomCells, out Cell firstCell);
                 getRandomCell(randomCells, out Cell secondCell);
 
-                Board.InsertLetterToBoard(letter, firstCell);
-                Board.InsertLetterToBoard(letter, secondCell);
+                Board.InsertSymbolToBoard(symbol, firstCell);
+                Board.InsertSymbolToBoard(symbol, secondCell);
             }
         }
 
@@ -48,7 +48,7 @@ namespace MemoryGame {
                     .ToList();
         }
             
-        private char[] initializeBoardLetters()
+        private char[] initializeBoardSymbols()
         {
             return Enumerable.Range(0, Board.Height * Board.Width / 2)
                     .Select(i => (char)('A' + i))

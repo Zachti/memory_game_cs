@@ -1,7 +1,7 @@
 namespace MemoryGame {
-    internal struct Card(char i_Letter)
+    internal struct Card<T>(T i_Symbol)
     {
-        public char Letter { get; set; } = i_Letter;
+        public T Symbol { get;} = i_Symbol;
         public bool IsRevealed { get; set; }
 
         public void Flip() => IsRevealed = !IsRevealed;

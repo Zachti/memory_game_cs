@@ -17,11 +17,11 @@ namespace MemoryGame {
             }
         }
    
-        public void RememberCell(Cell i_CellToBeAdded, char i_Letter) {
+        public void RememberCell(Cell i_CellToBeAdded, char i_Symbol) {
             MemoryMutex.WaitOne();
             try {
                 if (!isCellInMemory(i_CellToBeAdded)) {
-                    Memory.Add(i_CellToBeAdded, i_Letter);
+                    Memory.Add(i_CellToBeAdded, i_Symbol);
                 }
             }
             finally {
@@ -60,7 +60,7 @@ namespace MemoryGame {
             }
         }
     
-        public string MakeSelection(Card[,] i_Cards , bool i_IsFirstSelection) {
+        public string MakeSelection(Card<char>[,] i_Cards , bool i_IsFirstSelection) {
 
             bool isMemoryEmpty = IsMemoryEmpty();
             HasMatches = !isMemoryEmpty && HasMatches;
@@ -77,34 +77,34 @@ namespace MemoryGame {
             }
         }
 
-        private string getFirstSelection(Card[,] i_Cards)
+        private string getFirstSelection(Card<char>[,] i_Cards)
         {
             string firstSelection = string.Empty;
 
-            HasMatches = IsFoundMatch = findLetterMatch(ref firstSelection);
+            HasMatches = IsFoundMatch = findSymbolMatch(ref firstSelection);
             return HasMatches ? firstSelection : getRandomUnmemorizedCell(i_Cards);
         }
 
-        private string getSecondSelection(Card[,] i_Cards)
+        private string getSecondSelection(Card<char>[,] i_Cards)
         {
-            string secondSelection = IsFoundMatch ? Selection.ToString() : findLetterInMemory();
+            string secondSelection = IsFoundMatch ? Selection.ToString() : findSymbolInMemory();
             HasMatches = secondSelection != "";
             return HasMatches ? secondSelection : getRandomUnmemorizedCell(i_Cards);
         }
     
-        private string findLetterInMemory()
+        private string findSymbolInMemory()
         {
-            char Letter = Memory[Selection];
+            char Symbol = Memory[Selection];
             return Memory
-                .Where(memorizedLetter => 
-                    !memorizedLetter.Key.Equals(Selection) &&
-                    memorizedLetter.Value == Letter)
-                .Select(memorizedLetter => memorizedLetter.Key.ToString())
+                .Where(memorizedSymbol => 
+                    !memorizedSymbol.Key.Equals(Selection) &&
+                    memorizedSymbol.Value == Symbol)
+                .Select(memorizedSymbol => memorizedSymbol.Key.ToString())
                 .FirstOrDefault() 
                 ?? string.Empty;
         }
 
-        private string getRandomUnmemorizedCell(Card[,] i_Cards)
+        private string getRandomUnmemorizedCell(Card<char>[,] i_Cards)
         {
             List<Cell> cellsNotInMemory = Enumerable.Range(0, i_Cards.GetLength(0))
                 .SelectMany(row => Enumerable.Range(0, i_Cards.GetLength(1)), (row, column) => new { row, column })
@@ -116,21 +116,21 @@ namespace MemoryGame {
             return Selection.ToString();
         }
 
-        private bool findLetterMatch(ref string i_MemorizedMatchingLetter)
+        private bool findSymbolMatch(ref string i_MemorizedMatchingSymbol)
         {
             bool foundMatch = false;
 
-            foreach (KeyValuePair<Cell, char> firstMemorizedLetter in Memory)
+            foreach (KeyValuePair<Cell, char> firstMemorizedSymbol in Memory)
             {
-                KeyValuePair<Cell, char> matchingLetter = Memory
-                    .FirstOrDefault(secondMemorizedLetter =>
-                        !firstMemorizedLetter.Key.Equals(secondMemorizedLetter.Key) &&
-                        firstMemorizedLetter.Value == secondMemorizedLetter.Value);
+                KeyValuePair<Cell, char> matchingSymbol = Memory
+                    .FirstOrDefault(secondMemorizedSymbol =>
+                        !firstMemorizedSymbol.Key.Equals(secondMemorizedSymbol.Key) &&
+                        firstMemorizedSymbol.Value == secondMemorizedSymbol.Value);
 
-                if (!matchingLetter.Equals(default(KeyValuePair<Cell, char>)))
+                if (!matchingSymbol.Equals(default(KeyValuePair<Cell, char>)))
                 {
-                    i_MemorizedMatchingLetter = firstMemorizedLetter.Key.ToString();
-                    Selection = matchingLetter.Key;
+                    i_MemorizedMatchingSymbol = firstMemorizedSymbol.Key.ToString();
+                    Selection = matchingSymbol.Key;
                     foundMatch = true;
                     break;
                 }

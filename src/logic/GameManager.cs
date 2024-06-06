@@ -77,8 +77,8 @@ namespace MemoryGame {
         {
             if (GameData.GetRandomNumber(0, 100) <= AI?.DifficultyLevel)
             {
-                char letter = Board[CurrentUserSelection].Letter;
-                AI?.RememberCell(CurrentUserSelection, letter);
+                char symbol = Board[CurrentUserSelection].Symbol;
+                AI?.RememberCell(CurrentUserSelection, symbol);
             }
         }
 
@@ -93,7 +93,7 @@ namespace MemoryGame {
 
         private void checkAndHandleMatch()
         {
-            IsSelectionNotMatching = Board[PreviousUserSelection].Letter != Board[CurrentUserSelection].Letter;
+            IsSelectionNotMatching = Board[PreviousUserSelection].Symbol != Board[CurrentUserSelection].Symbol;
 
             if (!IsSelectionNotMatching)
             {

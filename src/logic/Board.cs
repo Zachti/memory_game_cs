@@ -3,14 +3,14 @@ namespace MemoryGame {
     {
         public int Width { get; set; } = i_Width;
         public int Height { get; set; } = i_Height;
-        public Card[,] Cards { get; set; } = new Card[i_Height, i_Width];
+        public Card<char>[,] Cards { get; set; } = new Card<char>[i_Height, i_Width];
         private int RevealedSquaresCounter { get; set; }
         public bool IsBoardFinished => Height * Width == RevealedSquaresCounter;
 
 
-        public ref Card this[Cell i_Cell] { get => ref Cards[i_Cell.Row, i_Cell.Column]; }
+        public ref Card<char> this[Cell i_Cell] { get => ref Cards[i_Cell.Row, i_Cell.Column]; }
 
-        public void InsertLetterToBoard(char i_Letter, Cell i_Cell) => Cards[i_Cell.Row, i_Cell.Column] = new Card(i_Letter);
+        public void InsertSymbolToBoard(char i_Symbol, Cell i_Cell) => Cards[i_Cell.Row, i_Cell.Column] = new Card<char>(i_Symbol);
 
         public void IncrementRevealedSquaresCounter() => RevealedSquaresCounter += 2;
 
