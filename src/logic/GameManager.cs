@@ -7,9 +7,9 @@ namespace MemoryGame {
         public Player CurrentPlayer { get; private set; } = new Player("AI", ePlayerTypes.AI);
         private AI? AI { get; set; }
         public bool IsAiHasMatches => AI!.HasMatches;
-        public List<Cell> Choices { get;} = [];
+        public List<Cell> Choices { get; } = [];
         private bool IsBoardFinished => Choices.Count == 0;
-        private List<Player> Players { get;} = [];
+        private List<Player> Players { get; } = [];
         private static readonly Random m_Random = new Random();
 
         public void Initialize(List<Player> i_Players,int i_BoardHeight, int i_BoardWidth, int? i_Difficulty)

@@ -1,7 +1,7 @@
 namespace MemoryGame {
     internal class AI(int i_Difficulty) {
         public bool HasMatches { get; private set; }
-        public int DifficultyLevel { get;} = i_Difficulty;
+        public int DifficultyLevel { get; } = i_Difficulty;
         private Cell Selection { get; set; } = new Cell (-1,-1);
         private List<Cell> Memory { get; set; } = [];
         private Mutex MemoryMutex { get; } = new Mutex();
