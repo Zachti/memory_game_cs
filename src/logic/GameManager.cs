@@ -58,10 +58,8 @@ namespace MemoryGame {
             Players.ForEach(player => player.Score = 0);
             CurrentGameState = eGameStates.OnGoing;
 
-            Task.WaitAll([
-                Task.Run(() => AI?.ResetMemory()),
-                Task.Run(() => initializeBoard(i_BoardHeight, i_BoardWidth))
-            ]);
+            AI?.ResetMemory();
+            initializeBoard(i_BoardHeight, i_BoardWidth);
         }
 
         private void createNewTurnsOrder()
