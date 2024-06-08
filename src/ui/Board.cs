@@ -1,5 +1,5 @@
 namespace MemoryGame {
-    internal class Board(int i_Width, int i_Height)
+    internal struct Board(int i_Width, int i_Height)
     {
         public int Width { get; set; } = i_Width;
         public int Height { get; set; } = i_Height;
