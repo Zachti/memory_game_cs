@@ -19,7 +19,7 @@ namespace MemoryGame {
             CurrentPlayer = Players[0];
             TurnsOrder =  new Queue<Player>(Players);
             AI = i_Difficulty != null ? new AI((int)i_Difficulty) : null;
-            initializeBoard(i_BoardHeight, i_BoardWidth);
+            initializeCellList(i_BoardHeight, i_BoardWidth);
         }
         
         public void Update(Cell i_UserSelection, bool i_IsAMatch)
@@ -59,7 +59,7 @@ namespace MemoryGame {
             CurrentGameState = eGameStates.OnGoing;
 
             AI?.ResetMemory();
-            initializeBoard(i_BoardHeight, i_BoardWidth);
+            initializeCellList(i_BoardHeight, i_BoardWidth);
         }
 
         private void createNewTurnsOrder()
@@ -84,7 +84,7 @@ namespace MemoryGame {
                     .ToList();
         }
             
-        private void initializeBoard(int i_BoardHeight, int i_BoardWidth)
+        private void initializeCellList(int i_BoardHeight, int i_BoardWidth)
         {
             List<Cell> randomCells = getRandomCellsList(i_BoardWidth, i_BoardHeight);
 
