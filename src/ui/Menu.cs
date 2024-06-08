@@ -1,8 +1,6 @@
 using System.Text;
 
 namespace MemoryGame {
-
-    internal record DifficultyOptions(eSinglePlayerDifficulty Difficulty, int Index);
     
     internal interface IMenu
     {
