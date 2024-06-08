@@ -2,7 +2,7 @@ namespace MemoryGame {
     internal class AI(int i_Difficulty) {
         public bool HasMatches { get; set; }
         public int DifficultyLevel { get; set; } = i_Difficulty;
-        private Cell Selection { get; set; }
+        private Cell Selection { get; set; } = new Cell (-1,-1);
         private List<Cell> Memory { get; set; } = [];
         private Mutex MemoryMutex { get; } = new Mutex();
         private bool IsFoundMatch { get; set; }
@@ -94,7 +94,7 @@ namespace MemoryGame {
         }
     
         private Cell? findCellInMemory() => 
-            Memory.FirstOrDefault(memorizedSymbol => memorizedSymbol.MatchCell.Equals(Selection));
+            Memory.FirstOrDefault(memorizedSymbol => memorizedSymbol.MatchCell!.Equals(Selection));
 
         private Cell getRandomUnmemorizedCell(List<Cell> i_Cells)
         {

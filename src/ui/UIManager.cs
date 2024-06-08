@@ -12,8 +12,8 @@ namespace MemoryGame {
         private int BoardHeight => Board.Height;
         private bool IsFirstSelection { get; set; } = true;
         private Action<string> Display { get; } = Console.WriteLine;
-        private Cell CurrentUserSelection { get; set; }
-        private Cell PreviousUserSelection{ get; set; }
+        private Cell CurrentUserSelection { get; set; } = new Cell (-1,-1);
+        private Cell PreviousUserSelection{ get; set; } = new Cell (-1,-1);
         private Action<eUiPauseInterval> Rest { get; } = interval => Thread.Sleep((int)interval);
         private Action ClearUI { get; } = Console.Clear; //Ex02.ConsoleUtils.Screen.Clear;    
 
@@ -318,7 +318,7 @@ namespace MemoryGame {
             foreach (char currentSymbol in Symbols)
             {
                 Cell firstCell = freeCells[0];
-                Cell secondCell = firstCell.MatchCell;
+                Cell secondCell = firstCell.MatchCell!;
       
                 insertSymbolAndRemoveCell(currentSymbol, firstCell, freeCells);
                 insertSymbolAndRemoveCell(currentSymbol, secondCell, freeCells);
