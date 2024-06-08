@@ -2,7 +2,6 @@ namespace MemoryGame {
     internal class GameManager()
     {
         public static eGameStates CurrentGameState { get; set; } = eGameStates.Menu;
-        public bool IsSelectionNotMatching { get; set; }
         public bool IsCurrentPlayerHuman => CurrentPlayer.Type == ePlayerTypes.Human;
         public Queue<Player> TurnsOrder { get; set; } =  new Queue<Player>();
         public Player CurrentPlayer { get; set; } = new Player("AI", ePlayerTypes.AI);
@@ -20,13 +19,12 @@ namespace MemoryGame {
             CurrentPlayer = Players[0];
             TurnsOrder =  new Queue<Player>(Players);
             AI = i_Difficulty != null ? new AI((int)i_Difficulty) : null;
-            InitializeBoard(i_BoardHeight, i_BoardWidth);
+            initializeBoard(i_BoardHeight, i_BoardWidth);
         }
         
         public void ChangeTurn() 
         {
             CurrentPlayer = getNextPlayer();
-            IsSelectionNotMatching = false;
         }
 
         public void Update(Cell i_UserSelection, bool i_IsAMatch)
@@ -52,22 +50,17 @@ namespace MemoryGame {
             }
         }
 
-        public void ResetGame() {
+        public void ResetGame(int i_BoardHeight, int i_BoardWidth) {
 
             createNewTurnsOrder();
             CurrentPlayer = TurnsOrder.Peek();
             Players.ForEach(player => player.Score = 0);
+            CurrentGameState = eGameStates.OnGoing;
 
             Task.WaitAll([
                 Task.Run(() => AI?.ResetMemory()),
-                Task.Run(initializeLogic),
+                Task.Run(() => initializeBoard(i_BoardHeight, i_BoardWidth))
             ]);
-        }
-
-        private void initializeLogic()
-        {
-            IsSelectionNotMatching = false;
-            CurrentGameState = eGameStates.OnGoing;
         }
 
         public List<Player> GetPlayersOrderByScore() => [.. Players.OrderByDescending( player => player.Score)];
@@ -104,7 +97,7 @@ namespace MemoryGame {
                     .ToList();
         }
             
-        public void InitializeBoard(int i_BoardHeight, int i_BoardWidth)
+        private void initializeBoard(int i_BoardHeight, int i_BoardWidth)
         {
             List<Cell> randomCells = getRandomCellsList(i_BoardWidth, i_BoardHeight);
 

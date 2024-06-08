@@ -4,9 +4,10 @@ using System.Text;
 namespace MemoryGame {
     internal class UIManager(IMenu i_Menu, GameManager i_GameManager)
     {
-        public bool IsSelectionNotMatching => Board[PreviousUserSelection].Symbol != Board[CurrentUserSelection].Symbol;        private IMenu IMenu { get; } = i_Menu;
+        private bool IsSelectionNotMatching => Board[PreviousUserSelection].Symbol != Board[CurrentUserSelection].Symbol;       
+        private IMenu IMenu { get; } = i_Menu;
         private GameManager GameManager { get; } = i_GameManager;
-        private Board Board { get; set; }
+        private Board Board { get; set; } = new Board(0, 0);
         private int BoardWidth => Board.Width;
         private int BoardHeight => Board.Height;
         private bool IsFirstSelection { get; set; } = true;
@@ -108,10 +109,8 @@ namespace MemoryGame {
             {
                 exit();
             }
-            Cell userSelection = Cell.Parse(i_PlayerInput);
-            GameManager.Update(userSelection, false);
-            updateSecondTurn(userSelection);
-            revealCurrentSelection();
+            
+            updateSecondTurn(Cell.Parse(i_PlayerInput));
 
             if(IsSelectionNotMatching)
             {
@@ -167,7 +166,7 @@ namespace MemoryGame {
         private bool checkForRestart()
         {
             Display("Press 'Y' to play again, or any other key to exit.");
-            return readInput().ToUpper() == "Y";
+            return readInput().Equals("Y", StringComparison.CurrentCultureIgnoreCase);
         }
 
         private void restartGame()
@@ -175,8 +174,7 @@ namespace MemoryGame {
             ClearUI();
             IMenu.GetBoardSize(out int height, out int width);
             Board = new Board(height, width);
-            GameManager.ResetGame();
-            GameManager.InitializeBoard(height, width);
+            GameManager.ResetGame(height, width);
             initializeBoardSymbols();
             IsFirstSelection = true;
             StartGame();
@@ -278,16 +276,11 @@ namespace MemoryGame {
         {
             if (!IsSelectionNotMatching)
             {
-                handleMatchFound();
+                GameManager.Update(CurrentUserSelection, true);
+                GameManager.Update(PreviousUserSelection, true);
+
+                GameManager.CurrentPlayer.Score++;
             }
-        }
-
-        private void handleMatchFound()
-        {
-            GameManager.Update(CurrentUserSelection, true);
-            GameManager.Update(PreviousUserSelection, true);
-
-            GameManager.CurrentPlayer.Score++;
         }
 
         private void revealCurrentSelection()
@@ -302,12 +295,16 @@ namespace MemoryGame {
    
         private void updateSecondTurn(Cell i_UserSelection)
         {
+            GameManager.Update(i_UserSelection, false);
+
             CurrentUserSelection = i_UserSelection;
 
-                if (!IsFirstSelection)
-                {
-                    checkAndHandleMatch();
-                }
+            if (!IsFirstSelection)
+            {
+                checkAndHandleMatch();
+            }
+
+            revealCurrentSelection();
         }   
    
         private void initializeBoardSymbols()
