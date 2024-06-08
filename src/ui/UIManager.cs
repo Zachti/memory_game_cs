@@ -110,7 +110,7 @@ namespace MemoryGame {
                 exit();
             }
             
-            updateSecondTurn(Cell.Parse(i_PlayerInput));
+            updateTurn(Cell.Parse(i_PlayerInput));
 
             if(IsSelectionNotMatching)
             {
@@ -293,7 +293,7 @@ namespace MemoryGame {
             IsFirstSelection = !IsFirstSelection;
         }
    
-        private void updateSecondTurn(Cell i_UserSelection)
+        private void updateTurn(Cell i_UserSelection)
         {
             GameManager.Update(i_UserSelection, false);
 
@@ -317,12 +317,18 @@ namespace MemoryGame {
 
             foreach (char currentSymbol in Symbols)
             {
-                GameManager.GetRandomCell(freeCells, out Cell firstCell);
+                Cell firstCell = freeCells[0];
                 Cell secondCell = firstCell.MatchCell;
-                freeCells.Remove(secondCell);
-                Board.InsertSymbolToBoard(currentSymbol, firstCell);
-                Board.InsertSymbolToBoard(currentSymbol, secondCell);
+      
+                insertSymbolAndRemoveCell(currentSymbol, firstCell, freeCells);
+                insertSymbolAndRemoveCell(currentSymbol, secondCell, freeCells);
             }
+        }
+
+        private void insertSymbolAndRemoveCell(char i_Symbol, Cell i_Cell, List<Cell> i_FreeCells)
+        {
+            Board.InsertSymbolToBoard(i_Symbol, i_Cell);
+            i_FreeCells.Remove(i_Cell);
         }
    }
 }

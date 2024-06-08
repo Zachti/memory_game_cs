@@ -83,7 +83,7 @@ namespace MemoryGame {
     
         public static int GetRandomNumber(int i_RangeStart, int i_RangeEnd) => m_Random.Next(i_RangeStart, i_RangeEnd);
 
-        public void GetRandomCell(List<Cell> i_RandomCells, out Cell o_Cell)
+        private void getRandomCell(List<Cell> i_RandomCells, out Cell o_Cell)
         {
             int randomSelection = GetRandomNumber(0, i_RandomCells.Count);
             o_Cell = i_RandomCells[randomSelection];
@@ -103,8 +103,8 @@ namespace MemoryGame {
 
             while (randomCells.Count > 0) {
 
-                GetRandomCell(randomCells, out Cell firstCell);
-                GetRandomCell(randomCells, out Cell secondCell);
+                getRandomCell(randomCells, out Cell firstCell);
+                getRandomCell(randomCells, out Cell secondCell);
 
                 firstCell.MatchCell = secondCell;
                 secondCell.MatchCell = firstCell;
