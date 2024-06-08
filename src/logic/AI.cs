@@ -3,7 +3,7 @@ namespace MemoryGame {
         public bool HasMatches { get; set; }
         public int DifficultyLevel { get; set; } = i_Difficulty;
         private Cell Selection { get; set; }
-        private Dictionary<Cell, char> Memory { get; set; } = [];
+        private List<Cell> Memory { get; set; } = [];
         private Mutex MemoryMutex { get; } = new Mutex();
         private bool IsFoundMatch { get; set; }
 
@@ -17,11 +17,12 @@ namespace MemoryGame {
             }
         }
    
-        public void RememberCell(Cell i_CellToBeAdded, char i_Symbol) {
+        public void RememberCell(Cell i_CellToBeAdded) {
+
             MemoryMutex.WaitOne();
             try {
                 if (!isCellInMemory(i_CellToBeAdded)) {
-                    Memory.Add(i_CellToBeAdded, i_Symbol);
+                    Memory.Add(i_CellToBeAdded);
                 }
             }
             finally {
@@ -32,7 +33,7 @@ namespace MemoryGame {
         private bool isCellInMemory(Cell i_Cell) {
             MemoryMutex.WaitOne();
             try {
-                return Memory.ContainsKey(i_Cell);
+                return Memory.Contains(i_Cell);
             }
             finally {
                 MemoryMutex.ReleaseMutex();
@@ -60,7 +61,7 @@ namespace MemoryGame {
             }
         }
     
-        public string MakeSelection(Card<char>[,] i_Cards , bool i_IsFirstSelection) {
+        public Cell MakeSelection(List<Cell> i_Cells , bool i_IsFirstSelection) {
 
             bool isMemoryEmpty = IsMemoryEmpty();
             HasMatches = !isMemoryEmpty && HasMatches;
@@ -69,68 +70,55 @@ namespace MemoryGame {
 
             try {
                 return isMemoryEmpty
-                    ? getRandomUnmemorizedCell(i_Cards)
-                    : (i_IsFirstSelection ? getFirstSelection(i_Cards) : getSecondSelection(i_Cards));
+                    ? getRandomUnmemorizedCell(i_Cells)
+                    : (i_IsFirstSelection ? getFirstSelection(i_Cells) : getSecondSelection(i_Cells));
             }
             finally {
                 MemoryMutex.ReleaseMutex();
             }
         }
 
-        private string getFirstSelection(Card<char>[,] i_Cards)
+        private Cell getFirstSelection(List<Cell> i_Cells)
         {
-            string firstSelection = string.Empty;
+            Cell? firstSelection = null;
 
-            HasMatches = IsFoundMatch = findSymbolMatch(ref firstSelection);
-            return HasMatches ? firstSelection : getRandomUnmemorizedCell(i_Cards);
+            HasMatches = IsFoundMatch = findCellMatch(ref firstSelection);
+            return HasMatches ? firstSelection! : getRandomUnmemorizedCell(i_Cells);
         }
 
-        private string getSecondSelection(Card<char>[,] i_Cards)
+        private Cell getSecondSelection(List<Cell> i_Cells)
         {
-            string secondSelection = IsFoundMatch ? Selection.ToString() : findSymbolInMemory();
-            HasMatches = secondSelection != "";
-            return HasMatches ? secondSelection : getRandomUnmemorizedCell(i_Cards);
+            Cell? secondSelection = IsFoundMatch ? Selection : findCellInMemory();
+            HasMatches = secondSelection != null;
+            return HasMatches ? secondSelection! : getRandomUnmemorizedCell(i_Cells);
         }
     
-        private string findSymbolInMemory()
-        {
-            char Symbol = Memory[Selection];
-            return Memory
-                .Where(memorizedSymbol => 
-                    !memorizedSymbol.Key.Equals(Selection) &&
-                    memorizedSymbol.Value == Symbol)
-                .Select(memorizedSymbol => memorizedSymbol.Key.ToString())
-                .FirstOrDefault() 
-                ?? string.Empty;
-        }
+        private Cell? findCellInMemory() => 
+            Memory.FirstOrDefault(memorizedSymbol => memorizedSymbol.MatchCell.Equals(Selection));
 
-        private string getRandomUnmemorizedCell(Card<char>[,] i_Cards)
+        private Cell getRandomUnmemorizedCell(List<Cell> i_Cells)
         {
-            List<Cell> cellsNotInMemory = Enumerable.Range(0, i_Cards.GetLength(0))
-                .SelectMany(row => Enumerable.Range(0, i_Cards.GetLength(1)), (row, column) => new { row, column })
-                .Where(cell => !(i_Cards[cell.row, cell.column].IsRevealed || Memory.ContainsKey(new Cell(cell.row, cell.column))))
-                .Select(cell => new Cell(cell.row, cell.column))
-                .ToList();
-            int randomIndex = GameData.GetRandomNumber(0, cellsNotInMemory.Count);
+           List<Cell> cellsNotInMemory = i_Cells.Where(cell => !Memory.Contains(cell)).ToList();
+            int randomIndex = GameManager.GetRandomNumber(0, cellsNotInMemory.Count);
             Selection = cellsNotInMemory[randomIndex];
-            return Selection.ToString();
+            return Selection;
         }
 
-        private bool findSymbolMatch(ref string i_MemorizedMatchingSymbol)
+        private bool findCellMatch(ref Cell? i_MemorizedMatchingSymbol)
         {
             bool foundMatch = false;
 
-            foreach (KeyValuePair<Cell, char> firstMemorizedSymbol in Memory)
+            foreach (Cell firstMemorizedCell in Memory)
             {
-                KeyValuePair<Cell, char> matchingSymbol = Memory
-                    .FirstOrDefault(secondMemorizedSymbol =>
-                        !firstMemorizedSymbol.Key.Equals(secondMemorizedSymbol.Key) &&
-                        firstMemorizedSymbol.Value == secondMemorizedSymbol.Value);
+                Cell? matchingCell = Memory
+                    .FirstOrDefault(secondMemorizedCell =>
+                        !firstMemorizedCell.Equals(secondMemorizedCell) &&
+                        firstMemorizedCell.Equals(secondMemorizedCell.MatchCell));
 
-                if (!matchingSymbol.Equals(default(KeyValuePair<Cell, char>)))
+                if (matchingCell != null)
                 {
-                    i_MemorizedMatchingSymbol = firstMemorizedSymbol.Key.ToString();
-                    Selection = matchingSymbol.Key;
+                    i_MemorizedMatchingSymbol = firstMemorizedCell;
+                    Selection = matchingCell;
                     foundMatch = true;
                     break;
                 }

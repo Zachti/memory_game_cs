@@ -1,141 +1,125 @@
 namespace MemoryGame {
-    internal class GameManager(IGameData i_GameData)
+    internal class GameManager()
     {
         public static eGameStates CurrentGameState { get; set; } = eGameStates.Menu;
-        private bool IsFirstSelection { get; set; } = true;
-        public int BoardWidth => IGameData.Board.Width;
-        public int BoardHeight => IGameData.Board.Height;
-        public Board Board => IGameData.Board;
-        public Player CurrentPlayer { get; set; } = i_GameData.Players.First();
         public bool IsSelectionNotMatching { get; set; }
         public bool IsCurrentPlayerHuman => CurrentPlayer.Type == ePlayerTypes.Human;
-        private Cell CurrentUserSelection { get; set; }
-        private Cell PreviousUserSelection{ get; set; }
-        private IGameData IGameData { get; } = i_GameData;
+        public Queue<Player> TurnsOrder { get; set; } =  new Queue<Player>();
+        public Player CurrentPlayer { get; set; }
         private AI? AI { get; set; }
         public bool IsAiHasMatches => AI!.HasMatches;
+        public List<Cell> Choices { get; set; } = [];
+        private bool IsBoardFinished => Choices.Count == 0;
+        public List<Player> Players { get; set; } = [];
+        private static readonly Random m_Random = new Random();
 
-        public void Initialize(List<Player> i_Players, Board i_Board, int? i_Difficulty)
+        public void Initialize(List<Player> i_Players,int i_BoardHeight, int i_BoardWidth, int? i_Difficulty)
         {
-           Task.WaitAll([
-                Task.Run(() => initializeMode(i_Difficulty)),
-                Task.Run(() => initializeGameData(i_Players, i_Board))
-            ]);
-        }
-
-        private void initializeMode(int? i_Difficulty) {
+            Players = i_Players;
             CurrentGameState = eGameStates.OnGoing;
+            CurrentPlayer = Players[0];
+            TurnsOrder =  new Queue<Player>(Players);
             AI = i_Difficulty != null ? new AI((int)i_Difficulty) : null;
-        }
-        
-        private void initializeGameData(List<Player> i_Players, Board i_Board) {
-            IGameData.Players = i_Players;
-            IGameData.InitializeBoard(i_Board);
-            IGameData.TurnsOrder = new Queue<Player>(IGameData.Players);
-            CurrentPlayer = IGameData.TurnsOrder.Peek();
+            InitializeBoard(i_BoardHeight, i_BoardWidth);
         }
         
         public void ChangeTurn() 
         {
-            CurrentPlayer = IGameData.GetNextPlayer();
+            CurrentPlayer = getNextPlayer();
 
             IsSelectionNotMatching = false;
-            Board[CurrentUserSelection].Flip();
-            Board[PreviousUserSelection].Flip();
         }
 
-        public void Update(Cell i_UserSelection)
+        public void Update()
         {       
-            if(!IsSelectionNotMatching) {
-                updateNextTurn(i_UserSelection);
-            }
-            if (Board.IsBoardFinished)
+            if (IsBoardFinished)
             {
                 CurrentGameState = eGameStates.Ended;
             }
         }
 
-        private void updateNextTurn(Cell i_UserSelection)
+        public void UpdateAiMemoryIfNeeded(Cell i_UserSelection, bool i_IsAMatch)
         {
-            CurrentUserSelection = i_UserSelection;
-
-            Task.WaitAll([
-                Task.Run(updateAiMemoryIfNeeded),
-                Task.Run(revealCurrentSelection),
-                Task.Run(() => {
-                    if (!IsFirstSelection)
-                    {
-                        checkAndHandleMatch();
-                    }
-                })
-            ]);
-
-            IsFirstSelection = !IsFirstSelection;
-        }
-
-        private void updateAiMemoryIfNeeded()
-        {
-            if (GameData.GetRandomNumber(0, 100) <= AI?.DifficultyLevel)
+            Cell cell = Choices.FirstOrDefault(cell => cell.Row == i_UserSelection.Row && cell.Column == i_UserSelection.Column)!;
+            if (i_IsAMatch)
             {
-                char symbol = Board[CurrentUserSelection].Symbol;
-                AI?.RememberCell(CurrentUserSelection, symbol);
+                Choices.Remove(cell);
+                AI?.ForgetCell(cell);
+            }
+            else if (GetRandomNumber(0, 100) <= AI?.DifficultyLevel)
+            {
+                AI?.RememberCell(cell);
             }
         }
 
-        private void revealCurrentSelection()
-        {
-            Board[CurrentUserSelection].Flip();
-            if (IsFirstSelection)
-            {
-                PreviousUserSelection = CurrentUserSelection;
-            }
-        }
+        public void ResetGame() {
 
-        private void checkAndHandleMatch()
-        {
-            IsSelectionNotMatching = Board[PreviousUserSelection].Symbol != Board[CurrentUserSelection].Symbol;
-
-            if (!IsSelectionNotMatching)
-            {
-                handleMatchFound();
-            }
-        }
-
-        private void handleMatchFound()
-        {
-            Task.WaitAll([
-                Task.Run(() => AI?.ForgetCell(CurrentUserSelection)),
-                Task.Run(() => AI?.ForgetCell(PreviousUserSelection))
-            ]);
-
-            CurrentPlayer.Score++;
-            Board.IncrementRevealedSquaresCounter();
-        }
-
-        public void ResetGame(int i_Height, int i_Width) {
-
-            IGameData.CreateNewTurnsOrder();
-            CurrentPlayer = IGameData.TurnsOrder.Peek();
-            IGameData.Players.ForEach(player => player.Score = 0);
+            createNewTurnsOrder();
+            CurrentPlayer = TurnsOrder.Peek();
+            Players.ForEach(player => player.Score = 0);
 
             Task.WaitAll([
                 Task.Run(() => AI?.ResetMemory()),
                 Task.Run(initializeLogic),
-                Task.Run(() => IGameData.InitializeBoard(new Board(i_Width, i_Height)))
             ]);
         }
 
         private void initializeLogic()
         {
-            IsFirstSelection = true;
             IsSelectionNotMatching = false;
             CurrentGameState = eGameStates.OnGoing;
         }
 
-        public List<Player> GetPlayersOrderByScore() => [.. IGameData.Players.OrderByDescending( player => player.Score)];
+        public List<Player> GetPlayersOrderByScore() => [.. Players.OrderByDescending( player => player.Score)];
     
-        public string GetAiInput() => AI!.MakeSelection(Board.Cards , IsFirstSelection);
+        public Cell GetAiInput(bool i_IsFirstSelection) => AI!.MakeSelection(Choices , i_IsFirstSelection);
+   
+        private Player getNextPlayer()
+        {
+            TurnsOrder.Enqueue(TurnsOrder.Dequeue());
+            return TurnsOrder.Peek();
+        }
 
-        public bool IsCellRevealed(Cell i_Cell) => Board[i_Cell].IsRevealed;
+        private void createNewTurnsOrder()
+        {
+            Player Winner = Players.MaxBy(player => player.Score)!;
+            int winnerIndex = Players.FindIndex(player => player == Winner);
+
+            TurnsOrder =  new Queue<Player>([Winner, ..Players.Skip(winnerIndex+1).Concat(Players.Take(winnerIndex)).ToList()]);
+        }
+    
+        public static int GetRandomNumber(int i_RangeStart, int i_RangeEnd) => m_Random.Next(i_RangeStart, i_RangeEnd);
+
+        public void GetRandomCell(List<Cell> i_RandomCells, out Cell o_Cell)
+        {
+            int randomSelection = GetRandomNumber(0, i_RandomCells.Count);
+            o_Cell = i_RandomCells[randomSelection];
+            i_RandomCells.RemoveAt(randomSelection);
+        }
+            
+        private List<Cell> getRandomCellsList(int i_Width, int i_Height)
+        {
+            return Enumerable.Range(0, i_Height)
+                    .SelectMany(row => Enumerable.Range(0, i_Width), (row, col) => new Cell(row, col))
+                    .ToList();
+        }
+            
+        public void InitializeBoard(int i_BoardHeight, int i_BoardWidth)
+        {
+            List<Cell> randomCells = getRandomCellsList(i_BoardWidth, i_BoardHeight);
+
+            while (randomCells.Count > 0) {
+
+                GetRandomCell(randomCells, out Cell firstCell);
+                GetRandomCell(randomCells, out Cell secondCell);
+
+                firstCell.MatchCell = secondCell;
+                secondCell.MatchCell = firstCell;
+
+                Choices.AddRange([firstCell, secondCell]);
+            }
+        }
+    
+        public bool IsBoardValid(int i_Width, int i_Height) => i_Width * i_Height % 2 == 0;
     }
 }

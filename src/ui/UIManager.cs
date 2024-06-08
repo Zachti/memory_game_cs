@@ -4,9 +4,15 @@ using System.Text;
 namespace MemoryGame {
     internal class UIManager(IMenu i_Menu, GameManager i_GameManager)
     {
-        private IMenu IMenu { get; } = i_Menu;
+        public bool IsSelectionNotMatching => Board[PreviousUserSelection].Symbol != Board[CurrentUserSelection].Symbol;        private IMenu IMenu { get; } = i_Menu;
         private GameManager GameManager { get; } = i_GameManager;
+        private Board Board { get; set; }
+        private int BoardWidth => Board.Width;
+        private int BoardHeight => Board.Height;
+        private bool IsFirstSelection { get; set; } = true;
         private Action<string> Display { get; } = Console.WriteLine;
+        private Cell CurrentUserSelection { get; set; }
+        private Cell PreviousUserSelection{ get; set; }
         private Action<eUiPauseInterval> Rest { get; } = interval => Thread.Sleep((int)interval);
         private Action ClearUI { get; } = Console.Clear; //Ex02.ConsoleUtils.Screen.Clear;    
 
@@ -22,8 +28,10 @@ namespace MemoryGame {
 
         private void runMenu()
         {
-            eGameModes desiredGameMode = IMenu.Start(out List<Player> players, out int height, out int width, out int? difficulty);
-            GameManager.Initialize(players, new Board(height, width), difficulty);
+            IMenu.Start(out List<Player> players, out int height, out int width, out int? difficulty);
+            Board = new Board(height, width);
+            GameManager.Initialize(players, height, width, difficulty);
+            initializeBoardSymbols();
         }
 
         private void runGame()
@@ -39,11 +47,11 @@ namespace MemoryGame {
         {
             ClearUI();
             Display($"\nCurrent Turn: {GameManager.CurrentPlayer.Name}\n");
-            drawTopSymbolsRow(GameManager.BoardWidth);
-            StringBuilder borderBuilder = new StringBuilder(" ").Append('=', 4 * GameManager.BoardWidth + 1);
+            drawTopSymbolsRow(BoardWidth);
+            StringBuilder borderBuilder = new StringBuilder(" ").Append('=', 4 * BoardWidth + 1);
             string border = borderBuilder.ToString();
             Display(border);
-            foreach (int i in Enumerable.Range(0, GameManager.BoardHeight))
+            foreach (int i in Enumerable.Range(0, BoardHeight))
             {
                 drawRow(i);
                 Display(border);
@@ -64,9 +72,9 @@ namespace MemoryGame {
 
         private void drawRow(int i_Index) {
             StringBuilder row = new StringBuilder(i_Index + 1).Append(" |");
-            foreach (int j in Enumerable.Range(0, GameManager.BoardWidth))
+            foreach (int j in Enumerable.Range(0, BoardWidth))
             {
-                Card<char> currentBoardSymbol = GameManager.Board.Cards[i_Index, j];
+                Card currentBoardSymbol = Board.Cards[i_Index, j];
                 row.Append(' ')
                 .Append( currentBoardSymbol.IsRevealed ? currentBoardSymbol.Symbol : ' ')
                 .Append(" |");
@@ -76,9 +84,9 @@ namespace MemoryGame {
 
         private string handleAiInput()
         {
-            string aiInput = GameManager.GetAiInput();
+            Cell aiSelection = GameManager.GetAiInput(IsFirstSelection);
             showAIMessage();
-            return aiInput;
+            return aiSelection.ToString();
         }
 
         private string handleHumanInput()
@@ -96,16 +104,25 @@ namespace MemoryGame {
 
         private void updateUI(string i_PlayerInput)
         {
+            if(i_PlayerInput == "Q")
+            {
+                exit();
+            }
 
-            (i_PlayerInput == "Q" ? (Action)exit : () => GameManager.Update(Cell.Parse(i_PlayerInput)))();
-            
+            updateSecondTurn(Cell.Parse(i_PlayerInput));
+            revealCurrentSelection();
+            GameManager.Update();
 
-            if(GameManager.IsSelectionNotMatching)
+            if(IsSelectionNotMatching)
             {
                 drawBoard();
+
                 Display("Mismatch, but try to remember!");
 
                 Rest(eUiPauseInterval.TwoSeconds);
+
+                Board[CurrentUserSelection].Flip();
+                Board[PreviousUserSelection].Flip();
 
                 GameManager.ChangeTurn();
             }
@@ -157,7 +174,11 @@ namespace MemoryGame {
         {
             ClearUI();
             IMenu.GetBoardSize(out int height, out int width);
-            GameManager.ResetGame(height, width);
+            Board = new Board(height, width);
+            GameManager.ResetGame();
+            GameManager.InitializeBoard(height, width);
+            initializeBoardSymbols();
+            IsFirstSelection = true;
             StartGame();
         } 
 
@@ -180,7 +201,7 @@ namespace MemoryGame {
         }
 
         private bool checkIfSymbolInRange(char i_Symbol) {
-            char lastSymbol = (char)('A' + GameManager.BoardWidth - 1);
+            char lastSymbol = (char)('A' + BoardWidth - 1);
             bool isInvalid = i_Symbol < 'A' || i_Symbol > lastSymbol;
             if (isInvalid) {
                 Console.WriteLine($"Invalid input, Symbol must be between A and {lastSymbol}");
@@ -189,7 +210,7 @@ namespace MemoryGame {
         }
 
         private bool checkIfDigitInRange(char i_Digit) {
-            char lastDigit = (char)('0' + GameManager.BoardHeight);
+            char lastDigit = (char)('0' + BoardHeight);
             bool isInvalid = i_Digit < '1' || i_Digit > lastDigit;
             if (isInvalid) {
                 Console.WriteLine($"Invalid input, digit must be between 1 and {lastDigit}");
@@ -199,7 +220,7 @@ namespace MemoryGame {
         
         private bool validateCellIsHidden(string i_UserInput) {
             Cell cell = Cell.Parse(i_UserInput);
-            bool isInvalid = GameManager.IsCellRevealed(cell);
+            bool isInvalid = Board[cell].IsRevealed;
             if (isInvalid)
             {
                 Display($"Cell {i_UserInput} is already revealed!\nPlease choose a hidden cell.");
@@ -252,5 +273,60 @@ namespace MemoryGame {
         private string getPlayerInput() => GameManager.IsCurrentPlayerHuman ? handleHumanInput() : handleAiInput();
 
         private string readInput() => Console.ReadLine() ?? string.Empty;
+
+        private void checkAndHandleMatch()
+        {
+            if (!IsSelectionNotMatching)
+            {
+                handleMatchFound();
+            }
+        }
+
+        private void handleMatchFound()
+        {
+            GameManager.UpdateAiMemoryIfNeeded(CurrentUserSelection, true);
+            GameManager.UpdateAiMemoryIfNeeded(PreviousUserSelection, true);
+
+            GameManager.CurrentPlayer.Score++;
+        }
+
+        private void revealCurrentSelection()
+        {
+            Board[CurrentUserSelection].Flip();
+            if (IsFirstSelection)
+            {
+                PreviousUserSelection = CurrentUserSelection;
+            }
+            IsFirstSelection = !IsFirstSelection;
+        }
+   
+        private void updateSecondTurn(Cell i_UserSelection)
+        {
+            CurrentUserSelection = i_UserSelection;
+
+            GameManager.UpdateAiMemoryIfNeeded(i_UserSelection, false);
+                if (!IsFirstSelection)
+                {
+                    checkAndHandleMatch();
+                }
+        }   
+   
+        private void initializeBoardSymbols()
+        {
+            char[] Symbols = Enumerable.Range(0, Board.Height * Board.Width / 2)
+                    .Select(i => (char)('A' + i))
+                    .ToArray();
+
+            List<Cell> freeCells = new List<Cell>(GameManager.Choices);
+
+            foreach (char currentSymbol in Symbols)
+            {
+                GameManager.GetRandomCell(freeCells, out Cell firstCell);
+                Cell secondCell = firstCell.MatchCell;
+                freeCells.Remove(secondCell);
+                Board.InsertSymbolToBoard(currentSymbol, firstCell);
+                Board.InsertSymbolToBoard(currentSymbol, secondCell);
+            }
+        }
    }
 }

@@ -10,10 +10,11 @@ namespace MemoryGame {
         void GetBoardSize(out int o_Height, out int o_Width);
     }
 
-    internal class Menu : IMenu
+    internal class Menu(GameManager i_GameManager) : IMenu
     {
         private static int MinBoardDimension { get; } = (int)eBoardDimensionRange.Min;
         private static int MaxBoardDimension { get; } = (int)eBoardDimensionRange.Max;
+        private GameManager GameManager { get; } = i_GameManager;
         private Action<string> Display { get; } = Console.WriteLine;
 
         public eGameModes Start(out List<Player> io_Players, out int o_Height, out int o_Width, out int? o_Difficulty) {
@@ -98,7 +99,7 @@ namespace MemoryGame {
             do {
                 o_Height = validateNumberInRange();
                 o_Width = validateNumberInRange();
-                isValid = Board.IsValid(o_Width, o_Height);
+                isValid = GameManager.IsBoardValid(o_Width, o_Height);
                 if (!isValid) {
                     Display("Invalid input. Please enter an even number.");
                 }

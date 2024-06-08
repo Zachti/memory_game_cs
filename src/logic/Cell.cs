@@ -1,8 +1,9 @@
 namespace MemoryGame {
-    internal struct Cell(int i_Row, int i_Column)
+    internal class Cell(int i_Row, int i_Column)
     {
         public int Row { get; set; } = i_Row;
         public int Column { get; set; } = i_Column;
+        public Cell MatchCell { get; set; } = null;
 
         public static Cell Parse(string i_ToParse)
         {
@@ -12,7 +13,7 @@ namespace MemoryGame {
             return new Cell(row, column);
         }
         
-        public override readonly string ToString()
+        public override string ToString()
         {
             return string.Format("{0}{1}", (char)(Column + 'A'), (char)(Row + '1'));
         }

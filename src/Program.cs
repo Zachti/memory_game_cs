@@ -18,8 +18,6 @@ namespace MemoryGame {
                 .AddTransient<UIManager>()
                 .AddTransient<GameManager>()
                 .AddSingleton<IMenu, Menu>()
-                .AddSingleton<IGameData, GameData>()
-                .AddSingleton(provider => new GameDataInput([new Player("AI", ePlayerTypes.AI)], new Board(4, 4)))
                 .BuildServiceProvider();
         }   
     }
