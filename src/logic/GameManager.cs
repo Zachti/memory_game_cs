@@ -4,7 +4,7 @@ namespace MemoryGame {
         public static eGameStates CurrentGameState { get; set; } = eGameStates.Menu;
         public bool IsCurrentPlayerHuman => CurrentPlayer.Type == ePlayerTypes.Human;
         private Queue<Player> TurnsOrder { get; set; } =  new Queue<Player>();
-        public Player CurrentPlayer { get; set; } = new Player("AI", ePlayerTypes.AI);
+        public Player CurrentPlayer { get; private set; } = new Player("AI", ePlayerTypes.AI);
         private AI? AI { get; set; }
         public bool IsAiHasMatches => AI!.HasMatches;
         public List<Cell> Choices { get;} = [];
