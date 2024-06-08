@@ -15,7 +15,7 @@ namespace MemoryGame {
         private Cell CurrentUserSelection { get; set; } = new Cell (-1,-1);
         private Cell PreviousUserSelection{ get; set; } = new Cell (-1,-1);
         private Action<eUiPauseInterval> Rest { get; } = interval => Thread.Sleep((int)interval);
-        private Action ClearUI { get; } = Ex02.ConsoleUtils.Screen.Clear;    
+        private Action ClearUI { get; } = Console.Clear; //Ex02.ConsoleUtils.Screen.Clear;    
 
         public void StartGame()
         {

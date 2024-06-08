@@ -1,7 +1,7 @@
 namespace MemoryGame {
     internal enum eGameModes 
     {
-        singlePlayer,
-        multiPlayer
+        Single_Player = 1,
+        Multi_Player
     }
 }
