@@ -15,7 +15,7 @@ namespace MemoryGame {
         private Cell CurrentUserSelection { get; set; } = new Cell (-1,-1);
         private Cell PreviousUserSelection{ get; set; } = new Cell (-1,-1);
         private Action<eUiPauseInterval> Rest { get; } = interval => Thread.Sleep((int)interval);
-        private Action ClearUI { get; } = Console.Clear; //Ex02.ConsoleUtils.Screen.Clear;    
+        private Action ClearUI { get; } = Ex02.ConsoleUtils.Screen.Clear;    
 
         public void StartGame()
         {
@@ -96,7 +96,7 @@ namespace MemoryGame {
             do
             {
                 Display($"{GameManager.CurrentPlayer.Name}, Please enter your selection: ");
-                userInput = readInput();
+                userInput = getInoputOrEmpty();
             }
             while (!ValidatePlayerInput(userInput));
 
@@ -166,7 +166,7 @@ namespace MemoryGame {
         private bool checkForRestart()
         {
             Display("Press 'Y' to play again, or any other key to exit.");
-            return readInput().Equals("Y", StringComparison.CurrentCultureIgnoreCase);
+            return getInoputOrEmpty().Equals("Y", StringComparison.CurrentCultureIgnoreCase);
         }
 
         private void restartGame()
@@ -270,7 +270,7 @@ namespace MemoryGame {
                 
         private string getPlayerInput() => GameManager.IsCurrentPlayerHuman ? handleHumanInput() : handleAiInput();
 
-        private string readInput() => Console.ReadLine() ?? string.Empty;
+        private string getInoputOrEmpty() => Console.ReadLine() ?? string.Empty;
 
         private void checkAndHandleMatch()
         {
