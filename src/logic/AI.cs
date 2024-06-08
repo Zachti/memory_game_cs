@@ -1,7 +1,7 @@
 namespace MemoryGame {
     internal class AI(int i_Difficulty) {
-        public bool HasMatches { get; set; }
-        public int DifficultyLevel { get; set; } = i_Difficulty;
+        public bool HasMatches { get; private set; }
+        public int DifficultyLevel { get;} = i_Difficulty;
         private Cell Selection { get; set; } = new Cell (-1,-1);
         private List<Cell> Memory { get; set; } = [];
         private Mutex MemoryMutex { get; } = new Mutex();
@@ -40,7 +40,7 @@ namespace MemoryGame {
             }
         }
     
-        public bool IsMemoryEmpty() {
+        private bool isMemoryEmpty() {
             MemoryMutex.WaitOne();
             try {
                 return Memory.Count == 0;
@@ -63,7 +63,7 @@ namespace MemoryGame {
     
         public Cell MakeSelection(List<Cell> i_Cells , bool i_IsFirstSelection) {
 
-            bool isMemoryEmpty = IsMemoryEmpty();
+            bool isMemoryEmpty = this.isMemoryEmpty();
             HasMatches = !isMemoryEmpty && HasMatches;
 
             MemoryMutex.WaitOne();

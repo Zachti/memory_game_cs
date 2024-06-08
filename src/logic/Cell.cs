@@ -1,8 +1,8 @@
 namespace MemoryGame {
     internal class Cell(int i_Row, int i_Column)
     {
-        public int Row { get; set; } = i_Row;
-        public int Column { get; set; } = i_Column;
+        public int Row { get; } = i_Row;
+        public int Column { get; } = i_Column;
         public Cell? MatchCell { get; set; }
 
         public static Cell Parse(string i_ToParse)
