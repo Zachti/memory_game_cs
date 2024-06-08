@@ -1,7 +1,7 @@
 namespace MemoryGame {
     internal class GameManager()
     {
-        public static eGameStates CurrentGameState { get; set; } = eGameStates.Menu;
+        public static eGameStates CurrentGameState { get; private set; } = eGameStates.Menu;
         public bool IsCurrentPlayerHuman => CurrentPlayer.Type == ePlayerTypes.Human;
         private Queue<Player> TurnsOrder { get; set; } =  new Queue<Player>();
         public Player CurrentPlayer { get; private set; } = new Player("AI", ePlayerTypes.AI);
