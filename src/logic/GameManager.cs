@@ -3,13 +3,13 @@ namespace MemoryGame {
     {
         public static eGameStates CurrentGameState { get; set; } = eGameStates.Menu;
         public bool IsCurrentPlayerHuman => CurrentPlayer.Type == ePlayerTypes.Human;
-        public Queue<Player> TurnsOrder { get; set; } =  new Queue<Player>();
+        private Queue<Player> TurnsOrder { get; set; } =  new Queue<Player>();
         public Player CurrentPlayer { get; set; } = new Player("AI", ePlayerTypes.AI);
         private AI? AI { get; set; }
         public bool IsAiHasMatches => AI!.HasMatches;
         public List<Cell> Choices { get; set; } = [];
         private bool IsBoardFinished => Choices.Count == 0;
-        public List<Player> Players { get; set; } = [];
+        private List<Player> Players { get; set; } = [];
         private static readonly Random m_Random = new Random();
 
         public void Initialize(List<Player> i_Players,int i_BoardHeight, int i_BoardWidth, int? i_Difficulty)
@@ -22,11 +22,6 @@ namespace MemoryGame {
             initializeBoard(i_BoardHeight, i_BoardWidth);
         }
         
-        public void ChangeTurn() 
-        {
-            CurrentPlayer = getNextPlayer();
-        }
-
         public void Update(Cell i_UserSelection, bool i_IsAMatch)
         {       
             updateAiMemoryIfNeeded(i_UserSelection, i_IsAMatch);
@@ -50,6 +45,12 @@ namespace MemoryGame {
             }
         }
 
+        private Player getNextPlayer()
+        {
+            TurnsOrder.Enqueue(TurnsOrder.Dequeue());
+            return TurnsOrder.Peek();
+        }
+        
         public void ResetGame(int i_BoardHeight, int i_BoardWidth) {
 
             createNewTurnsOrder();
@@ -63,16 +64,6 @@ namespace MemoryGame {
             ]);
         }
 
-        public List<Player> GetPlayersOrderByScore() => [.. Players.OrderByDescending( player => player.Score)];
-    
-        public Cell GetAiInput(bool i_IsFirstSelection) => AI!.MakeSelection(Choices , i_IsFirstSelection);
-   
-        private Player getNextPlayer()
-        {
-            TurnsOrder.Enqueue(TurnsOrder.Dequeue());
-            return TurnsOrder.Peek();
-        }
-
         private void createNewTurnsOrder()
         {
             Player Winner = Players.MaxBy(player => player.Score)!;
@@ -80,9 +71,7 @@ namespace MemoryGame {
 
             TurnsOrder =  new Queue<Player>([Winner, ..Players.Skip(winnerIndex+1).Concat(Players.Take(winnerIndex)).ToList()]);
         }
-    
-        public static int GetRandomNumber(int i_RangeStart, int i_RangeEnd) => m_Random.Next(i_RangeStart, i_RangeEnd);
-
+ 
         private void getRandomCell(List<Cell> i_RandomCells, out Cell o_Cell)
         {
             int randomSelection = GetRandomNumber(0, i_RandomCells.Count);
@@ -114,5 +103,14 @@ namespace MemoryGame {
         }
     
         public bool IsBoardValid(int i_Width, int i_Height) => i_Width * i_Height % 2 == 0;
+
+        public List<Player> GetPlayersOrderByScore() => [.. Players.OrderByDescending( player => player.Score)];
+    
+        public Cell GetAiInput(bool i_IsFirstSelection) => AI!.MakeSelection(Choices , i_IsFirstSelection);
+   
+        public void ChangeTurn() => CurrentPlayer = getNextPlayer();
+   
+        public static int GetRandomNumber(int i_RangeStart, int i_RangeEnd) => m_Random.Next(i_RangeStart, i_RangeEnd);
+
     }
 }
