@@ -3,7 +3,7 @@ namespace MemoryGame {
     {
         public int Row { get; set; } = i_Row;
         public int Column { get; set; } = i_Column;
-        public Cell MatchCell { get; set; } = null;
+        public Cell MatchCell { get; set; }
 
         public static Cell Parse(string i_ToParse)
         {

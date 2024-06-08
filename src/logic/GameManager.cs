@@ -5,7 +5,7 @@ namespace MemoryGame {
         public bool IsSelectionNotMatching { get; set; }
         public bool IsCurrentPlayerHuman => CurrentPlayer.Type == ePlayerTypes.Human;
         public Queue<Player> TurnsOrder { get; set; } =  new Queue<Player>();
-        public Player CurrentPlayer { get; set; }
+        public Player CurrentPlayer { get; set; } = new Player("AI", ePlayerTypes.AI);
         private AI? AI { get; set; }
         public bool IsAiHasMatches => AI!.HasMatches;
         public List<Cell> Choices { get; set; } = [];
@@ -26,19 +26,19 @@ namespace MemoryGame {
         public void ChangeTurn() 
         {
             CurrentPlayer = getNextPlayer();
-
             IsSelectionNotMatching = false;
         }
 
-        public void Update()
+        public void Update(Cell i_UserSelection, bool i_IsAMatch)
         {       
+            updateAiMemoryIfNeeded(i_UserSelection, i_IsAMatch);
             if (IsBoardFinished)
             {
                 CurrentGameState = eGameStates.Ended;
             }
         }
 
-        public void UpdateAiMemoryIfNeeded(Cell i_UserSelection, bool i_IsAMatch)
+        private void updateAiMemoryIfNeeded(Cell i_UserSelection, bool i_IsAMatch)
         {
             Cell cell = Choices.FirstOrDefault(cell => cell.Row == i_UserSelection.Row && cell.Column == i_UserSelection.Column)!;
             if (i_IsAMatch)

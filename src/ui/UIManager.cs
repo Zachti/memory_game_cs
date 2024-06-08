@@ -108,10 +108,10 @@ namespace MemoryGame {
             {
                 exit();
             }
-
-            updateSecondTurn(Cell.Parse(i_PlayerInput));
+            Cell userSelection = Cell.Parse(i_PlayerInput);
+            GameManager.Update(userSelection, false);
+            updateSecondTurn(userSelection);
             revealCurrentSelection();
-            GameManager.Update();
 
             if(IsSelectionNotMatching)
             {
@@ -284,8 +284,8 @@ namespace MemoryGame {
 
         private void handleMatchFound()
         {
-            GameManager.UpdateAiMemoryIfNeeded(CurrentUserSelection, true);
-            GameManager.UpdateAiMemoryIfNeeded(PreviousUserSelection, true);
+            GameManager.Update(CurrentUserSelection, true);
+            GameManager.Update(PreviousUserSelection, true);
 
             GameManager.CurrentPlayer.Score++;
         }
@@ -304,7 +304,6 @@ namespace MemoryGame {
         {
             CurrentUserSelection = i_UserSelection;
 
-            GameManager.UpdateAiMemoryIfNeeded(i_UserSelection, false);
                 if (!IsFirstSelection)
                 {
                     checkAndHandleMatch();
