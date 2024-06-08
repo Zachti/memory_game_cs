@@ -96,7 +96,7 @@ namespace MemoryGame {
             do
             {
                 Display($"{GameManager.CurrentPlayer.Name}, Please enter your selection: ");
-                userInput = getInoputOrEmpty();
+                userInput = getInputOrEmpty();
             }
             while (!ValidatePlayerInput(userInput));
 
@@ -166,7 +166,7 @@ namespace MemoryGame {
         private bool checkForRestart()
         {
             Display("Press 'Y' to play again, or any other key to exit.");
-            return getInoputOrEmpty().Equals("Y", StringComparison.CurrentCultureIgnoreCase);
+            return getInputOrEmpty().Equals("Y", StringComparison.CurrentCultureIgnoreCase);
         }
 
         private void restartGame()
@@ -267,10 +267,6 @@ namespace MemoryGame {
             }
             io_Scoreboard.AppendLine();
         }
-                
-        private string getPlayerInput() => GameManager.IsCurrentPlayerHuman ? handleHumanInput() : handleAiInput();
-
-        private string getInoputOrEmpty() => Console.ReadLine() ?? string.Empty;
 
         private void checkAndHandleMatch()
         {
@@ -330,5 +326,9 @@ namespace MemoryGame {
             Board.InsertSymbolToBoard(i_Symbol, i_Cell);
             i_FreeCells.Remove(i_Cell);
         }
+   
+        private string getPlayerInput() => GameManager.IsCurrentPlayerHuman ? handleHumanInput() : handleAiInput();
+
+        private string getInputOrEmpty() => Console.ReadLine() ?? string.Empty;
    }
 }
